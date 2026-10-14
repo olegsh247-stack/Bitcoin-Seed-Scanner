@@ -7,18 +7,16 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23F7931A'/%3E%3Cpath fill='%23fff' d='M44.3 27.5c.6-4-2.4-6.1-6.6-7.5l1.3-5.4-3.3-.8-1.3 5.2c-.9-.2-1.7-.4-2.6-.6l1.3-5.2-3.3-.8-1.3 5.4c-.7-.2-1.4-.3-2.1-.5l-4.5-1.1-.9 3.5s2.4.6 2.4.6c1.3.3 1.6 1.2 1.5 1.9l-1.5 6.2c.1 0 .2.1.3.1l-.3-.1-2.2 8.7c-.2.4-.6 1.1-1.5.8 0 0-2.4-.6-2.4-.6l-1.6 3.8 4.3 1.1c.8.2 1.6.4 2.3.6l-1.4 5.5 3.3.8 1.3-5.4c.9.2 1.7.4 2.6.6l-1.3 5.3 3.3.8 1.4-5.5c5.6 1.1 9.9.6 11.7-4.5 1.4-4.1-.1-6.5-3-8 2.2-.5 3.8-1.9 4.3-4.9zm-7.6 10.7c-1 4.1-8 1.9-10.3 1.3l1.8-7.4c2.3.6 9.6 1.7 8.5 6.1zm1-10.8c-.9 3.7-6.6 1.8-8.4 1.4l1.7-6.7c1.8.4 7.7 1.3 6.7 5.3z'/%3E%3C/svg%3E">
 <style>
 :root{--bg:#0B1120;--bg2:#0F172A;--card:#1E293B;--card-hover:#243044;--border:#334155;--text:#F1F5F9;--muted:#94A3B8;--accent:#3B82F6;--accent-hover:#2563EB;--success:#22C55E;--warning:#F59E0B;--danger:#EF4444;--orange:#F97316}
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;padding:20px}.container{max-width:920px;margin:0 auto}header{margin-bottom:28px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}h1{font-size:1.55rem;font-weight:700;letter-spacing:-0.02em}.subtitle{color:var(--muted);font-size:0.95rem;margin-top:6px}.warn{background:linear-gradient(135deg,#1c1917 0%,#292524 100%);border:1px solid #78350f;border-left:4px solid var(--orange);color:#FDBA74;padding:14px 16px;border-radius:10px;margin-bottom:20px;font-size:0.9rem}.danger-box{background:#1f1215;border:1px solid #7f1d1d;border-left:4px solid var(--danger);color:#FCA5A5;padding:14px 16px;border-radius:10px;margin-bottom:20px;font-size:0.9rem}.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:18px}.card h2{font-size:1.05rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}.step{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:var(--accent);color:white;border-radius:50%;font-size:0.8rem;font-weight:700}label{display:block;font-size:0.82rem;color:var(--muted);margin-bottom:6px;font-weight:500}textarea,input[type=text],input[type=number]{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:9px;font-size:0.95rem;font-family:ui-monospace,"SF Mono",Menlo,monospace;transition:border-color .15s}textarea:focus,input:focus{outline:none;border-color:var(--accent)}textarea{min-height:88px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}@media(max-width:600px){.row{grid-template-columns:1fr}}button{font-family:inherit;font-weight:600;font-size:0.95rem;border:none;border-radius:9px;padding:12px 20px;cursor:pointer;transition:background .15s,transform .1s}button:active{transform:scale(.98)}button:disabled{opacity:.45;cursor:not-allowed}.btn-primary{background:var(--accent);color:white}.btn-primary:hover:not(:disabled){background:var(--accent-hover)}.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border)}.btn-secondary:hover:not(:disabled){background:var(--card-hover)}.btn-danger{background:var(--danger);color:white}.btn-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}.status{margin-top:14px;font-size:0.9rem;color:var(--muted);min-height:1.4em}.status.ok{color:var(--success)}.status.err{color:var(--danger)}table{width:100%;border-collapse:collapse;font-size:0.88rem;margin-top:12px}th{text-align:left;color:var(--muted);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border)}td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:middle}tr.found{background:rgba(34,197,94,.08)}.path{font-family:ui-monospace,monospace;font-size:0.82rem;color:var(--muted)}.addr{font-family:ui-monospace,monospace;font-size:0.84rem;word-break:break-all}.bal{color:var(--success);font-weight:600}.empty-state{text-align:center;padding:36px 16px;color:var(--muted);font-size:0.95rem}.send-form{display:none}.send-form.active{display:block}.confirm-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;margin:16px 0;font-size:0.92rem}.confirm-box .big{font-size:1.15rem;font-weight:600;margin:6px 0;word-break:break-all}footer{margin-top:36px;padding-top:20px;border-top:1px solid var(--border);font-size:0.8rem;color:var(--muted);text-align:center;line-height:1.6}.progress{height:4px;background:var(--border);border-radius:2px;margin-top:12px;overflow:hidden;display:none}.progress.active{display:block}.progress-bar{height:100%;background:var(--accent);width:0%;transition:width .3s}.source-info{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:14px;font-size:0.9rem}.fee-hints{font-size:0.8rem;color:var(--muted);margin-top:6px}.brand{display:flex;align-items:center;gap:12px}.logo{width:40px;height:40px;border-radius:50%;background:#F7931A;display:flex;align-items:center;justify-content:center;flex-shrink:0}.logo svg{width:26px;height:26px}.lang-switch{display:flex;gap:4px}.lang-btn{background:var(--bg2);border:1px solid var(--border);color:var(--muted);padding:6px 10px;border-radius:7px;font-size:0.78rem;font-weight:600;cursor:pointer}.lang-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}.donate-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:12px;font-size:0.88rem}.donate-box code{display:block;word-break:break-all;font-family:ui-monospace,monospace;background:var(--bg);padding:8px 10px;border-radius:6px;margin:4px 0 10px;border:1px solid var(--border);font-size:0.82rem}.donate-label{color:var(--muted);font-size:0.8rem;margin-top:6px}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;padding:20px}.container{max-width:920px;margin:0 auto}header{margin-bottom:28px}h1{font-size:1.55rem;font-weight:700;letter-spacing:-0.02em}.subtitle{color:var(--muted);font-size:0.95rem;margin-top:8px;width:100%}.warn{background:linear-gradient(135deg,#1c1917 0%,#292524 100%);border:1px solid #78350f;border-left:4px solid var(--orange);color:#FDBA74;padding:14px 16px;border-radius:10px;margin-bottom:20px;font-size:0.9rem}.danger-box{background:#1f1215;border:1px solid #7f1d1d;border-left:4px solid var(--danger);color:#FCA5A5;padding:14px 16px;border-radius:10px;margin-bottom:20px;font-size:0.9rem}.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:18px}.card h2{font-size:1.05rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}.step{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:var(--accent);color:white;border-radius:50%;font-size:0.8rem;font-weight:700}label{display:block;font-size:0.82rem;color:var(--muted);margin-bottom:6px;font-weight:500}textarea,input[type=text],input[type=number]{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:9px;font-size:0.95rem;font-family:ui-monospace,"SF Mono",Menlo,monospace;transition:border-color .15s}textarea:focus,input:focus{outline:none;border-color:var(--accent)}textarea{min-height:88px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}@media(max-width:600px){.row{grid-template-columns:1fr}.header-top{flex-wrap:wrap}}.btn-primary{background:var(--accent);color:white}.btn-primary:hover:not(:disabled){background:var(--accent-hover)}.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border)}.btn-secondary:hover:not(:disabled){background:var(--card-hover)}.btn-danger{background:var(--danger);color:white}button{font-family:inherit;font-weight:600;font-size:0.95rem;border:none;border-radius:9px;padding:12px 20px;cursor:pointer;transition:background .15s,transform .1s}button:active{transform:scale(.98)}button:disabled{opacity:.45;cursor:not-allowed}.btn-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}.status{margin-top:14px;font-size:0.9rem;color:var(--muted);min-height:1.4em}.status.ok{color:var(--success)}.status.err{color:var(--danger)}table{width:100%;border-collapse:collapse;font-size:0.88rem;margin-top:12px}th{text-align:left;color:var(--muted);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border)}td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:middle}tr.found{background:rgba(34,197,94,.08)}.path{font-family:ui-monospace,monospace;font-size:0.82rem;color:var(--muted)}.addr{font-family:ui-monospace,monospace;font-size:0.84rem;word-break:break-all}.bal{color:var(--success);font-weight:600}.empty-state{text-align:center;padding:36px 16px;color:var(--muted);font-size:0.95rem}.send-form{display:none}.send-form.active{display:block}.confirm-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;margin:16px 0;font-size:0.92rem}.confirm-box .big{font-size:1.15rem;font-weight:600;margin:6px 0;word-break:break-all}footer{margin-top:36px;padding-top:20px;border-top:1px solid var(--border);font-size:0.8rem;color:var(--muted);text-align:center;line-height:1.6}.progress{height:4px;background:var(--border);border-radius:2px;margin-top:12px;overflow:hidden;display:none}.progress.active{display:block}.progress-bar{height:100%;background:var(--accent);width:0%;transition:width .3s}.source-info{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:14px;font-size:0.9rem}.fee-hints{font-size:0.8rem;color:var(--muted);margin-top:6px}.brand{display:flex;align-items:center;gap:12px}.logo{width:40px;height:40px;border-radius:50%;background:#F7931A;display:flex;align-items:center;justify-content:center;flex-shrink:0}.logo svg{width:26px;height:26px}.lang-switch{display:flex;gap:4px;flex-shrink:0}.lang-btn{background:var(--bg2);border:1px solid var(--border);color:var(--muted);padding:6px 10px;border-radius:7px;font-size:0.78rem;font-weight:600;cursor:pointer}.lang-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}.donate-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:12px;font-size:0.88rem}.donate-box code{display:block;word-break:break-all;font-family:ui-monospace,monospace;background:var(--bg);padding:8px 10px;border-radius:6px;margin:4px 0 10px;border:1px solid var(--border);font-size:0.82rem}.donate-label{color:var(--muted);font-size:0.8rem;margin-top:6px}.header-top{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}.header-top .brand{min-width:0}.header-top h1{margin:0;font-size:1.55rem}.hint{font-size:0.78rem;color:var(--muted);margin-top:6px;line-height:1.4}
 </style>
 </head>
 <body>
 <div class="container">
 <header>
+<div class="header-top">
 <div class="brand">
 <div class="logo" aria-hidden="true"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="32" fill="#F7931A"/><path fill="#fff" d="M44.3 27.5c.6-4-2.4-6.1-6.6-7.5l1.3-5.4-3.3-.8-1.3 5.2c-.9-.2-1.7-.4-2.6-.6l1.3-5.2-3.3-.8-1.3 5.4c-.7-.2-1.4-.3-2.1-.5l-4.5-1.1-.9 3.5s2.4.6 2.4.6c1.3.3 1.6 1.2 1.5 1.9l-1.5 6.2c.1 0 .2.1.3.1l-.3-.1-2.2 8.7c-.2.4-.6 1.1-1.5.8 0 0-2.4-.6-2.4-.6l-1.6 3.8 4.3 1.1c.8.2 1.6.4 2.3.6l-1.4 5.5 3.3.8 1.3-5.4c.9.2 1.7.4 2.6.6l-1.3 5.3 3.3.8 1.4-5.5c5.6 1.1 9.9.6 11.7-4.5 1.4-4.1-.1-6.5-3-8 2.2-.5 3.8-1.9 4.3-4.9zm-7.6 10.7c-1 4.1-8 1.9-10.3 1.3l1.8-7.4c2.3.6 9.6 1.7 8.5 6.1zm1-10.8c-.9 3.7-6.6 1.8-8.4 1.4l1.7-6.7c1.8.4 7.7 1.3 6.7 5.3z"/></svg></div>
-<div>
-<h1>Bitcoin Seed Scanner</h1>
-<p class="subtitle" id="subtitle">Find coins on BIP44 / 49 / 84 / 86 + send. Seed stays in browser memory only.</p>
-</div>
+<div><h1>Bitcoin Seed Scanner</h1></div>
 </div>
 <div class="lang-switch">
 <button type="button" class="lang-btn active" data-lang="en">EN</button>
@@ -26,6 +24,8 @@
 <button type="button" class="lang-btn" data-lang="es">ES</button>
 <button type="button" class="lang-btn" data-lang="fr">FR</button>
 </div>
+</div>
+<p class="subtitle" id="subtitle">Find coins on BIP44 / 49 / 84 / 86 + send. Seed stays in browser memory only.</p>
 </header>
 <div class="danger-box" id="critBox"><strong>Critical</strong><br>If the computer may be infected — do not use this tool with large amounts.<br>Prefer a live USB / clean system / hardware wallet.</div>
 <div class="warn" id="saferBox"><strong>Safer workflow:</strong><br>1. First only find coins.<br>2. Send only when sure, with double confirmation.<br>3. Close the tab when done. Seed is never saved.</div>
@@ -35,7 +35,7 @@
 <textarea id="mnemonic" placeholder="word1 word2 word3 ..." spellcheck="false" autocomplete="off"></textarea>
 <div class="row">
 <div><label for="passphrase" id="passLabel">Passphrase (if used)</label><input type="text" id="passphrase" placeholder="optional" autocomplete="off"></div>
-<div><label for="gap" id="gapLabel">Addresses per path (gap)</label><input type="number" id="gap" value="25" min="5" max="100"></div>
+<div><label for="gap" id="gapLabel">Addresses per path (gap)</label><input type="number" id="gap" value="25" min="5" max="100"><div class="hint" id="gapHint">How many addresses to check on each path (receive and change). Default 25, range 5-100. Higher = slower, but finds coins farther along the chain.</div></div>
 </div>
 <div class="btn-row">
 <button class="btn-primary" id="scanBtn">Find coins</button>
@@ -108,134 +108,10 @@ import { HDKey } from 'https://esm.sh/@scure/bip32@1.5.0';
 import * as btc from 'https://esm.sh/@scure/btc-signer@1.6.0';
 import { hex } from 'https://esm.sh/@scure/base@1.2.1';
 const LANGS={
-en:{
-subtitle:"Find coins on BIP44 / 49 / 84 / 86 + send. Seed stays in browser memory only.",
-critTitle:"Critical",
-critBody:"If the computer may be infected — do not use this tool with large amounts.\nPrefer a live USB / clean system / hardware wallet.",
-saferTitle:"Safer workflow:",
-saferBody:"1. First only find coins.\n2. Send only when sure, with double confirmation.\n3. Close the tab when done. Seed is never saved.",
-step1:"Seed phrase",
-seedLabel:"Seed (12 or 24 words)",
-passLabel:"Passphrase (if used)",
-passPh:"optional",
-gapLabel:"Addresses per path (gap)",
-scanBtn:"Find coins",
-clearBtn:"Clear all",
-step2:"Found funds",
-noFunds:"No coins found in the scanned range.\nTry a larger gap or check the passphrase.",
-step3:"Send",
-sourceHint:"Select an address in the table above first",
-toLabel:"Recipient address",
-amountLabel:"Amount (BTC)",
-feeLabel:"Fee (sat/vB)",
-prepareBtn:"Prepare transaction",
-maxBtn:"Maximum",
-confirmHint:"Double-check everything. This cannot be undone.",
-confirmLabel:"Type the last 6 characters of the recipient address",
-broadcastBtn:"Sign and send",
-cancelBtn:"Cancel",
-donateTitle:"Gratitude",
-donateText:"If this program helped you recover your funds — we would gladly accept your voluntary thank-you. It is never required, and it will surely be counted by the Almighty. 🙏",
-thPath:"Path",thType:"Type",thAddr:"Address",thBal:"Balance",
-selectBtn:"Select",
-footer:"Local tool. Seed and keys exist only in browser RAM.\nClosing the tab clears them. Not a replacement for a hardware wallet.\nBIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)\nScans receive (/0/i) and change (/1/i)."
-},
-ru:{
-subtitle:"Поиск монет по BIP44 / 49 / 84 / 86 + отправка. Seed только в памяти браузера.",
-critTitle:"Важно",
-critBody:"Если компьютер может быть заражён — не используйте инструмент с крупными суммами.\nЛучше live-USB / чистая система / hardware-кошелёк.",
-saferTitle:"Безопасный порядок:",
-saferBody:"1. Сначала только найдите монеты.\n2. Отправляйте только когда уверены, с двойным подтверждением.\n3. Закройте вкладку после работы. Seed никуда не сохраняется.",
-step1:"Seed-фраза",
-seedLabel:"Seed (12 или 24 слова)",
-passLabel:"Passphrase (если использовали)",
-passPh:"необязательно",
-gapLabel:"Адресов на путь (gap)",
-scanBtn:"Найти монеты",
-clearBtn:"Очистить всё",
-step2:"Найденные средства",
-noFunds:"Монет в выбранном диапазоне не найдено.\nПопробуйте больший gap или проверьте passphrase.",
-step3:"Отправка",
-sourceHint:"Сначала выберите адрес в таблице выше",
-toLabel:"Адрес получателя",
-amountLabel:"Сумма (BTC)",
-feeLabel:"Комиссия (sat/vB)",
-prepareBtn:"Подготовить транзакцию",
-maxBtn:"Максимум",
-confirmHint:"Проверьте всё ещё раз. Отменить будет нельзя.",
-confirmLabel:"Введите последние 6 символов адреса получателя",
-broadcastBtn:"Подписать и отправить",
-cancelBtn:"Отмена",
-donateTitle:"Благодарность",
-donateText:"Если программа помогла вам вернуть средства — мы с удовольствием примем Вашу добровольную благодарность. Это ни к чему не обязывает и обязательно зачтётся Всевышним. 🙏",
-thPath:"Путь",thType:"Тип",thAddr:"Адрес",thBal:"Баланс",
-selectBtn:"Выбрать",
-footer:"Локальный инструмент. Seed и ключи только в памяти браузера.\nЗакрытие вкладки их стирает. Не замена hardware-кошельку.\nBIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)\nСканируются receive (/0/i) и change (/1/i)."
-},
-es:{
-subtitle:"Busca monedas en BIP44 / 49 / 84 / 86 + envío. La seed solo está en la memoria del navegador.",
-critTitle:"Crítico",
-critBody:"Si el ordenador puede estar infectado — no uses esta herramienta con grandes cantidades.\nPrefiere un live USB / sistema limpio / monedero hardware.",
-saferTitle:"Flujo más seguro:",
-saferBody:"1. Primero solo encuentra monedas.\n2. Envía solo cuando estés seguro, con doble confirmación.\n3. Cierra la pestaña al terminar. La seed nunca se guarda.",
-step1:"Frase seed",
-seedLabel:"Seed (12 o 24 palabras)",
-passLabel:"Passphrase (si la usaste)",
-passPh:"opcional",
-gapLabel:"Direcciones por ruta (gap)",
-scanBtn:"Buscar monedas",
-clearBtn:"Borrar todo",
-step2:"Fondos encontrados",
-noFunds:"No se encontraron monedas en el rango escaneado.\nPrueba un gap mayor o revisa la passphrase.",
-step3:"Enviar",
-sourceHint:"Selecciona primero una dirección en la tabla de arriba",
-toLabel:"Dirección de destino",
-amountLabel:"Cantidad (BTC)",
-feeLabel:"Comisión (sat/vB)",
-prepareBtn:"Preparar transacción",
-maxBtn:"Máximo",
-confirmHint:"Revisa todo otra vez. Esto no se puede deshacer.",
-confirmLabel:"Escribe los últimos 6 caracteres de la dirección de destino",
-broadcastBtn:"Firmar y enviar",
-cancelBtn:"Cancelar",
-donateTitle:"Agradecimiento",
-donateText:"Si este programa te ayudó a recuperar tus fondos — aceptaremos con gusto tu agradecimiento voluntario. No obliga a nada y, sin duda, será tenido en cuenta por el Todopoderoso. 🙏",
-thPath:"Ruta",thType:"Tipo",thAddr:"Dirección",thBal:"Saldo",
-selectBtn:"Elegir",
-footer:"Herramienta local. Seed y claves solo en la memoria del navegador.\nAl cerrar la pestaña se borran. No sustituye un monedero hardware.\nBIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)\nSe escanean receive (/0/i) y change (/1/i)."
-},
-fr:{
-subtitle:"Trouver des pièces sur BIP44 / 49 / 84 / 86 + envoi. La seed reste uniquement en mémoire du navigateur.",
-critTitle:"Critique",
-critBody:"Si l'ordinateur peut être infecté — n'utilisez pas cet outil avec de gros montants.\nPréférez un live USB / système propre / portefeuille matériel.",
-saferTitle:"Démarche plus sûre :",
-saferBody:"1. D'abord uniquement trouver les pièces.\n2. Envoyer seulement en étant sûr, avec double confirmation.\n3. Fermez l'onglet ensuite. La seed n'est jamais enregistrée.",
-step1:"Phrase seed",
-seedLabel:"Seed (12 ou 24 mots)",
-passLabel:"Passphrase (si utilisée)",
-passPh:"facultatif",
-gapLabel:"Adresses par chemin (gap)",
-scanBtn:"Trouver les pièces",
-clearBtn:"Tout effacer",
-step2:"Fonds trouvés",
-noFunds:"Aucune pièce trouvée dans la plage scannée.\nEssayez un gap plus grand ou vérifiez la passphrase.",
-step3:"Envoyer",
-sourceHint:"Sélectionnez d'abord une adresse dans le tableau ci-dessus",
-toLabel:"Adresse du destinataire",
-amountLabel:"Montant (BTC)",
-feeLabel:"Frais (sat/vB)",
-prepareBtn:"Préparer la transaction",
-maxBtn:"Maximum",
-confirmHint:"Vérifiez encore une fois. Cela ne peut pas être annulé.",
-confirmLabel:"Saisissez les 6 derniers caractères de l'adresse de destination",
-broadcastBtn:"Signer et envoyer",
-cancelBtn:"Annuler",
-donateTitle:"Remerciements",
-donateText:"Si ce programme vous a aidé à récupérer vos fonds — nous accepterons volontiers votre remerciement volontaire. Cela n'oblige à rien et sera certainement compté par le Tout-Puissant. 🙏",
-thPath:"Chemin",thType:"Type",thAddr:"Adresse",thBal:"Solde",
-selectBtn:"Choisir",
-footer:"Outil local. Seed et clés uniquement en mémoire du navigateur.\nLa fermeture de l'onglet les efface. Ne remplace pas un portefeuille matériel.\nBIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)\nScan receive (/0/i) et change (/1/i)."
-}
+en:{subtitle:"Find coins on BIP44 / 49 / 84 / 86 + send. Seed stays in browser memory only.",critTitle:"Critical",critBody:"If the computer may be infected — do not use this tool with large amounts.\nPrefer a live USB / clean system / hardware wallet.",saferTitle:"Safer workflow:",saferBody:"1. First only find coins.\n2. Send only when sure, with double confirmation.\n3. Close the tab when done. Seed is never saved.",step1:"Seed phrase",seedLabel:"Seed (12 or 24 words)",passLabel:"Passphrase (if used)",passPh:"optional",gapLabel:"Addresses per path (gap)",gapHint:"How many addresses to check on each path (receive and change). Default 25, range 5-100. Higher = slower, but finds coins farther along the chain.",scanBtn:"Find coins",clearBtn:"Clear all",step2:"Found funds",noFunds:"No coins found in the scanned range.\nTry a larger gap or check the passphrase.",step3:"Send",sourceHint:"Select an address in the table above first",toLabel:"Recipient address",amountLabel:"Amount (BTC)",feeLabel:"Fee (sat/vB)",prepareBtn:"Prepare transaction",maxBtn:"Maximum",confirmHint:"Double-check everything. This cannot be undone.",confirmLabel:"Type the last 6 characters of the recipient address",broadcastBtn:"Sign and send",cancelBtn:"Cancel",donateTitle:"Gratitude",donateText:"If this program helped you recover your funds — we would gladly accept your voluntary thank-you. It is never required, and it will surely be counted by the Almighty. 🙏",thPath:"Path",thType:"Type",thAddr:"Address",thBal:"Balance",selectBtn:"Select",footer:"Local tool. Seed and keys exist only in browser RAM.\nClosing the tab clears them. Not a replacement for a hardware wallet.\nBIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)\nScans receive (/0/i) and change (/1/i)."},
+ru:{subtitle:"Поиск монет по BIP44 / 49 / 84 / 86 + отправка. Seed только в памяти браузера.",critTitle:"Важно",critBody:"Если компьютер может быть заражён — не используйте инструмент с крупными суммами.\nЛучше live-USB / чистая система / hardware-кошелёк.",saferTitle:"Безопасный порядок:",saferBody:"1. Сначала только найдите монеты.\n2. Отправляйте только когда уверены, с двойным подтверждением.\n3. Закройте вкладку после работы. Seed никуда не сохраняется.",step1:"Seed-фраза",seedLabel:"Seed (12 или 24 слова)",passLabel:"Passphrase (если использовали)",passPh:"необязательно",gapLabel:"Адресов на путь (gap)",gapHint:"Сколько адресов проверять на каждом пути (receive и change). По умолчанию 25, диапазон 5-100. Больше — дольше, но находит монеты дальше по цепочке.",scanBtn:"Найти монеты",clearBtn:"Очистить всё",step2:"Найденные средства",noFunds:"Монет в выбранном диапазоне не найдено.\nПопробуйте больший gap или проверьте passphrase.",step3:"Отправка",sourceHint:"Сначала выберите адрес в таблице выше",toLabel:"Адрес получателя",amountLabel:"Сумма (BTC)",feeLabel:"Комиссия (sat/vB)",prepareBtn:"Подготовить транзакцию",maxBtn:"Максимум",confirmHint:"Проверьте всё ещё раз. Отменить будет нельзя.",confirmLabel:"Введите последние 6 символов адреса получателя",broadcastBtn:"Подписать и отправить",cancelBtn:"Отмена",donateTitle:"Благодарность",donateText:"Если программа помогла вам вернуть средства — мы с удовольствием примем Вашу добровольную благодарность. Это ни к чему не обязывает и обязательно зачтётся Всевышним. 🙏",thPath:"Путь",thType:"Тип",thAddr:"Адрес",thBal:"Баланс",selectBtn:"Выбрать",footer:"Локальный инструмент. Seed и ключи только в памяти браузера.\nЗакрытие вкладки их стирает. Не замена hardware-кошельку.\nBIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)\nСканируются receive (/0/i) и change (/1/i)."},
+es:{subtitle:"Busca monedas en BIP44 / 49 / 84 / 86 + envío. La seed solo está en la memoria del navegador.",critTitle:"Crítico",critBody:"Si el ordenador puede estar infectado — no uses esta herramienta con grandes cantidades.\nPrefiere un live USB / sistema limpio / monedero hardware.",saferTitle:"Flujo más seguro:",saferBody:"1. Primero solo encuentra monedas.\n2. Envía solo cuando estés seguro, con doble confirmación.\n3. Cierra la pestaña al terminar. La seed nunca se guarda.",step1:"Frase seed",seedLabel:"Seed (12 o 24 palabras)",passLabel:"Passphrase (si la usaste)",passPh:"opcional",gapLabel:"Direcciones por ruta (gap)",gapHint:"Cuántas direcciones comprobar en cada ruta (receive y change). Por defecto 25, rango 5-100. Más alto = más lento, pero encuentra monedas más adelante en la cadena.",scanBtn:"Buscar monedas",clearBtn:"Borrar todo",step2:"Fondos encontrados",noFunds:"No se encontraron monedas en el rango escaneado.\nPrueba un gap mayor o revisa la passphrase.",step3:"Enviar",sourceHint:"Selecciona primero una dirección en la tabla de arriba",toLabel:"Dirección de destino",amountLabel:"Cantidad (BTC)",feeLabel:"Comisión (sat/vB)",prepareBtn:"Preparar transacción",maxBtn:"Máximo",confirmHint:"Revisa todo otra vez. Esto no se puede deshacer.",confirmLabel:"Escribe los últimos 6 caracteres de la dirección de destino",broadcastBtn:"Firmar y enviar",cancelBtn:"Cancelar",donateTitle:"Agradecimiento",donateText:"Si este programa te ayudó a recuperar tus fondos — aceptaremos con gusto tu agradecimiento voluntario. No obliga a nada y, sin duda, será tenido en cuenta por el Todopoderoso. 🙏",thPath:"Ruta",thType:"Tipo",thAddr:"Dirección",thBal:"Saldo",selectBtn:"Elegir",footer:"Herramienta local. Seed y claves solo en la memoria del navegador.\nAl cerrar la pestaña se borran. No sustituye un monedero hardware.\nBIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)\nSe escanean receive (/0/i) y change (/1/i)."},
+fr:{subtitle:"Trouver des pièces sur BIP44 / 49 / 84 / 86 + envoi. La seed reste uniquement en mémoire du navigateur.",critTitle:"Critique",critBody:"Si l'ordinateur peut être infecté — n'utilisez pas cet outil avec de gros montants.\nPréférez un live USB / système propre / portefeuille matériel.",saferTitle:"Démarche plus sûre :",saferBody:"1. D'abord uniquement trouver les pièces.\n2. Envoyer seulement en étant sûr, avec double confirmation.\n3. Fermez l'onglet ensuite. La seed n'est jamais enregistrée.",step1:"Phrase seed",seedLabel:"Seed (12 ou 24 mots)",passLabel:"Passphrase (si utilisée)",passPh:"facultatif",gapLabel:"Adresses par chemin (gap)",gapHint:"Nombre d'adresses à vérifier sur chaque chemin (receive et change). Par défaut 25, plage 5-100. Plus élevé = plus lent, mais trouve des pièces plus loin dans la chaîne.",scanBtn:"Trouver les pièces",clearBtn:"Tout effacer",step2:"Fonds trouvés",noFunds:"Aucune pièce trouvée dans la plage scannée.\nEssayez un gap plus grand ou vérifiez la passphrase.",step3:"Envoyer",sourceHint:"Sélectionnez d'abord une adresse dans le tableau ci-dessus",toLabel:"Adresse du destinataire",amountLabel:"Montant (BTC)",feeLabel:"Frais (sat/vB)",prepareBtn:"Préparer la transaction",maxBtn:"Maximum",confirmHint:"Vérifiez encore une fois. Cela ne peut pas être annulé.",confirmLabel:"Saisissez les 6 derniers caractères de l'adresse de destination",broadcastBtn:"Signer et envoyer",cancelBtn:"Annuler",donateTitle:"Remerciements",donateText:"Si ce programme vous a aidé à récupérer vos fonds — nous accepterons volontiers votre remerciement volontaire. Cela n'oblige à rien et sera certainement compté par le Tout-Puissant. 🙏",thPath:"Chemin",thType:"Type",thAddr:"Adresse",thBal:"Solde",selectBtn:"Choisir",footer:"Outil local. Seed et clés uniquement en mémoire du navigateur.\nLa fermeture de l'onglet les efface. Ne remplace pas un portefeuille matériel.\nBIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)\nScan receive (/0/i) et change (/1/i)."}
 };
 let lang=localStorage.getItem("bss_lang")||((navigator.language||"en").slice(0,2));
 if(!LANGS[lang])lang="en";
@@ -246,24 +122,11 @@ const dt=document.getElementById("donateTitle");if(dt)dt.textContent=L.donateTit
 const dx=document.getElementById("donateText");if(dx)dx.textContent=L.donateText;
 const crit=document.getElementById("critBox");if(crit)crit.innerHTML="<strong>"+L.critTitle+"</strong><br>"+L.critBody.replace(/\n/g,"<br>");
 const safer=document.getElementById("saferBox");if(safer)safer.innerHTML="<strong>"+L.saferTitle+"</strong><br>"+L.saferBody.replace(/\n/g,"<br>");
-const map=[
-["step1Title",L.step1],["seedLabel",L.seedLabel],["passLabel",L.passLabel],["gapLabel",L.gapLabel],
-["scanBtn",L.scanBtn],["clearBtn",L.clearBtn],["step2Title",L.step2],["noFunds",L.noFunds],
-["step3Title",L.step3],["sourceInfo",L.sourceHint],["toLabel",L.toLabel],["amountLabel",L.amountLabel],
-["feeLabel",L.feeLabel],["prepareBtn",L.prepareBtn],["maxBtn",L.maxBtn],["confirmHint",L.confirmHint],
-["confirmLabel",L.confirmLabel],["broadcastBtn",L.broadcastBtn],["cancelSendBtn",L.cancelBtn],
-["thPath",L.thPath],["thType",L.thType],["thAddr",L.thAddr],["thBal",L.thBal],["footerText",L.footer]
-];
-for(const [id,text] of map){
-  const el=document.getElementById(id);
-  if(!el)continue;
-  if(id==="noFunds"||id==="footerText"||id==="sourceInfo")el.innerHTML=text.replace(/\n/g,"<br>");
-  else el.textContent=text;
-}
+const map=[["step1Title",L.step1],["seedLabel",L.seedLabel],["passLabel",L.passLabel],["gapLabel",L.gapLabel],["gapHint",L.gapHint],["scanBtn",L.scanBtn],["clearBtn",L.clearBtn],["step2Title",L.step2],["noFunds",L.noFunds],["step3Title",L.step3],["sourceInfo",L.sourceHint],["toLabel",L.toLabel],["amountLabel",L.amountLabel],["feeLabel",L.feeLabel],["prepareBtn",L.prepareBtn],["maxBtn",L.maxBtn],["confirmHint",L.confirmHint],["confirmLabel",L.confirmLabel],["broadcastBtn",L.broadcastBtn],["cancelSendBtn",L.cancelBtn],["thPath",L.thPath],["thType",L.thType],["thAddr",L.thAddr],["thBal",L.thBal],["footerText",L.footer]];
+for(const [id,text] of map){const el=document.getElementById(id);if(!el||text==null)continue;if(id==="noFunds"||id==="footerText"||id==="sourceInfo")el.innerHTML=text.replace(/\n/g,"<br>");else el.textContent=text;}
 const pass=document.getElementById("passphrase");if(pass)pass.placeholder=L.passPh;
 document.querySelectorAll(".lang-btn").forEach(b=>b.classList.toggle("active",b.dataset.lang===lang));
-document.documentElement.lang=lang;
-window._selectLabel=L.selectBtn;
+document.documentElement.lang=lang;window._selectLabel=L.selectBtn;
 }
 document.querySelectorAll(".lang-btn").forEach(b=>b.onclick=()=>{lang=b.dataset.lang;localStorage.setItem("bss_lang",lang);applyLang();});
 applyLang();
