@@ -81,18 +81,22 @@
 </div>
 <div class="card">
 <h2 id="donateTitle">Gratitude</h2>
-<p id="donateText" style="color:var(--muted);font-size:0.92rem;margin-bottom:10px">If this tool helped you recover funds, any voluntary thank-you is welcome. It is never required.</p>
+<p id="donateText" style="color:var(--muted);font-size:0.92rem;margin-bottom:10px">If this program helped you recover your funds — we would gladly accept your voluntary thank-you. It is never required, and it will surely be counted by the Almighty. 🙏</p>
 <div class="donate-box">
-<div class="donate-label">USDT · TRC-20 (TRON)</div>
+<div class="donate-label">BTC · Legacy (P2PKH)</div>
+<code>1GgXo15BHD2CJorJaVhhhB8AvTszr1Nrpc</code>
+<div class="donate-label">BTC · Nested SegWit (P2SH)</div>
+<code>3B6wA2Yu5nH9FYXAakkHd79ijnQ16RoD5G</code>
+<div class="donate-label">BTC · Native SegWit (P2WPKH)</div>
+<code>bc1qy9ht50kfehlxynwew20eh47c8x9pyvq7pc2umq</code>
+<div class="donate-label">BTC · SegWit (P2WSH)</div>
+<code>bc1q56kmywwmlvt6xp04zr63g9nff2ye0p7j2txhz9ccs087dxmr8gnqevee4d</code>
+<div class="donate-label">BTC · Taproot (P2TR)</div>
+<code>bc1p6wk0ecu3355m0eymwd92a7f8d99w7lyx5s4xek8nm7razg4hjvqqfxdvx9</code>
+<div class="donate-label">USDT · TRC-20</div>
 <code>TVXzchqZdvRqTCJutjGgF1xVP5kuDfk2nx</code>
-<div class="donate-label">USDT / USDC · ERC-20 / BEP-20 / Base</div>
+<div class="donate-label">USDT · ERC-20</div>
 <code>0x761B53654e2333261649eEb8857B752A60f11435</code>
-<div class="donate-label">SOL / ELIZAOS · Solana</div>
-<code>8cTp36pWi1oPCwV6k6yB2sTJbTTuAHqgAbdVeCPTQkpc</code>
-<div class="donate-label">Dash</div>
-<code>XoThJ7ZAXkE9dyNh5VkBNfuGjn39d4NpFY</code>
-<div class="donate-label">XMR (Monero)</div>
-<code>48MowmJYenKSsB4QnKtwhq6eeJxEsAcuaPV58BM5rviXVq9PrGU6TkaQtHjRrhDvPHioz8P12qqv324onJMcjEszGtaM8DV</code>
 </div>
 </div>
 <footer>Local tool. Seed and keys exist only in browser RAM.<br>Closing the tab clears them. Not a replacement for a hardware wallet.<br>BIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)<br>Scans receive (/0/i) and change (/1/i).</footer>
@@ -103,7 +107,7 @@ import { wordlist } from 'https://esm.sh/@scure/bip39@1.5.4/wordlists/english.js
 import { HDKey } from 'https://esm.sh/@scure/bip32@1.5.0';
 import * as btc from 'https://esm.sh/@scure/btc-signer@1.6.0';
 import { hex } from 'https://esm.sh/@scure/base@1.2.1';
-const LANGS={en:{subtitle:"Find coins on BIP44 / 49 / 84 / 86 + send. Seed stays in browser memory only.",donateTitle:"Gratitude",donateText:"If this tool helped you recover funds, any voluntary thank-you is welcome. It is never required."},ru:{subtitle:"Поиск монет по BIP44 / 49 / 84 / 86 + отправка. Seed только в памяти браузера.",donateTitle:"Благодарность",donateText:"Если программа помогла вернуть средства — будем рады любой добровольной благодарности. Это ни к чему не обязывает."},es:{subtitle:"Busca monedas en BIP44 / 49 / 84 / 86 + envío. La seed solo está en la memoria del navegador.",donateTitle:"Agradecimiento",donateText:"Si esta herramienta te ayudó a recuperar fondos, cualquier agradecimiento voluntario es bienvenido. Nunca es obligatorio."},fr:{subtitle:"Trouver des pièces sur BIP44 / 49 / 84 / 86 + envoi. La seed reste uniquement en mémoire du navigateur.",donateTitle:"Remerciements",donateText:"Si cet outil vous a aidé à récupérer des fonds, tout remerciement volontaire est bienvenu. Ce n'est jamais obligatoire."}};
+const LANGS={en:{subtitle:"Find coins on BIP44 / 49 / 84 / 86 + send. Seed stays in browser memory only.",donateTitle:"Gratitude",donateText:"If this program helped you recover your funds — we would gladly accept your voluntary thank-you. It is never required, and it will surely be counted by the Almighty. 🙏"},ru:{subtitle:"Поиск монет по BIP44 / 49 / 84 / 86 + отправка. Seed только в памяти браузера.",donateTitle:"Благодарность",donateText:"Если программа помогла вам вернуть средства — мы с удовольствием примем Вашу добровольную благодарность. Это ни к чему не обязывает и обязательно зачтётся Всевышним. 🙏"},es:{subtitle:"Busca monedas en BIP44 / 49 / 84 / 86 + envío. La seed solo está en la memoria del navegador.",donateTitle:"Agradecimiento",donateText:"Si este programa te ayudó a recuperar tus fondos — aceptaremos con gusto tu agradecimiento voluntario. No obliga a nada y, sin duda, será tenido en cuenta por el Todopoderoso. 🙏"},fr:{subtitle:"Trouver des pièces sur BIP44 / 49 / 84 / 86 + envoi. La seed reste uniquement en mémoire du navigateur.",donateTitle:"Remerciements",donateText:"Si ce programme vous a aidé à récupérer vos fonds — nous accepterons volontiers votre remerciement volontaire. Cela n'oblige à rien et sera certainement compté par le Tout-Puissant. 🙏"}};
 let lang=localStorage.getItem("bss_lang")||((navigator.language||"en").slice(0,2));
 if(!LANGS[lang])lang="en";
 function applyLang(){const L=LANGS[lang];const s=document.getElementById("subtitle");if(s)s.textContent=L.subtitle;const dt=document.getElementById("donateTitle");if(dt)dt.textContent=L.donateTitle;const dx=document.getElementById("donateText");if(dx)dx.textContent=L.donateText;document.querySelectorAll(".lang-btn").forEach(b=>b.classList.toggle("active",b.dataset.lang===lang));document.documentElement.lang=lang;}
