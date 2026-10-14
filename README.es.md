@@ -29,7 +29,7 @@ Las copias de otros sitios o de mensajeros pueden estar modificadas para robar t
 Tras guardar `index.html`, verifica el SHA-256:
 
 ```
-15e59f09293f962acb63d302b8171ba1e4aa93bf6852967a7bf7c14d230002b7
+efada0854c6cb29d0bd851b1381f6fc9519d51a80327087f72737cc9e2d72730
 ```
 
 - **Linux / macOS:** `sha256sum index.html` (o `shasum -a 256 index.html`)
@@ -84,7 +84,7 @@ Luego cierra la pestaña. No se guarda nada en el disco.
 | Native SegWit | empieza por **bc1q** | BIP84 |
 | Taproot | empieza por **bc1p** | BIP86 |
 
-Se escanean receive y change.
+Se escanean receive y change, cada cadena hasta encontrar **N direcciones consecutivas sin usar** («gap limit», 25 por defecto). Puedes elegir el **número de cuenta** (0 por defecto).
 
 ---
 
@@ -92,7 +92,9 @@ Se escanean receive y change.
 
 - Seed y claves solo **en la memoria del navegador**
 - Se borran al cerrar la pestaña o al pulsar Clear
-- Solo se contacta con mempool.space (saldos, comisiones, broadcast)
+- Solo se contacta con mempool.space (saldos, comisiones, broadcast). **No se carga código desde ningún CDN**: todas las bibliotecas están incluidas en `index.html` y una Content-Security-Policy limita la página a ese único script y a mempool.space.
+- **Privacidad:** para consultar saldos, la página envía todas las direcciones derivadas a mempool.space, por lo que ese servicio (y quien observe tu conexión) puede vincularlas entre sí y ver tu IP. Usa Tor/VPN o tu propio nodo si te importa.
+- Si falla la consulta de un saldo (red, límite de peticiones), la herramienta lo avisa en lugar de indicar «sin fondos». Si ves esa advertencia, repite el escaneo.
 - El envío exige escribir los últimos 6 caracteres del destino
 - **Nunca introduzcas la seed en un ordenador en el que no confíes**
 
@@ -111,6 +113,18 @@ Si este programa te ayudó a recuperar tus fondos — aceptaremos con gusto tu a
 | BTC | Taproot (P2TR) | `bc1p6wk0ecu3355m0eymwd92a7f8d99w7lyx5s4xek8nm7razg4hjvqqfxdvx9` |
 | USDT | TRC-20 | `TVXzchqZdvRqTCJutjGgF1xVP5kuDfk2nx` |
 | USDT | ERC-20 | `0x761B53654e2333261649eEb8857B752A60f11435` |
+
+---
+
+## Compilar desde el código fuente (opcional)
+
+`index.html` se genera a partir de `src/` (edita `src/template.html` y `src/app.js`, **no** `index.html`). Para reproducirlo byte a byte y compararlo con la suma de verificación de arriba:
+
+```
+npm ci
+npm run build   # escribe index.html y actualiza el SHA-256 en todos los README
+npm test
+```
 
 ---
 

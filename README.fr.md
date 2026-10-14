@@ -29,7 +29,7 @@ Les copies provenant d’autres sites ou de messageries peuvent être modifiées
 Après avoir enregistré `index.html`, vérifiez le SHA-256 :
 
 ```
-15e59f09293f962acb63d302b8171ba1e4aa93bf6852967a7bf7c14d230002b7
+efada0854c6cb29d0bd851b1381f6fc9519d51a80327087f72737cc9e2d72730
 ```
 
 - **Linux / macOS :** `sha256sum index.html` (ou `shasum -a 256 index.html`)
@@ -84,7 +84,7 @@ Ensuite fermez l’onglet. Rien n’est enregistré sur le disque.
 | Native SegWit | commence par **bc1q** | BIP84 |
 | Taproot | commence par **bc1p** | BIP86 |
 
-Les chaînes receive et change sont toutes deux scannées.
+Les chaînes receive et change sont toutes deux scannées, chacune jusqu’à **N adresses inutilisées consécutives** (« gap limit », 25 par défaut). Vous pouvez choisir le **numéro de compte** (0 par défaut).
 
 ---
 
@@ -92,7 +92,9 @@ Les chaînes receive et change sont toutes deux scannées.
 
 - Seed et clés uniquement **en mémoire du navigateur**
 - Effacées à la fermeture de l’onglet ou via Clear
-- Réseau : uniquement mempool.space (soldes, frais, broadcast)
+- Réseau : uniquement mempool.space (soldes, frais, broadcast). **Aucun code n’est chargé depuis un CDN** : toutes les bibliothèques sont intégrées à `index.html`, et une Content-Security-Policy limite la page à ce seul script et à mempool.space.
+- **Confidentialité :** pour vérifier les soldes, la page envoie toutes les adresses dérivées à mempool.space ; ce service (et quiconque observe votre connexion) peut donc les relier entre elles et voir votre IP. Utilisez Tor/VPN ou votre propre nœud si cela compte pour vous.
+- Si la consultation d’un solde échoue (réseau, limite de requêtes), l’outil le signale au lieu d’afficher « aucun fonds ». Si vous voyez cet avertissement, relancez le scan.
 - L’envoi exige de taper les 6 derniers caractères de la destination
 - **N’entrez jamais une seed sur un ordinateur non fiable**
 
@@ -111,6 +113,18 @@ Si ce programme vous a aidé à récupérer vos fonds — nous accepterons volon
 | BTC | Taproot (P2TR) | `bc1p6wk0ecu3355m0eymwd92a7f8d99w7lyx5s4xek8nm7razg4hjvqqfxdvx9` |
 | USDT | TRC-20 | `TVXzchqZdvRqTCJutjGgF1xVP5kuDfk2nx` |
 | USDT | ERC-20 | `0x761B53654e2333261649eEb8857B752A60f11435` |
+
+---
+
+## Compiler depuis les sources (facultatif)
+
+`index.html` est généré à partir de `src/` (modifiez `src/template.html` et `src/app.js`, **pas** `index.html`). Pour le reproduire à l’octet près et le comparer à la somme de contrôle ci-dessus :
+
+```
+npm ci
+npm run build   # écrit index.html et met à jour le SHA-256 dans tous les README
+npm test
+```
 
 ---
 

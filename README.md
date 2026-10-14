@@ -28,7 +28,7 @@ Copies from other sites or messengers may be modified to steal your seed.
 After saving `index.html`, verify the SHA-256 checksum:
 
 ```
-1b22328b5af655ee018b00e2a81eebaa6a042a82ee530d4f5f2f5b218759eba6
+efada0854c6cb29d0bd851b1381f6fc9519d51a80327087f72737cc9e2d72730
 ```
 
 - **Linux / macOS:** `sha256sum index.html` (or `shasum -a 256 index.html`)
@@ -83,9 +83,9 @@ Then close the browser tab. Nothing is stored on disk.
 | Native SegWit | starts with **bc1q** | BIP84 |
 | Taproot | starts with **bc1p** | BIP86 |
 
-Receive and change chains are both scanned.
+Receive and change chains are both scanned, each until **N consecutive unused addresses** (the "gap limit", default 25) are found. You can pick the **account number** (default 0).
 
-**Gap** (addresses per path): default **25**, allowed range **5–100**. Higher values scan farther along each chain but take longer.
+**Gap limit** range: **5–100** (default **25**). Higher values scan farther along each chain but take longer.
 
 ---
 
@@ -93,7 +93,9 @@ Receive and change chains are both scanned.
 
 - Seed and keys stay **only in browser memory**
 - Cleared when you close the tab or click Clear
-- Network calls go only to mempool.space (balances, fees, broadcast)
+- Network calls go only to mempool.space (balances, fees, broadcast). **No code is loaded from any CDN**: all libraries are bundled into `index.html`, and a Content-Security-Policy restricts the page to that one script and to mempool.space.
+- **Privacy:** to check balances the page sends every derived address to mempool.space, so that service (and anyone watching your connection) can link those addresses together and see your IP. Use Tor/VPN, or your own node, if that matters.
+- If a balance lookup fails (network, rate limit), the tool says so instead of reporting "no funds". Re-run the scan if you see that warning.
 - Send requires typing the last 6 characters of the destination
 - **Never enter a seed on a computer you do not trust**
 
@@ -112,6 +114,18 @@ If this program helped you recover your funds — we would gladly accept your vo
 | BTC | Taproot (P2TR) | `bc1p6wk0ecu3355m0eymwd92a7f8d99w7lyx5s4xek8nm7razg4hjvqqfxdvx9` |
 | USDT | TRC-20 | `TVXzchqZdvRqTCJutjGgF1xVP5kuDfk2nx` |
 | USDT | ERC-20 | `0x761B53654e2333261649eEb8857B752A60f11435` |
+
+---
+
+## Build from source (optional)
+
+`index.html` is generated from `src/` (edit `src/template.html` and `src/app.js`, **not** `index.html`). To reproduce it byte for byte and compare with the checksum above:
+
+```
+npm ci
+npm run build   # writes index.html, refreshes the SHA-256 in all READMEs
+npm test
+```
 
 ---
 
