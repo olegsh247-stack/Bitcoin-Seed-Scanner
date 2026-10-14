@@ -8,6 +8,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
 import * as bip39 from "@scure/bip39";
+import { wordlist } from "@scure/bip39/wordlists/english";
 import { HDKey } from "@scure/bip32";
 import * as btc from "@scure/btc-signer";
 import { hex } from "@scure/base";
@@ -142,9 +143,20 @@ const mempool = async (url, init, posted) => {
   return { status: 404, text: "not found" };
 };
 
+// Fill the per-word boxes (switching to 24 boxes when needed) and fire the input handler.
+const fillSeed = (d, phrase) => {
+  const w = phrase.split(" ");
+  if (w.length === 24) click(d.querySelector('.wc-btn[data-count="24"]'));
+  if (w.length === 12) click(d.querySelector('.wc-btn[data-count="12"]'));
+  const boxes = [...d.querySelectorAll("#seedGrid input")];
+  assert.equal(boxes.length, w.length);
+  boxes.forEach((b, i) => (b.value = w[i]));
+  boxes[0].dispatchEvent(new d.defaultView.Event("input"));
+};
+
 async function scan(ctx, { account = "0" } = {}) {
   const { d } = ctx;
-  type(d.getElementById("mnemonic"), MN);
+  fillSeed(d, MN);
   d.getElementById("gap").value = "5";
   d.getElementById("account").value = account;
   click(d.getElementById("scanBtn"));
@@ -244,7 +256,7 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
 {
   const { d } = ctx;
   click(d.getElementById("clearBtn"));
-  assert.equal(d.getElementById("mnemonic").value, "");
+  assert.ok([...d.querySelectorAll("#seedGrid input")].every((b) => b.value === ""));
   assert.equal(d.querySelectorAll("#tbody tr").length, 0);
   assert.equal(d.getElementById("resultsCard").style.display, "none");
   ok("Clear all wipes seed, results and form");
@@ -321,6 +333,107 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   assert.equal(d.getElementById("accountLabel").textContent, "Account number");
   assert.equal(d.getElementById("seedLabel").textContent, "Seed (12 or 24 words)");
   ok("EN/RU/ES/FR switching translates critical box, labels, gap hint and Select button");
+}
+
+// ---- 11. word boxes: colours, completion, paste, 12/24 ---------------------
+{
+  const L = boot(mempool);
+  const { d, w } = L;
+  const grid = () => [...d.querySelectorAll("#seedGrid input")];
+  const fire = (el, type) =>
+    el.dispatchEvent(new w.Event(type, { bubbles: true, cancelable: true }));
+  assert.equal(grid().length, 12);
+
+  fillSeed(d, MN);
+  assert.ok(
+    grid().every((b) => b.classList.contains("ok")),
+    "valid phrase: all boxes green",
+  );
+  assert.equal(d.getElementById("seedState").className, "seed-state ok");
+
+  fillSeed(d, Array(12).fill("abandon").join(" "));
+  assert.ok(
+    grid().every((b) => b.classList.contains("bad")),
+    "bad checksum: all boxes red",
+  );
+  assert.equal(d.getElementById("seedState").className, "seed-state bad");
+  click(d.getElementById("scanBtn"));
+  assert.match(d.getElementById("status").textContent, /Invalid seed phrase/);
+
+  // a single unknown word is flagged on its own box after leaving it
+  fillSeed(d, MN);
+  const g = grid();
+  g[3].value = "zzzzz";
+  fire(g[3], "input");
+  fire(g[3], "blur");
+  assert.ok(g[3].classList.contains("bad"));
+  assert.ok(!g[2].classList.contains("bad") && !g[2].classList.contains("ok"));
+
+  // partial phrase stays neutral and shows progress
+  click(d.getElementById("clearBtn"));
+  const g2 = grid();
+  g2[0].value = "abandon";
+  g2[1].value = "ability";
+  fire(g2[0], "input");
+  assert.ok(g2.every((b) => !b.classList.contains("ok") && !b.classList.contains("bad")));
+  assert.equal(d.getElementById("seedState").textContent, "2 / 12");
+
+  // typing a unique prefix + space completes the word and moves on
+  const g3 = grid();
+  g3[2].value = "aban ";
+  fire(g3[2], "input");
+  assert.equal(g3[2].value, "abandon");
+
+  // pasting 24 words into one box switches to 24 boxes and fills them
+  const phrase24 = bip39.generateMnemonic(wordlist, 256);
+  const paste = new w.Event("paste", { bubbles: true, cancelable: true });
+  paste.clipboardData = { getData: () => phrase24.split(" ").join("\n") };
+  grid()[0].dispatchEvent(paste);
+  assert.equal(grid().length, 24);
+  assert.equal(
+    grid()
+      .map((b) => b.value)
+      .join(" "),
+    phrase24,
+  );
+  assert.ok(
+    grid().every((b) => b.classList.contains("ok")),
+    "valid 24-word phrase is green",
+  );
+
+  // switching back to 12 keeps the first 12 words
+  click(d.querySelector('.wc-btn[data-count="12"]'));
+  assert.equal(grid().length, 12);
+  assert.equal(
+    grid()
+      .map((b) => b.value)
+      .join(" "),
+    phrase24.split(" ").slice(0, 12).join(" "),
+  );
+  ok("word boxes: green/red by checksum, bad-word flag, prefix completion, paste, 12/24 switch");
+}
+
+// ---- 12. in-app help --------------------------------------------------------
+{
+  const { d, w } = boot(mempool);
+  const card = d.getElementById("helpCard");
+  assert.equal(card.style.display, "none");
+  click(d.getElementById("helpBtn"));
+  assert.equal(card.style.display, "block");
+  assert.equal(d.getElementById("helpBtn").getAttribute("aria-expanded"), "true");
+  assert.match(d.getElementById("helpBody").textContent, /What it does/);
+  assert.match(
+    d.getElementById("helpBody").textContent,
+    /github\.com\/olegsh247-stack\/Bitcoin-Seed-Scanner/,
+  );
+  click(d.querySelector('.lang-btn[data-lang="ru"]'));
+  assert.match(d.getElementById("helpBody").textContent, /Что делает/);
+  assert.equal(d.getElementById("helpBtn").textContent, "Справка");
+  click(d.querySelector('.lang-btn[data-lang="fr"]'));
+  assert.match(d.getElementById("helpBody").textContent, /À quoi ça sert/);
+  click(d.getElementById("helpBtn"));
+  assert.equal(card.style.display, "none");
+  ok("help button toggles the in-app guide, translated in all languages");
 }
 
 console.log(`\n${n} e2e checks passed`);

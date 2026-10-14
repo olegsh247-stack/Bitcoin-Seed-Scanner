@@ -29,7 +29,7 @@ Las copias de otros sitios o de mensajeros pueden estar modificadas para robar t
 Tras guardar `index.html`, verifica el SHA-256:
 
 ```
-9dc83303a3664f75b1d0eb9ef6b979c1319854715cd84faceebae3686d24ef2f
+fc3005ccc2f00b210ef83ad982a5d3c27f640ee2c765e965f4947482bc7b2ea3
 ```
 
 - **Linux / macOS:** `sha256sum index.html` (o `shasum -a 256 index.html`)

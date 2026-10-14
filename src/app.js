@@ -36,6 +36,13 @@ const LANGS = {
       "1. First only find coins.\n2. Send only when sure, with double confirmation.\n3. Close the tab when done. Seed is never saved.",
     step1: "Seed phrase",
     seedLabel: "Seed (12 or 24 words)",
+    helpBtn: "Help",
+    helpTitle: "About this tool",
+    seedOk: "✓ Valid seed phrase",
+    seedBad: "✗ Checksum mismatch — a word is wrong or in the wrong order",
+    seedWord: "✗ Not a valid BIP39 word",
+    helpBody:
+      'What it does\nChecks one seed phrase against all four common Bitcoin address types — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — on both the receive and change chains, and lets you send coins from a found address. Many wallets only look at the newest type, so older coins can look "missing".\n\nHow to use\n1. Enter your 12 or 24 words, one per box (you can paste the whole phrase into any box). All boxes turn green when the phrase is valid and red when it is not.\n2. Add the passphrase if you used one.\n3. Press "Find coins" and wait.\n4. Press "Select" next to an address with a balance, enter the destination and amount, press "Prepare", type the last 6 characters of the destination, then "Sign and send".\n5. Close the tab when you are done.\n\nSettings\n• Gap limit: how many unused addresses in a row to see before a chain is considered finished (default 25).\n• Account number: normally 0.\n\nSecurity and privacy\n• The seed lives only in this tab\'s memory. It is never saved and never sent anywhere.\n• Only mempool.space is contacted (balances, fees, broadcast). It can see the addresses you check and your IP address; use Tor/VPN if that matters.\n• No code is loaded from the internet: every library is inside this single file.\n• For large amounts use a clean device. This is not a replacement for a hardware wallet.\n\nSource and license\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — MIT license, provided "as is" without warranty. Compare this file\'s SHA-256 with the one in the README.',
     passLabel: "Passphrase (if used)",
     passPh: "optional",
     gapLabel: "Gap limit (stop after N unused)",
@@ -78,6 +85,13 @@ const LANGS = {
       "1. Сначала только найдите монеты.\n2. Отправляйте только когда уверены, с двойным подтверждением.\n3. Закройте вкладку после работы. Seed никуда не сохраняется.",
     step1: "Seed-фраза",
     seedLabel: "Seed (12 или 24 слова)",
+    helpBtn: "Справка",
+    helpTitle: "О программе",
+    seedOk: "✓ Фраза верна",
+    seedBad: "✗ Контрольная сумма не сходится — неверное слово или порядок слов",
+    seedWord: "✗ Такого слова нет в списке BIP39",
+    helpBody:
+      "Что делает\nПроверяет одну seed-фразу сразу по всем четырём типам биткоин-адресов — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — по цепочкам receive и change, и позволяет отправить монеты с найденного адреса. Многие кошельки смотрят только новейший тип, поэтому старые монеты могут «пропадать».\n\nКак пользоваться\n1. Введите 12 или 24 слова по одному в окошко (можно вставить всю фразу целиком в любое окошко). Если фраза верна, все окошки станут зелёными, если нет — красными.\n2. Введите passphrase, если он был.\n3. Нажмите «Найти монеты» и дождитесь результата.\n4. Нажмите «Выбрать» у адреса с балансом, укажите получателя и сумму, нажмите «Подготовить», введите последние 6 символов адреса получателя и «Подписать и отправить».\n5. Закройте вкладку, когда закончите.\n\nНастройки\n• Gap limit: сколько неиспользованных адресов подряд нужно увидеть, чтобы считать цепочку законченной (по умолчанию 25).\n• Номер аккаунта: обычно 0.\n\nБезопасность и приватность\n• Seed живёт только в памяти этой вкладки. Он нигде не сохраняется и никуда не отправляется.\n• В сеть уходят только запросы к mempool.space (балансы, комиссии, отправка). Он видит проверяемые адреса и ваш IP; если это важно — используйте Tor/VPN.\n• Код из интернета не загружается: все библиотеки находятся внутри этого единственного файла.\n• Для крупных сумм используйте чистое устройство. Это не замена hardware-кошельку.\n\nИсточник и лицензия\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — лицензия MIT, «как есть», без гарантий. Сверьте SHA-256 этого файла с указанным в README.",
     passLabel: "Passphrase (если использовали)",
     passPh: "необязательно",
     gapLabel: "Gap limit (остановка после N неиспользованных)",
@@ -122,6 +136,13 @@ const LANGS = {
       "1. Primero solo encuentra monedas.\n2. Envía solo cuando estés seguro, con doble confirmación.\n3. Cierra la pestaña al terminar. La seed nunca se guarda.",
     step1: "Frase seed",
     seedLabel: "Seed (12 o 24 palabras)",
+    helpBtn: "Ayuda",
+    helpTitle: "Acerca de esta herramienta",
+    seedOk: "✓ Frase seed válida",
+    seedBad: "✗ La suma de comprobación no coincide: hay una palabra incorrecta o en otro orden",
+    seedWord: "✗ No es una palabra BIP39 válida",
+    helpBody:
+      "Qué hace\nComprueba una frase seed en los cuatro tipos habituales de dirección Bitcoin — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — en las cadenas receive y change, y permite enviar monedas desde una dirección encontrada. Muchos monederos solo miran el tipo más nuevo, así que las monedas antiguas pueden parecer «perdidas».\n\nCómo usarla\n1. Escribe las 12 o 24 palabras, una por casilla (puedes pegar la frase completa en cualquier casilla). Todas las casillas se ponen en verde si la frase es válida y en rojo si no lo es.\n2. Añade la passphrase si la usaste.\n3. Pulsa «Buscar monedas» y espera.\n4. Pulsa «Elegir» junto a una dirección con saldo, indica destino e importe, pulsa «Preparar», escribe los últimos 6 caracteres del destino y «Firmar y enviar».\n5. Cierra la pestaña al terminar.\n\nAjustes\n• Gap limit: cuántas direcciones sin usar seguidas deben aparecer para dar por terminada una cadena (25 por defecto).\n• Número de cuenta: normalmente 0.\n\nSeguridad y privacidad\n• La seed solo existe en la memoria de esta pestaña. Nunca se guarda ni se envía a ningún sitio.\n• Solo se contacta con mempool.space (saldos, comisiones, envío). Puede ver las direcciones que consultas y tu IP; usa Tor/VPN si te importa.\n• No se carga código de internet: todas las bibliotecas están dentro de este único archivo.\n• Con cantidades grandes usa un dispositivo limpio. No sustituye a un monedero hardware.\n\nFuente y licencia\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — licencia MIT, «tal cual», sin garantía. Compara el SHA-256 de este archivo con el del README.",
     passLabel: "Passphrase (si la usaste)",
     passPh: "opcional",
     gapLabel: "Gap limit (parar tras N sin usar)",
@@ -166,6 +187,13 @@ const LANGS = {
       "1. D'abord uniquement trouver les pièces.\n2. Envoyer seulement en étant sûr, avec double confirmation.\n3. Fermez l'onglet ensuite. La seed n'est jamais enregistrée.",
     step1: "Phrase seed",
     seedLabel: "Seed (12 ou 24 mots)",
+    helpBtn: "Aide",
+    helpTitle: "À propos de cet outil",
+    seedOk: "✓ Phrase seed valide",
+    seedBad: "✗ Somme de contrôle invalide — un mot est faux ou dans le mauvais ordre",
+    seedWord: "✗ Mot absent de la liste BIP39",
+    helpBody:
+      "À quoi ça sert\nVérifie une phrase seed sur les quatre types d'adresses Bitcoin courants — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — sur les chaînes receive et change, et permet d'envoyer des pièces depuis une adresse trouvée. Beaucoup de portefeuilles ne regardent que le type le plus récent : les anciennes pièces peuvent sembler « disparues ».\n\nMode d'emploi\n1. Saisissez vos 12 ou 24 mots, un par case (vous pouvez coller toute la phrase dans n'importe quelle case). Toutes les cases deviennent vertes si la phrase est valide, rouges sinon.\n2. Ajoutez la passphrase si vous en avez utilisé une.\n3. Cliquez sur « Trouver les pièces » et attendez.\n4. Cliquez sur « Choisir » à côté d'une adresse avec un solde, indiquez destinataire et montant, cliquez sur « Préparer », tapez les 6 derniers caractères de l'adresse de destination, puis « Signer et envoyer ».\n5. Fermez l'onglet quand vous avez terminé.\n\nRéglages\n• Gap limit : combien d'adresses inutilisées consécutives il faut voir pour considérer une chaîne terminée (25 par défaut).\n• Numéro de compte : normalement 0.\n\nSécurité et confidentialité\n• La seed n'existe que dans la mémoire de cet onglet. Elle n'est jamais enregistrée ni envoyée.\n• Seul mempool.space est contacté (soldes, frais, diffusion). Il voit les adresses vérifiées et votre IP ; utilisez Tor/VPN si cela compte pour vous.\n• Aucun code n'est chargé depuis Internet : toutes les bibliothèques sont dans ce fichier unique.\n• Pour de gros montants, utilisez un appareil propre. Ce n'est pas un remplacement d'un portefeuille matériel.\n\nSource et licence\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — licence MIT, « en l'état », sans garantie. Comparez le SHA-256 de ce fichier à celui du README.",
     passLabel: "Passphrase (si utilisée)",
     passPh: "facultatif",
     gapLabel: "Gap limit (arrêt après N inutilisées)",
@@ -238,6 +266,9 @@ function applyLang() {
     ["accountLabel", L.accountLabel],
     ["step1Title", L.step1],
     ["seedLabel", L.seedLabel],
+    ["helpBtn", L.helpBtn],
+    ["helpTitle", L.helpTitle],
+    ["helpBody", L.helpBody],
     ["passLabel", L.passLabel],
     ["gapLabel", L.gapLabel],
     ["gapHint", L.gapHint],
@@ -265,7 +296,7 @@ function applyLang() {
   for (const [id, text] of map) {
     const el = document.getElementById(id);
     if (!el || text == null) continue;
-    if (id === "noFunds" || id === "footerText" || id === "sourceInfo")
+    if (id === "noFunds" || id === "footerText" || id === "sourceInfo" || id === "helpBody")
       el.innerHTML = text.replace(/\n/g, "<br>");
     else el.textContent = text;
   }
@@ -283,14 +314,14 @@ document.querySelectorAll(".lang-btn").forEach(
       lang = b.dataset.lang;
       storeSet("bss_lang", lang);
       applyLang();
+      refreshSeedUI();
     }),
 );
 applyLang();
 
 // ------------------------------------------------------------ DOM refs ----
 const $ = (id) => document.getElementById(id);
-const mnemonicEl = $("mnemonic"),
-  passphraseEl = $("passphrase"),
+const passphraseEl = $("passphrase"),
   gapEl = $("gap"),
   accountEl = $("account"),
   scanBtn = $("scanBtn"),
@@ -327,8 +358,153 @@ let foundFunds = [],
 // -------------------------------------------------------------- helpers ----
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// ----------------------------------------------------------- seed boxes ----
+const WORDSET = new Set(wordlist);
+const seedGrid = $("seedGrid"),
+  seedState = $("seedState"),
+  helpBtn = $("helpBtn"),
+  helpCard = $("helpCard");
+let wordCount = 12;
+
+const boxes = () => [...seedGrid.querySelectorAll("input")];
+const seedWords = () => boxes().map((b) => b.value.trim().toLowerCase());
+
+// "aban" -> "abandon" when exactly one BIP39 word starts with it.
+function completeWord(v) {
+  const w = v.trim().toLowerCase();
+  if (!w || WORDSET.has(w)) return w;
+  const hits = wordlist.filter((x) => x.startsWith(w));
+  return hits.length === 1 ? hits[0] : w;
+}
+
+function buildBoxes(n) {
+  const old = seedWords();
+  wordCount = n;
+  seedGrid.textContent = "";
+  for (let i = 0; i < n; i++) {
+    const wrap = document.createElement("div");
+    wrap.className = "sw";
+    const num = document.createElement("span");
+    num.textContent = String(i + 1);
+    const inp = document.createElement("input");
+    inp.type = "text";
+    inp.value = old[i] || "";
+    inp.setAttribute("autocomplete", "off");
+    inp.setAttribute("autocapitalize", "none");
+    inp.setAttribute("autocorrect", "off");
+    inp.setAttribute("spellcheck", "false");
+    inp.setAttribute("aria-label", `Word ${i + 1}`);
+    inp.dataset.i = String(i);
+    inp.addEventListener("input", () => onWordInput(i));
+    inp.addEventListener("blur", () => {
+      inp.value = completeWord(inp.value);
+      refreshSeedUI();
+    });
+    inp.addEventListener("keydown", (e) => {
+      const list = boxes();
+      if (e.key === "Enter") {
+        e.preventDefault();
+        list[Math.min(i + 1, list.length - 1)].focus();
+      } else if (e.key === "Backspace" && inp.value === "" && i > 0) {
+        e.preventDefault();
+        list[i - 1].focus();
+      }
+    });
+    inp.addEventListener("paste", (e) => {
+      const text = (e.clipboardData && e.clipboardData.getData("text")) || "";
+      if (!/[\s,]/.test(text.trim())) return; // single word: let the browser paste it
+      e.preventDefault();
+      placeWords(i, text);
+    });
+    wrap.append(num, inp);
+    seedGrid.append(wrap);
+  }
+  document
+    .querySelectorAll(".wc-btn")
+    .forEach((b) => b.classList.toggle("active", Number(b.dataset.count) === n));
+  refreshSeedUI();
+}
+
+// Put several words into consecutive boxes starting at `start` (paste, or typing a space).
+function placeWords(start, text, terminated = true) {
+  const tokens = text
+    .toLowerCase()
+    .split(/[\s,]+/)
+    .filter(Boolean)
+    .map((t, k, a) => (k < a.length - 1 || terminated ? completeWord(t) : t));
+  if (!tokens.length) return;
+  if (start + tokens.length > wordCount && wordCount === 12 && start + tokens.length <= 24)
+    buildBoxes(24);
+  const list = boxes();
+  let last = start;
+  tokens.forEach((t, k) => {
+    if (start + k < list.length) {
+      list[start + k].value = t;
+      last = start + k;
+    }
+  });
+  refreshSeedUI();
+  boxes()[Math.min(last + (terminated ? 1 : 0), list.length - 1)].focus();
+}
+
+function onWordInput(i) {
+  const inp = boxes()[i];
+  if (/[\s,]/.test(inp.value)) {
+    const terminated = /[\s,]$/.test(inp.value);
+    placeWords(i, inp.value, terminated);
+  } else refreshSeedUI();
+}
+
+// Green on every box for a valid phrase, red for an invalid one; a single bad word is red.
+function refreshSeedUI() {
+  const bs = boxes();
+  if (!bs.length) return;
+  const ws = bs.map((b) => b.value.trim().toLowerCase());
+  const L = LANGS[lang];
+  bs.forEach((b) => b.classList.remove("ok", "bad"));
+  let cls = "",
+    msg = "";
+  if (ws.every((w) => WORDSET.has(w))) {
+    const valid = bip39.validateMnemonic(ws.join(" "), wordlist);
+    cls = valid ? "ok" : "bad";
+    bs.forEach((b) => b.classList.add(cls));
+    msg = valid ? L.seedOk : L.seedBad;
+  } else {
+    let badWord = false;
+    bs.forEach((b, i) => {
+      const w = ws[i];
+      if (!w) return;
+      const typing = document.activeElement === b;
+      const possible = typing ? wordlist.some((x) => x.startsWith(w)) : WORDSET.has(w);
+      if (!possible) {
+        b.classList.add("bad");
+        badWord = true;
+      }
+    });
+    cls = badWord ? "bad" : "";
+    msg = badWord ? L.seedWord : `${ws.filter(Boolean).length} / ${wordCount}`;
+  }
+  seedState.textContent = msg;
+  seedState.className = "seed-state" + (cls ? " " + cls : "");
+}
+
+function clearSeedBoxes() {
+  boxes().forEach((b) => (b.value = ""));
+  refreshSeedUI();
+}
+
+document.querySelectorAll(".wc-btn").forEach((b) => {
+  b.onclick = () => buildBoxes(Number(b.dataset.count));
+});
+helpBtn.onclick = () => {
+  const open = helpCard.style.display === "none";
+  helpCard.style.display = open ? "block" : "none";
+  helpBtn.setAttribute("aria-expanded", String(open));
+};
+buildBoxes(12);
+
 function hardClear() {
-  mnemonicEl.value = "";
+  clearSeedBoxes();
   passphraseEl.value = "";
   toAddressEl.value = "";
   amountEl.value = "";
@@ -419,7 +595,7 @@ async function fetchFeeHints() {
 
 // ---------------------------------------------------------------- scan ----
 scanBtn.onclick = async () => {
-  const mnemonic = mnemonicEl.value.trim().replace(/\s+/g, " ");
+  const mnemonic = seedWords().join(" ").replace(/\s+/g, " ").trim();
   const passphrase = passphraseEl.value || "";
   // Gap limit: stop a chain after this many CONSECUTIVE unused addresses.
   const gap = Math.min(100, Math.max(5, parseInt(gapEl.value) || 25));
@@ -433,7 +609,7 @@ scanBtn.onclick = async () => {
   };
   if (!mnemonic) return fail("Enter a seed phrase");
   const words = mnemonic.split(" ");
-  if (words.length !== 12 && words.length !== 24) return fail("Need 12 or 24 words");
+  if (words.length !== wordCount) return fail(`Enter all ${wordCount} words`);
   if (!bip39.validateMnemonic(mnemonic, wordlist)) return fail("Invalid seed phrase (checksum)");
 
   statusEl.textContent = "Generating seed...";
