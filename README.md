@@ -1,3 +1,7 @@
+**Language / Язык / Idioma / Langue:** [English](README.md) · [Русский](README.ru.md) · [Español](README.es.md) · [Français](README.fr.md)
+
+---
+
 # Bitcoin Seed Scanner
 
 Simple tool to **find Bitcoin that modern wallets often miss** after restoring a seed — and send it out.
@@ -7,7 +11,7 @@ This tool checks **all common address types at once**.
 
 > ⚠️ **Not a daily wallet.** Use only for recovery. For large amounts prefer a clean computer or live USB.
 
-**Languages:** English · Русский · Español · Français (switch in the top-right)
+The app itself supports **English · Русский · Español · Français** (switch in the top-right of the page).
 
 ---
 
@@ -71,14 +75,6 @@ Receive and change chains are both scanned.
 ## Gratitude
 
 If this tool helped you recover funds, any **voluntary** thank-you is welcome. It is never required.
-
-| Asset | Network | Address |
-|-------|---------|---------|
-| USDT | TRC-20 (TRON) | `TVXzchqZdvRqTCJutjGgF1xVP5kuDfk2nx` |
-| USDT / USDC | ERC-20 / BEP-20 / Base | `0x761B53654e2333261649eEb8857B752A60f11435` |
-| SOL / ELIZAOS | Solana | `8cTp36pWi1oPCwV6k6yB2sTJbTTuAHqgAbdVeCPTQkpc` |
-| Dash | Dash | `XoThJ7ZAXkE9dyNh5VkBNfuGjn39d4NpFY` |
-| XMR (Monero) | Monero | `48MowmJYenKSsB4QnKtwhq6eeJxEsAcuaPV58BM5rviXVq9PrGU6TkaQtHjRrhDvPHioz8P12qqv324onJMcjEszGtaM8DV` |
 
 ---
 
