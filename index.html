@@ -27,15 +27,15 @@
 <button type="button" class="lang-btn" data-lang="fr">FR</button>
 </div>
 </header>
-<div class="danger-box"><strong>Critical</strong><br>If the computer may be infected — do not use this tool with large amounts.<br>Prefer a live USB / clean system / hardware wallet.</div>
-<div class="warn"><strong>Safer workflow:</strong><br>1. First only find coins.<br>2. Send only when sure, with double confirmation.<br>3. Close the tab when done. Seed is never saved.</div>
+<div class="danger-box" id="critBox"><strong>Critical</strong><br>If the computer may be infected — do not use this tool with large amounts.<br>Prefer a live USB / clean system / hardware wallet.</div>
+<div class="warn" id="saferBox"><strong>Safer workflow:</strong><br>1. First only find coins.<br>2. Send only when sure, with double confirmation.<br>3. Close the tab when done. Seed is never saved.</div>
 <div class="card" id="seedCard">
-<h2><span class="step">1</span> Seed phrase</h2>
-<label for="mnemonic">Seed (12 or 24 words)</label>
+<h2><span class="step">1</span> <span id="step1Title">Seed phrase</span></h2>
+<label for="mnemonic" id="seedLabel">Seed (12 or 24 words)</label>
 <textarea id="mnemonic" placeholder="word1 word2 word3 ..." spellcheck="false" autocomplete="off"></textarea>
 <div class="row">
-<div><label for="passphrase">Passphrase (if used)</label><input type="text" id="passphrase" placeholder="optional" autocomplete="off"></div>
-<div><label for="gap">Addresses per path (gap)</label><input type="number" id="gap" value="25" min="5" max="100"></div>
+<div><label for="passphrase" id="passLabel">Passphrase (if used)</label><input type="text" id="passphrase" placeholder="optional" autocomplete="off"></div>
+<div><label for="gap" id="gapLabel">Addresses per path (gap)</label><input type="number" id="gap" value="25" min="5" max="100"></div>
 </div>
 <div class="btn-row">
 <button class="btn-primary" id="scanBtn">Find coins</button>
@@ -45,19 +45,19 @@
 <div class="status" id="status"></div>
 </div>
 <div class="card" id="resultsCard" style="display:none">
-<h2><span class="step">2</span> Found funds</h2>
+<h2><span class="step">2</span> <span id="step2Title">Found funds</span></h2>
 <div id="summary"></div>
-<div style="overflow-x:auto"><table><thead><tr><th>Path</th><th>Type</th><th>Address</th><th>Balance</th><th></th></tr></thead><tbody id="tbody"></tbody></table></div>
+<div style="overflow-x:auto"><table><thead><tr><th id="thPath">Path</th><th id="thType">Type</th><th id="thAddr">Address</th><th id="thBal">Balance</th><th></th></tr></thead><tbody id="tbody"></tbody></table></div>
 <div id="noFunds" class="empty-state" style="display:none">No coins found in the scanned range.<br>Try a larger gap or check the passphrase.</div>
 </div>
 <div class="card send-form" id="sendCard">
-<h2><span class="step">3</span> Send</h2>
+<h2><span class="step">3</span> <span id="step3Title">Send</span></h2>
 <div class="source-info" id="sourceInfo">Select an address in the table above first</div>
-<label for="toAddress">Recipient address</label>
+<label for="toAddress" id="toLabel">Recipient address</label>
 <input type="text" id="toAddress" placeholder="bc1q... / 3... / 1... / bc1p..." autocomplete="off">
 <div class="row" style="margin-top:14px">
-<div><label for="amount">Amount (BTC)</label><input type="text" id="amount" placeholder="0.001"></div>
-<div><label for="feeRate">Fee (sat/vB)</label><input type="number" id="feeRate" value="5" min="1"><div class="fee-hints" id="feeHints"></div></div>
+<div><label for="amount" id="amountLabel">Amount (BTC)</label><input type="text" id="amount" placeholder="0.001"></div>
+<div><label for="feeRate" id="feeLabel">Fee (sat/vB)</label><input type="number" id="feeRate" value="5" min="1"><div class="fee-hints" id="feeHints"></div></div>
 </div>
 <div class="btn-row">
 <button class="btn-primary" id="prepareBtn">Prepare transaction</button>
@@ -68,9 +68,9 @@
 <div>Recipient:</div><div class="big" id="confirmTo"></div>
 <div style="margin-top:10px">Amount:</div><div class="big" id="confirmAmount"></div>
 <div style="margin-top:10px">Fee (approx.):</div><div class="big" id="confirmFee"></div>
-<div style="margin-top:10px;color:var(--muted);font-size:0.85rem">Double-check everything. This cannot be undone.</div>
+<div style="margin-top:10px;color:var(--muted);font-size:0.85rem" id="confirmHint">Double-check everything. This cannot be undone.</div>
 </div>
-<label for="confirmText">Type the last 6 characters of the recipient address</label>
+<label for="confirmText" id="confirmLabel">Type the last 6 characters of the recipient address</label>
 <input type="text" id="confirmText" placeholder="......" maxlength="8" autocomplete="off">
 <div class="btn-row">
 <button class="btn-danger" id="broadcastBtn" disabled>Sign and send</button>
@@ -99,7 +99,7 @@
 <code>0x761B53654e2333261649eEb8857B752A60f11435</code>
 </div>
 </div>
-<footer>Local tool. Seed and keys exist only in browser RAM.<br>Closing the tab clears them. Not a replacement for a hardware wallet.<br>BIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)<br>Scans receive (/0/i) and change (/1/i).</footer>
+<footer id="footerText">Local tool. Seed and keys exist only in browser RAM.<br>Closing the tab clears them. Not a replacement for a hardware wallet.<br>BIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)<br>Scans receive (/0/i) and change (/1/i).</footer>
 </div>
 <script type="module">
 import * as bip39 from 'https://esm.sh/@scure/bip39@1.5.4';
@@ -107,10 +107,164 @@ import { wordlist } from 'https://esm.sh/@scure/bip39@1.5.4/wordlists/english.js
 import { HDKey } from 'https://esm.sh/@scure/bip32@1.5.0';
 import * as btc from 'https://esm.sh/@scure/btc-signer@1.6.0';
 import { hex } from 'https://esm.sh/@scure/base@1.2.1';
-const LANGS={en:{subtitle:"Find coins on BIP44 / 49 / 84 / 86 + send. Seed stays in browser memory only.",donateTitle:"Gratitude",donateText:"If this program helped you recover your funds — we would gladly accept your voluntary thank-you. It is never required, and it will surely be counted by the Almighty. 🙏"},ru:{subtitle:"Поиск монет по BIP44 / 49 / 84 / 86 + отправка. Seed только в памяти браузера.",donateTitle:"Благодарность",donateText:"Если программа помогла вам вернуть средства — мы с удовольствием примем Вашу добровольную благодарность. Это ни к чему не обязывает и обязательно зачтётся Всевышним. 🙏"},es:{subtitle:"Busca monedas en BIP44 / 49 / 84 / 86 + envío. La seed solo está en la memoria del navegador.",donateTitle:"Agradecimiento",donateText:"Si este programa te ayudó a recuperar tus fondos — aceptaremos con gusto tu agradecimiento voluntario. No obliga a nada y, sin duda, será tenido en cuenta por el Todopoderoso. 🙏"},fr:{subtitle:"Trouver des pièces sur BIP44 / 49 / 84 / 86 + envoi. La seed reste uniquement en mémoire du navigateur.",donateTitle:"Remerciements",donateText:"Si ce programme vous a aidé à récupérer vos fonds — nous accepterons volontiers votre remerciement volontaire. Cela n'oblige à rien et sera certainement compté par le Tout-Puissant. 🙏"}};
+const LANGS={
+en:{
+subtitle:"Find coins on BIP44 / 49 / 84 / 86 + send. Seed stays in browser memory only.",
+critTitle:"Critical",
+critBody:"If the computer may be infected — do not use this tool with large amounts.\nPrefer a live USB / clean system / hardware wallet.",
+saferTitle:"Safer workflow:",
+saferBody:"1. First only find coins.\n2. Send only when sure, with double confirmation.\n3. Close the tab when done. Seed is never saved.",
+step1:"Seed phrase",
+seedLabel:"Seed (12 or 24 words)",
+passLabel:"Passphrase (if used)",
+passPh:"optional",
+gapLabel:"Addresses per path (gap)",
+scanBtn:"Find coins",
+clearBtn:"Clear all",
+step2:"Found funds",
+noFunds:"No coins found in the scanned range.\nTry a larger gap or check the passphrase.",
+step3:"Send",
+sourceHint:"Select an address in the table above first",
+toLabel:"Recipient address",
+amountLabel:"Amount (BTC)",
+feeLabel:"Fee (sat/vB)",
+prepareBtn:"Prepare transaction",
+maxBtn:"Maximum",
+confirmHint:"Double-check everything. This cannot be undone.",
+confirmLabel:"Type the last 6 characters of the recipient address",
+broadcastBtn:"Sign and send",
+cancelBtn:"Cancel",
+donateTitle:"Gratitude",
+donateText:"If this program helped you recover your funds — we would gladly accept your voluntary thank-you. It is never required, and it will surely be counted by the Almighty. 🙏",
+thPath:"Path",thType:"Type",thAddr:"Address",thBal:"Balance",
+selectBtn:"Select",
+footer:"Local tool. Seed and keys exist only in browser RAM.\nClosing the tab clears them. Not a replacement for a hardware wallet.\nBIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)\nScans receive (/0/i) and change (/1/i)."
+},
+ru:{
+subtitle:"Поиск монет по BIP44 / 49 / 84 / 86 + отправка. Seed только в памяти браузера.",
+critTitle:"Важно",
+critBody:"Если компьютер может быть заражён — не используйте инструмент с крупными суммами.\nЛучше live-USB / чистая система / hardware-кошелёк.",
+saferTitle:"Безопасный порядок:",
+saferBody:"1. Сначала только найдите монеты.\n2. Отправляйте только когда уверены, с двойным подтверждением.\n3. Закройте вкладку после работы. Seed никуда не сохраняется.",
+step1:"Seed-фраза",
+seedLabel:"Seed (12 или 24 слова)",
+passLabel:"Passphrase (если использовали)",
+passPh:"необязательно",
+gapLabel:"Адресов на путь (gap)",
+scanBtn:"Найти монеты",
+clearBtn:"Очистить всё",
+step2:"Найденные средства",
+noFunds:"Монет в выбранном диапазоне не найдено.\nПопробуйте больший gap или проверьте passphrase.",
+step3:"Отправка",
+sourceHint:"Сначала выберите адрес в таблице выше",
+toLabel:"Адрес получателя",
+amountLabel:"Сумма (BTC)",
+feeLabel:"Комиссия (sat/vB)",
+prepareBtn:"Подготовить транзакцию",
+maxBtn:"Максимум",
+confirmHint:"Проверьте всё ещё раз. Отменить будет нельзя.",
+confirmLabel:"Введите последние 6 символов адреса получателя",
+broadcastBtn:"Подписать и отправить",
+cancelBtn:"Отмена",
+donateTitle:"Благодарность",
+donateText:"Если программа помогла вам вернуть средства — мы с удовольствием примем Вашу добровольную благодарность. Это ни к чему не обязывает и обязательно зачтётся Всевышним. 🙏",
+thPath:"Путь",thType:"Тип",thAddr:"Адрес",thBal:"Баланс",
+selectBtn:"Выбрать",
+footer:"Локальный инструмент. Seed и ключи только в памяти браузера.\nЗакрытие вкладки их стирает. Не замена hardware-кошельку.\nBIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)\nСканируются receive (/0/i) и change (/1/i)."
+},
+es:{
+subtitle:"Busca monedas en BIP44 / 49 / 84 / 86 + envío. La seed solo está en la memoria del navegador.",
+critTitle:"Crítico",
+critBody:"Si el ordenador puede estar infectado — no uses esta herramienta con grandes cantidades.\nPrefiere un live USB / sistema limpio / monedero hardware.",
+saferTitle:"Flujo más seguro:",
+saferBody:"1. Primero solo encuentra monedas.\n2. Envía solo cuando estés seguro, con doble confirmación.\n3. Cierra la pestaña al terminar. La seed nunca se guarda.",
+step1:"Frase seed",
+seedLabel:"Seed (12 o 24 palabras)",
+passLabel:"Passphrase (si la usaste)",
+passPh:"opcional",
+gapLabel:"Direcciones por ruta (gap)",
+scanBtn:"Buscar monedas",
+clearBtn:"Borrar todo",
+step2:"Fondos encontrados",
+noFunds:"No se encontraron monedas en el rango escaneado.\nPrueba un gap mayor o revisa la passphrase.",
+step3:"Enviar",
+sourceHint:"Selecciona primero una dirección en la tabla de arriba",
+toLabel:"Dirección de destino",
+amountLabel:"Cantidad (BTC)",
+feeLabel:"Comisión (sat/vB)",
+prepareBtn:"Preparar transacción",
+maxBtn:"Máximo",
+confirmHint:"Revisa todo otra vez. Esto no se puede deshacer.",
+confirmLabel:"Escribe los últimos 6 caracteres de la dirección de destino",
+broadcastBtn:"Firmar y enviar",
+cancelBtn:"Cancelar",
+donateTitle:"Agradecimiento",
+donateText:"Si este programa te ayudó a recuperar tus fondos — aceptaremos con gusto tu agradecimiento voluntario. No obliga a nada y, sin duda, será tenido en cuenta por el Todopoderoso. 🙏",
+thPath:"Ruta",thType:"Tipo",thAddr:"Dirección",thBal:"Saldo",
+selectBtn:"Elegir",
+footer:"Herramienta local. Seed y claves solo en la memoria del navegador.\nAl cerrar la pestaña se borran. No sustituye un monedero hardware.\nBIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)\nSe escanean receive (/0/i) y change (/1/i)."
+},
+fr:{
+subtitle:"Trouver des pièces sur BIP44 / 49 / 84 / 86 + envoi. La seed reste uniquement en mémoire du navigateur.",
+critTitle:"Critique",
+critBody:"Si l'ordinateur peut être infecté — n'utilisez pas cet outil avec de gros montants.\nPréférez un live USB / système propre / portefeuille matériel.",
+saferTitle:"Démarche plus sûre :",
+saferBody:"1. D'abord uniquement trouver les pièces.\n2. Envoyer seulement en étant sûr, avec double confirmation.\n3. Fermez l'onglet ensuite. La seed n'est jamais enregistrée.",
+step1:"Phrase seed",
+seedLabel:"Seed (12 ou 24 mots)",
+passLabel:"Passphrase (si utilisée)",
+passPh:"facultatif",
+gapLabel:"Adresses par chemin (gap)",
+scanBtn:"Trouver les pièces",
+clearBtn:"Tout effacer",
+step2:"Fonds trouvés",
+noFunds:"Aucune pièce trouvée dans la plage scannée.\nEssayez un gap plus grand ou vérifiez la passphrase.",
+step3:"Envoyer",
+sourceHint:"Sélectionnez d'abord une adresse dans le tableau ci-dessus",
+toLabel:"Adresse du destinataire",
+amountLabel:"Montant (BTC)",
+feeLabel:"Frais (sat/vB)",
+prepareBtn:"Préparer la transaction",
+maxBtn:"Maximum",
+confirmHint:"Vérifiez encore une fois. Cela ne peut pas être annulé.",
+confirmLabel:"Saisissez les 6 derniers caractères de l'adresse de destination",
+broadcastBtn:"Signer et envoyer",
+cancelBtn:"Annuler",
+donateTitle:"Remerciements",
+donateText:"Si ce programme vous a aidé à récupérer vos fonds — nous accepterons volontiers votre remerciement volontaire. Cela n'oblige à rien et sera certainement compté par le Tout-Puissant. 🙏",
+thPath:"Chemin",thType:"Type",thAddr:"Adresse",thBal:"Solde",
+selectBtn:"Choisir",
+footer:"Outil local. Seed et clés uniquement en mémoire du navigateur.\nLa fermeture de l'onglet les efface. Ne remplace pas un portefeuille matériel.\nBIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)\nScan receive (/0/i) et change (/1/i)."
+}
+};
 let lang=localStorage.getItem("bss_lang")||((navigator.language||"en").slice(0,2));
 if(!LANGS[lang])lang="en";
-function applyLang(){const L=LANGS[lang];const s=document.getElementById("subtitle");if(s)s.textContent=L.subtitle;const dt=document.getElementById("donateTitle");if(dt)dt.textContent=L.donateTitle;const dx=document.getElementById("donateText");if(dx)dx.textContent=L.donateText;document.querySelectorAll(".lang-btn").forEach(b=>b.classList.toggle("active",b.dataset.lang===lang));document.documentElement.lang=lang;}
+function applyLang(){
+const L=LANGS[lang];
+const s=document.getElementById("subtitle");if(s)s.textContent=L.subtitle;
+const dt=document.getElementById("donateTitle");if(dt)dt.textContent=L.donateTitle;
+const dx=document.getElementById("donateText");if(dx)dx.textContent=L.donateText;
+const crit=document.getElementById("critBox");if(crit)crit.innerHTML="<strong>"+L.critTitle+"</strong><br>"+L.critBody.replace(/\n/g,"<br>");
+const safer=document.getElementById("saferBox");if(safer)safer.innerHTML="<strong>"+L.saferTitle+"</strong><br>"+L.saferBody.replace(/\n/g,"<br>");
+const map=[
+["step1Title",L.step1],["seedLabel",L.seedLabel],["passLabel",L.passLabel],["gapLabel",L.gapLabel],
+["scanBtn",L.scanBtn],["clearBtn",L.clearBtn],["step2Title",L.step2],["noFunds",L.noFunds],
+["step3Title",L.step3],["sourceInfo",L.sourceHint],["toLabel",L.toLabel],["amountLabel",L.amountLabel],
+["feeLabel",L.feeLabel],["prepareBtn",L.prepareBtn],["maxBtn",L.maxBtn],["confirmHint",L.confirmHint],
+["confirmLabel",L.confirmLabel],["broadcastBtn",L.broadcastBtn],["cancelSendBtn",L.cancelBtn],
+["thPath",L.thPath],["thType",L.thType],["thAddr",L.thAddr],["thBal",L.thBal],["footerText",L.footer]
+];
+for(const [id,text] of map){
+  const el=document.getElementById(id);
+  if(!el)continue;
+  if(id==="noFunds"||id==="footerText"||id==="sourceInfo")el.innerHTML=text.replace(/\n/g,"<br>");
+  else el.textContent=text;
+}
+const pass=document.getElementById("passphrase");if(pass)pass.placeholder=L.passPh;
+document.querySelectorAll(".lang-btn").forEach(b=>b.classList.toggle("active",b.dataset.lang===lang));
+document.documentElement.lang=lang;
+window._selectLabel=L.selectBtn;
+}
 document.querySelectorAll(".lang-btn").forEach(b=>b.onclick=()=>{lang=b.dataset.lang;localStorage.setItem("bss_lang",lang);applyLang();});
 applyLang();
 const $=id=>document.getElementById(id);
@@ -126,12 +280,12 @@ function calcFeeAndChange(inputSum,amountSats,numInputs,feeRate,addrType){const 
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 function satsToBtc(sats){return(Number(sats)/1e8).toFixed(8)}
 function btcToSats(btc){return Math.round(parseFloat(btc)*1e8)}
-function hardClear(){mnemonicEl.value="";passphraseEl.value="";toAddressEl.value="";amountEl.value="";confirmText.value="";resultsCard.style.display="none";sendCard.classList.remove("active");confirmArea.style.display="none";tbody.innerHTML="";summary.innerHTML="";statusEl.textContent="";statusEl.className="status";sendStatus.textContent="";progress.classList.remove("active");progressBar.style.width="0%";sourceInfo.textContent="Select an address in the table above first";foundFunds=[];selectedSource=null;preparedTx=null;if(rootKey){try{rootKey.wipePrivateData?.()}catch(_){}rootKey=null}}
+function hardClear(){mnemonicEl.value="";passphraseEl.value="";toAddressEl.value="";amountEl.value="";confirmText.value="";resultsCard.style.display="none";sendCard.classList.remove("active");confirmArea.style.display="none";tbody.innerHTML="";summary.innerHTML="";statusEl.textContent="";statusEl.className="status";sendStatus.textContent="";progress.classList.remove("active");progressBar.style.width="0%";sourceInfo.textContent=LANGS[lang].sourceHint;foundFunds=[];selectedSource=null;preparedTx=null;if(rootKey){try{rootKey.wipePrivateData?.()}catch(_){}rootKey=null}}
 clearBtn.onclick=()=>{if(confirm("Clear all data (seed, results, send form)?"))hardClear()};
 async function fetchBalance(addr){const res=await fetch(`https://mempool.space/api/address/${addr}`);if(!res.ok)throw new Error(`mempool ${res.status}`);const data=await res.json();const chain=data.chain_stats||{},mem=data.mempool_stats||{};return(chain.funded_txo_sum||0)+(mem.funded_txo_sum||0)-((chain.spent_txo_sum||0)+(mem.spent_txo_sum||0))}
 async function fetchUtxos(addr){const res=await fetch(`https://mempool.space/api/address/${addr}/utxo`);if(!res.ok)throw new Error(`utxo ${res.status}`);return await res.json()}
 async function fetchFeeHints(){try{const res=await fetch("https://mempool.space/api/v1/fees/recommended");if(!res.ok)return;const f=await res.json();feeHints.textContent=`Hints: fast ${f.fastestFee} · halfHour ${f.halfHourFee} · hour ${f.hourFee} sat/vB`;if(!feeRateEl.value||feeRateEl.value==="5")feeRateEl.value=f.halfHourFee||5}catch(_){}}
-scanBtn.onclick=async()=>{const mnemonic=mnemonicEl.value.trim().replace(/\s+/g," ");const passphrase=passphraseEl.value||"";const gap=Math.min(100,Math.max(5,parseInt(gapEl.value)||25));if(!mnemonic){statusEl.textContent="Enter a seed phrase";statusEl.className="status err";return}const words=mnemonic.split(" ");if(words.length!==12&&words.length!==24){statusEl.textContent="Need 12 or 24 words";statusEl.className="status err";return}if(!bip39.validateMnemonic(mnemonic,wordlist)){statusEl.textContent="Invalid seed phrase (checksum)";statusEl.className="status err";return}statusEl.textContent="Generating seed...";statusEl.className="status";progress.classList.add("active");progressBar.style.width="5%";scanBtn.disabled=true;foundFunds=[];tbody.innerHTML="";noFunds.style.display="none";resultsCard.style.display="none";sendCard.classList.remove("active");try{const seed=bip39.mnemonicToSeedSync(mnemonic,passphrase);rootKey=HDKey.fromMasterSeed(seed);const total=PATHS.length*CHAINS.length*gap;let done=0;for(const p of PATHS){for(const change of CHAINS){const chainLabel=change===0?"receive":"change";statusEl.textContent=`Scanning ${p.name} (${p.type}, ${chainLabel})...`;for(let i=0;i<gap;i++){const path=`m/${p.purpose}'/0'/0'/${change}/${i}`;const child=rootKey.derive(path);if(!child.privateKey){done++;progressBar.style.width=`${Math.round(done/total*100)}%`;continue}const payment=p.makePayment(child.publicKey);const address=payment.address;if(!address){done++;progressBar.style.width=`${Math.round(done/total*100)}%`;continue}let balanceSats=0;try{balanceSats=await fetchBalance(address)}catch(e){}if(balanceSats>0){foundFunds.push({path,type:p.type,name:p.name,address,balanceSats,privateKey:child.privateKey,payment,pub:child.publicKey})}done++;progressBar.style.width=`${Math.round(done/total*100)}%`;await sleep(80)}}}resultsCard.style.display="block";sendCard.classList.add("active");if(foundFunds.length===0){noFunds.style.display="block";summary.innerHTML="";statusEl.textContent="Done. No funds found.";statusEl.className="status"}else{noFunds.style.display="none";const totalSats=foundFunds.reduce((s,f)=>s+f.balanceSats,0);summary.innerHTML=`<strong>Addresses found: ${foundFunds.length}</strong> · total <span class="bal">${satsToBtc(totalSats)} BTC</span>`;tbody.innerHTML=foundFunds.map((f,idx)=>`<tr class="found"><td class="path">${f.path}</td><td>${f.name}<br><small style="color:var(--muted)">${f.type}</small></td><td class="addr">${f.address}</td><td class="bal">${satsToBtc(f.balanceSats)}</td><td><button class="btn-secondary" style="padding:6px 12px;font-size:0.82rem" data-idx="${idx}">Select</button></td></tr>`).join("");tbody.querySelectorAll("button[data-idx]").forEach(btn=>{btn.onclick=()=>{const idx=parseInt(btn.dataset.idx);selectedSource=foundFunds[idx];sourceInfo.innerHTML=`Source: <strong>${selectedSource.address}</strong><br>${selectedSource.type} · ${selectedSource.path} · balance <strong class="bal">${satsToBtc(selectedSource.balanceSats)} BTC</strong>`;sendStatus.textContent="";confirmArea.style.display="none"}});statusEl.textContent=`Done. Found ${foundFunds.length} address(es) with balance.`;statusEl.className="status ok"}}catch(e){statusEl.textContent="Error: "+e.message;statusEl.className="status err"}finally{scanBtn.disabled=false;setTimeout(()=>{progress.classList.remove("active");progressBar.style.width="0%"},600)}};
+scanBtn.onclick=async()=>{const mnemonic=mnemonicEl.value.trim().replace(/\s+/g," ");const passphrase=passphraseEl.value||"";const gap=Math.min(100,Math.max(5,parseInt(gapEl.value)||25));if(!mnemonic){statusEl.textContent="Enter a seed phrase";statusEl.className="status err";return}const words=mnemonic.split(" ");if(words.length!==12&&words.length!==24){statusEl.textContent="Need 12 or 24 words";statusEl.className="status err";return}if(!bip39.validateMnemonic(mnemonic,wordlist)){statusEl.textContent="Invalid seed phrase (checksum)";statusEl.className="status err";return}statusEl.textContent="Generating seed...";statusEl.className="status";progress.classList.add("active");progressBar.style.width="5%";scanBtn.disabled=true;foundFunds=[];tbody.innerHTML="";noFunds.style.display="none";resultsCard.style.display="none";sendCard.classList.remove("active");try{const seed=bip39.mnemonicToSeedSync(mnemonic,passphrase);rootKey=HDKey.fromMasterSeed(seed);const total=PATHS.length*CHAINS.length*gap;let done=0;for(const p of PATHS){for(const change of CHAINS){const chainLabel=change===0?"receive":"change";statusEl.textContent=`Scanning ${p.name} (${p.type}, ${chainLabel})...`;for(let i=0;i<gap;i++){const path=`m/${p.purpose}'/0'/0'/${change}/${i}`;const child=rootKey.derive(path);if(!child.privateKey){done++;progressBar.style.width=`${Math.round(done/total*100)}%`;continue}const payment=p.makePayment(child.publicKey);const address=payment.address;if(!address){done++;progressBar.style.width=`${Math.round(done/total*100)}%`;continue}let balanceSats=0;try{balanceSats=await fetchBalance(address)}catch(e){}if(balanceSats>0){foundFunds.push({path,type:p.type,name:p.name,address,balanceSats,privateKey:child.privateKey,payment,pub:child.publicKey})}done++;progressBar.style.width=`${Math.round(done/total*100)}%`;await sleep(80)}}}resultsCard.style.display="block";sendCard.classList.add("active");if(foundFunds.length===0){noFunds.style.display="block";summary.innerHTML="";statusEl.textContent="Done. No funds found.";statusEl.className="status"}else{noFunds.style.display="none";const totalSats=foundFunds.reduce((s,f)=>s+f.balanceSats,0);summary.innerHTML=`<strong>Addresses found: ${foundFunds.length}</strong> · total <span class="bal">${satsToBtc(totalSats)} BTC</span>`;tbody.innerHTML=foundFunds.map((f,idx)=>`<tr class="found"><td class="path">${f.path}</td><td>${f.name}<br><small style="color:var(--muted)">${f.type}</small></td><td class="addr">${f.address}</td><td class="bal">${satsToBtc(f.balanceSats)}</td><td><button class="btn-secondary" style="padding:6px 12px;font-size:0.82rem" data-idx="${idx}">${window._selectLabel||"Select"}</button></td></tr>`).join("");tbody.querySelectorAll("button[data-idx]").forEach(btn=>{btn.onclick=()=>{const idx=parseInt(btn.dataset.idx);selectedSource=foundFunds[idx];sourceInfo.innerHTML=`Source: <strong>${selectedSource.address}</strong><br>${selectedSource.type} · ${selectedSource.path} · balance <strong class="bal">${satsToBtc(selectedSource.balanceSats)} BTC</strong>`;sendStatus.textContent="";confirmArea.style.display="none"}});statusEl.textContent=`Done. Found ${foundFunds.length} address(es) with balance.`;statusEl.className="status ok"}}catch(e){statusEl.textContent="Error: "+e.message;statusEl.className="status err"}finally{scanBtn.disabled=false;setTimeout(()=>{progress.classList.remove("active");progressBar.style.width="0%"},600)}};
 prepareBtn.onclick=async()=>{if(!selectedSource){sendStatus.textContent="Select a source address first";sendStatus.className="status err";return}const to=toAddressEl.value.trim();const amountStr=amountEl.value.trim();const feeRate=parseInt(feeRateEl.value)||5;if(!to||!amountStr){sendStatus.textContent="Enter address and amount";sendStatus.className="status err";return}if(!/^(1|3|bc1)[a-zA-HJ-NP-Z0-9]{25,90}$/i.test(to)){sendStatus.textContent="This does not look like a valid Bitcoin address";sendStatus.className="status err";return}const amountSats=btcToSats(amountStr);if(amountSats<=0){sendStatus.textContent="Amount must be greater than zero";sendStatus.className="status err";return}sendStatus.textContent="Fetching UTXOs...";sendStatus.className="status";prepareBtn.disabled=true;try{const utxos=await fetchUtxos(selectedSource.address);if(!utxos.length)throw new Error("No UTXOs on this address");const{selected,sum:inputSum}=selectUtxos(utxos,amountSats,feeRate,selectedSource.name);const{fee:feeSats,change:changeSats,ok,vsize}=calcFeeAndChange(inputSum,amountSats,selected.length,feeRate,selectedSource.name);if(!ok||changeSats<0n)throw new Error(`Not enough funds. Need ~${satsToBtc(Number(BigInt(amountSats)+feeSats))} BTC (amount + fee). On address: ${satsToBtc(Number(inputSum))} BTC`);const inputs=selected.map(u=>({...selectedSource.payment,txid:u.txid,index:u.vout,witnessUtxo:{script:selectedSource.payment.script,amount:BigInt(u.value)}}));const tx=new btc.Transaction();for(const inp of inputs)tx.addInput(inp);tx.addOutputAddress(to,BigInt(amountSats));if(changeSats>546n)tx.addOutputAddress(selectedSource.address,changeSats);preparedTx={tx,amountSats,feeSats:Number(feeSats),changeSats:Number(changeSats),inputs,vsize,utxoCount:selected.length};confirmTo.textContent=to;confirmAmount.textContent=amountStr+" BTC";confirmFee.textContent=`~${satsToBtc(Number(feeSats))} BTC (${feeRate} sat/vB, ~${vsize} vB, UTXO: ${selected.length})`;confirmArea.style.display="block";confirmText.value="";broadcastBtn.disabled=true;sendStatus.textContent="";sendStatus.className="status"}catch(e){sendStatus.textContent="Prepare error: "+e.message;sendStatus.className="status err"}finally{prepareBtn.disabled=false}};
 maxBtn.onclick=async()=>{if(!selectedSource){sendStatus.textContent="Select a source address first";sendStatus.className="status err";return}const feeRate=parseInt(feeRateEl.value)||5;try{const utxos=await fetchUtxos(selectedSource.address);if(!utxos.length){sendStatus.textContent="No UTXOs on this address";sendStatus.className="status err";return}const inputSum=utxos.reduce((s,u)=>s+BigInt(u.value),0n);const vs=baseVSize()+utxos.length*inputVSize(selectedSource.name)+outputVSize();const fee=BigInt(Math.ceil(vs*feeRate));const maxSats=inputSum>fee?inputSum-fee:0n;amountEl.value=satsToBtc(Number(maxSats));sendStatus.textContent="";sendStatus.className="status"}catch(e){sendStatus.textContent="Could not compute maximum: "+e.message;sendStatus.className="status err"}};
 confirmText.oninput=()=>{const to=toAddressEl.value.trim();const needed=to.slice(-6).toLowerCase();broadcastBtn.disabled=confirmText.value.trim().toLowerCase()!==needed};
