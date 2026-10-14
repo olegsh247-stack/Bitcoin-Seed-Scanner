@@ -28,7 +28,7 @@ Copies from other sites or messengers may be modified to steal your seed.
 After saving `index.html`, verify the SHA-256 checksum:
 
 ```
-15e59f09293f962acb63d302b8171ba1e4aa93bf6852967a7bf7c14d230002b7
+4a593824abdc0054ddbc5137e0951fd9e46021d1e41db102df86f6e2fcd47f89
 ```
 
 - **Linux / macOS:** `sha256sum index.html` (or `shasum -a 256 index.html`)
@@ -84,6 +84,8 @@ Then close the browser tab. Nothing is stored on disk.
 | Taproot | starts with **bc1p** | BIP86 |
 
 Receive and change chains are both scanned.
+
+**Gap** (addresses per path): default **25**, allowed range **5–100**. Higher values scan farther along each chain but take longer.
 
 ---
 
