@@ -75,7 +75,7 @@ Se escanean receive y change.
 
 ## Agradecimiento
 
-Si esta herramienta te ayudó a recuperar fondos, cualquier agradecimiento **voluntario** es bienvenido. Nunca es obligatorio.
+Si este programa te ayudó a recuperar tus fondos — aceptaremos con gusto tu agradecimiento voluntario. No obliga a nada y, sin duda, será tenido en cuenta por el Todopoderoso. 🙂
 
 ---
 

@@ -74,7 +74,7 @@ Receive and change chains are both scanned.
 
 ## Gratitude
 
-If this tool helped you recover funds, any **voluntary** thank-you is welcome. It is never required.
+If this program helped you recover your funds — we would gladly accept your voluntary thank-you. It is never required, and it will surely be counted by the Almighty. 🙂
 
 ---
 

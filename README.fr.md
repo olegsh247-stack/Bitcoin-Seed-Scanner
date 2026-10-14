@@ -75,7 +75,7 @@ Les chaînes receive et change sont toutes deux scannées.
 
 ## Remerciements
 
-Si cet outil vous a aidé à récupérer des fonds, tout remerciement **volontaire** est bienvenu. Ce n’est jamais obligatoire.
+Si ce programme vous a aidé à récupérer vos fonds — nous accepterons volontiers votre remerciement volontaire. Cela n’oblige à rien et sera certainement compté par le Tout-Puissant. 🙂
 
 ---
 
