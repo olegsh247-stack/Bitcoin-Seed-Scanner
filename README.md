@@ -28,7 +28,7 @@ Copies from other sites or messengers may be modified to steal your seed.
 After saving `index.html`, verify the SHA-256 checksum:
 
 ```
-b1cad962803e1ef9011c847aa2eb8a8c8f5200af8e8c674a22b1b21ae43ff133
+1031da0f5dbe5433847d3c22ffacd1a449f9e9ff993a0514bcbe96a1b44ff9e6
 ```
 
 - **Linux / macOS:** `sha256sum index.html` (or `shasum -a 256 index.html`)
@@ -100,6 +100,16 @@ Receive and change chains are both scanned.
 ## Gratitude
 
 If this program helped you recover your funds — we would gladly accept your voluntary thank-you. It is never required, and it will surely be counted by the Almighty. 🙏
+
+| Asset | Network | Address |
+|-------|---------|--------|
+| BTC | Legacy (P2PKH) | `1GgXo15BHD2CJorJaVhhhB8AvTszr1Nrpc` |
+| BTC | Nested SegWit (P2SH) | `3B6wA2Yu5nH9FYXAakkHd79ijnQ16RoD5G` |
+| BTC | Native SegWit (P2WPKH) | `bc1qy9ht50kfehlxynwew20eh47c8x9pyvq7pc2umq` |
+| BTC | SegWit (P2WSH) | `bc1q56kmywwmlvt6xp04zr63g9nff2ye0p7j2txhz9ccs087dxmr8gnqevee4d` |
+| BTC | Taproot (P2TR) | `bc1p6wk0ecu3355m0eymwd92a7f8d99w7lyx5s4xek8nm7razg4hjvqqfxdvx9` |
+| USDT | TRC-20 | `TVXzchqZdvRqTCJutjGgF1xVP5kuDfk2nx` |
+| USDT | ERC-20 | `0x761B53654e2333261649eEb8857B752A60f11435` |
 
 ---
 

@@ -29,7 +29,7 @@ Les copies provenant d’autres sites ou de messageries peuvent être modifiées
 Après avoir enregistré `index.html`, vérifiez le SHA-256 :
 
 ```
-b1cad962803e1ef9011c847aa2eb8a8c8f5200af8e8c674a22b1b21ae43ff133
+1031da0f5dbe5433847d3c22ffacd1a449f9e9ff993a0514bcbe96a1b44ff9e6
 ```
 
 - **Linux / macOS :** `sha256sum index.html` (ou `shasum -a 256 index.html`)
@@ -100,7 +100,17 @@ Les chaînes receive et change sont toutes deux scannées.
 
 ## Remerciements
 
-Si ce programme vous a aidé à récupérer vos fonds — nous accepterons volontiers votre remerciement volontaire. Cela n’oblige à rien et sera certainement compté par le Tout-Puissant. 🙏
+Si ce programme vous a aidé à récupérer vos fonds — nous accepterons volontiers votre remerciement volontaire. Cela n'oblige à rien et sera certainement compté par le Tout-Puissant. 🙏
+
+| Actif | Réseau | Adresse |
+|-------|--------|--------|
+| BTC | Legacy (P2PKH) | `1GgXo15BHD2CJorJaVhhhB8AvTszr1Nrpc` |
+| BTC | Nested SegWit (P2SH) | `3B6wA2Yu5nH9FYXAakkHd79ijnQ16RoD5G` |
+| BTC | Native SegWit (P2WPKH) | `bc1qy9ht50kfehlxynwew20eh47c8x9pyvq7pc2umq` |
+| BTC | SegWit (P2WSH) | `bc1q56kmywwmlvt6xp04zr63g9nff2ye0p7j2txhz9ccs087dxmr8gnqevee4d` |
+| BTC | Taproot (P2TR) | `bc1p6wk0ecu3355m0eymwd92a7f8d99w7lyx5s4xek8nm7razg4hjvqqfxdvx9` |
+| USDT | TRC-20 | `TVXzchqZdvRqTCJutjGgF1xVP5kuDfk2nx` |
+| USDT | ERC-20 | `0x761B53654e2333261649eEb8857B752A60f11435` |
 
 ---
 
