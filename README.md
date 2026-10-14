@@ -1,108 +1,93 @@
 # Bitcoin Seed Scanner
 
-Простая программа, которая **ищет потерянные биткоины по seed-фразе** и позволяет их отправить.
+Simple tool to **find Bitcoin that modern wallets often miss** after restoring a seed — and send it out.
 
-Многие кошельки показывают только новые адреса. Старые (особенно начинающиеся на `3...`) «пропадают» из виду — хотя монеты на месте.  
-Этот инструмент проверяет **все** основные типы адресов сразу.
+Many wallets only look at the newest address type. Older coins (especially addresses starting with `3...`) can become invisible even though they are still on the blockchain.  
+This tool checks **all common address types at once**.
 
-> ⚠️ Это **не** обычный кошелёк для ежедневных платежей.  
-> Используйте только для восстановления. Для крупных сумм — только на чистом компьютере или live-USB.
+> ⚠️ **Not a daily wallet.** Use only for recovery. For large amounts prefer a clean computer or live USB.
 
----
-
-## Как скачать и открыть (за 1 минуту)
-
-### Способ 1 — самый простой
-
-1. Откройте страницу:  
-   **https://github.com/olegsh247-stack/Bitcoin-Seed-Scanner**
-2. Нажмите зелёную кнопку **Code** → **Download ZIP**
-3. Распакуйте архив на компьютер
-4. Дважды кликните файл **`index.html`** — он откроется в браузере (Chrome, Firefox, Edge, Brave)
-
-Готово. Интернет нужен только чтобы проверить балансы и отправить транзакцию.
-
-### Способ 2 — сохранить один файл
-
-1. Откройте прямую ссылку на программу:  
-   **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
-2. Нажмите правой кнопкой → **«Сохранить как…»** (Save as…)
-3. Сохраните файл, например, на Рабочий стол
-4. Откройте сохранённый `index.html` двойным кликом
+**Languages:** English · Русский · Español · Français (switch in the top-right)
 
 ---
 
-## Как пользоваться
+## Download and open (1 minute)
 
-1. Вставьте свою **seed-фразу** (12 или 24 слова)
-2. Если при создании кошелька был **пароль / passphrase** — введите его
-3. Нажмите **«Найти монеты»**
-4. Подождите: программа проверит адреса разных типов
-5. Если нашлись средства — нажмите **«Выбрать»** у нужного адреса
-6. Укажите, куда отправить, и сумму
-7. Нажмите **«Подготовить транзакцию»**
-8. Для подтверждения введите **последние 6 символов** адреса получателя
-9. Нажмите **«Подписать и отправить»**
+### Option 1 — easiest
 
-После работы просто закройте вкладку браузера. Seed нигде не сохраняется.
+1. Open **https://github.com/olegsh247-stack/Bitcoin-Seed-Scanner**
+2. Click green **Code** → **Download ZIP**
+3. Unzip the archive
+4. Double-click **`index.html`** — it opens in your browser
 
----
+### Option 2 — single file
 
-## Что именно ищет программа
+1. Open: **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
+2. Right-click → **Save as…**
+3. Open the saved file
 
-| Тип адреса | Как выглядит | Пример пути |
-|------------|--------------|-------------|
-| Старые (Legacy) | начинаются на **1** | BIP44 |
-| Nested SegWit | начинаются на **3** | BIP49 |
-| Обычный SegWit | начинаются на **bc1q** | BIP84 |
-| Taproot | начинаются на **bc1p** | BIP86 |
-
-Проверяются и адреса для получения, и «сдачи» (change).
+Internet is only needed to check balances and broadcast a transaction. The seed never leaves your browser.
 
 ---
 
-## Важно про безопасность
+## How to use
 
-- Seed и ключи **не уходят** на какой-либо сервер — всё считается только в вашем браузере
-- После закрытия вкладки данные из памяти стираются
-- Перед отправкой нужно вручную подтвердить адрес (защита от ошибки)
-- **Не вводите seed на чужом или заражённом компьютере**
-- Антивирус ловит не всё: кейлоггеры и стилеры могут видеть то, что вы печатаете
+1. Paste your **seed phrase** (12 or 24 words)
+2. Enter **passphrase** if you used one
+3. Click **Find coins**
+4. Wait while all address types are checked
+5. Click **Select** on an address with balance
+6. Enter destination and amount → **Prepare**
+7. Type the **last 6 characters** of the destination address
+8. **Sign and send**
 
-Лучше всего: live-USB с чистой системой или hardware-кошелёк.
-
----
-
-## Частые вопросы
-
-**Почему кошелёк показывает 0, а здесь находятся монеты?**  
-Кошелёк смотрит только один тип адресов. Здесь проверяются все четыре + change-адреса.
-
-**Нужен ли интернет?**  
-Да, чтобы узнать баланс и отправить транзакцию (через mempool.space). Сама seed-фраза в интернет не отправляется.
-
-**Можно ли пользоваться на телефоне?**  
-Технически да, но на компьютере удобнее и безопаснее.
-
-**Это бесплатно?**  
-Да. Комиссия сети Bitcoin при отправке — обычная, её берёт сеть, не эта программа.
+Then close the browser tab. Nothing is stored on disk.
 
 ---
 
-## Ограничения
+## What it scans
 
-- Только Bitcoin (основная сеть)
-- Отправка с одного адреса за раз
-- Не замена hardware-кошельку
+| Address type | Looks like | Path |
+|--------------|------------|------|
+| Legacy | starts with **1** | BIP44 |
+| Nested SegWit | starts with **3** | BIP49 |
+| Native SegWit | starts with **bc1q** | BIP84 |
+| Taproot | starts with **bc1p** | BIP86 |
 
----
-
-## Благодарность
-
-Если программа помогла вам вернуть средства — мы будем искренне рады принять Вашу благодарность.  
-Это совершенно добровольно и ни к чему не обязывает.  
-Пусть такая доброта зачтётся вам Всевышним.
+Receive and change chains are both scanned.
 
 ---
 
-**Используйте осознанно. За сохранность ваших средств отвечаете вы.**
+## Security
+
+- Seed and keys stay **only in browser memory**
+- Cleared when you close the tab or click Clear
+- Network calls go only to mempool.space (balances, fees, broadcast)
+- Send requires typing the last 6 characters of the destination
+- **Never enter a seed on a computer you do not trust**
+
+---
+
+## Gratitude
+
+If this tool helped you recover funds, any **voluntary** thank-you is welcome. It is never required.
+
+| Asset | Network | Address |
+|-------|---------|---------|
+| USDT | TRC-20 (TRON) | `TVXzchqZdvRqTCJutjGgF1xVP5kuDfk2nx` |
+| USDT / USDC | ERC-20 / BEP-20 / Base | `0x761B53654e2333261649eEb8857B752A60f11435` |
+| SOL / ELIZAOS | Solana | `8cTp36pWi1oPCwV6k6yB2sTJbTTuAHqgAbdVeCPTQkpc` |
+| Dash | Dash | `XoThJ7ZAXkE9dyNh5VkBNfuGjn39d4NpFY` |
+| XMR (Monero) | Monero | `48MowmJYenKSsB4QnKtwhq6eeJxEsAcuaPV58BM5rviXVq9PrGU6TkaQtHjRrhDvPHioz8P12qqv324onJMcjEszGtaM8DV` |
+
+---
+
+## Limits
+
+- Bitcoin mainnet only
+- One source address per send
+- Not a replacement for a hardware wallet
+
+---
+
+**Use carefully. You are responsible for your funds.**
