@@ -28,7 +28,7 @@ Copies from other sites or messengers may be modified to steal your seed.
 After saving `index.html`, verify the SHA-256 checksum:
 
 ```
-1031da0f5dbe5433847d3c22ffacd1a449f9e9ff993a0514bcbe96a1b44ff9e6
+15e59f09293f962acb63d302b8171ba1e4aa93bf6852967a7bf7c14d230002b7
 ```
 
 - **Linux / macOS:** `sha256sum index.html` (or `shasum -a 256 index.html`)
