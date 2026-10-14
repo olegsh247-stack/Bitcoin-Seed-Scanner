@@ -16,6 +16,31 @@ La propia app admite **English · Русский · Español · Français** (sel
 
 ---
 
+## Solo la fuente oficial
+
+Descarga **solo** desde este repositorio:
+
+**https://github.com/olegsh247-stack/Bitcoin-Seed-Scanner**
+
+Las copias de otros sitios o de mensajeros pueden estar modificadas para robar tu seed.
+
+### Comprobar el archivo (opcional, recomendado)
+
+Tras guardar `index.html`, verifica el SHA-256:
+
+```
+b1cad962803e1ef9011c847aa2eb8a8c8f5200af8e8c674a22b1b21ae43ff133
+```
+
+- **Linux / macOS:** `sha256sum index.html` (o `shasum -a 256 index.html`)
+- **Windows (PowerShell):** `Get-FileHash index.html -Algorithm SHA256`
+
+Si el hash no coincide — no uses ese archivo.
+
+*(Actualiza este hash en cada nueva versión de `index.html`.)*
+
+---
+
 ## Descargar y abrir (1 minuto)
 
 ### Opción 1 — la más fácil
@@ -75,7 +100,7 @@ Se escanean receive y change.
 
 ## Agradecimiento
 
-Si este programa te ayudó a recuperar tus fondos — aceptaremos con gusto tu agradecimiento voluntario. No obliga a nada y, sin duda, será tenido en cuenta por el Todopoderoso. 🙂
+Si este programa te ayudó a recuperar tus fondos — aceptaremos con gusto tu agradecimiento voluntario. No obliga a nada y, sin duda, será tenido en cuenta por el Todopoderoso. 🙏
 
 ---
 
