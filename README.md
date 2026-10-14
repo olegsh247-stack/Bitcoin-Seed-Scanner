@@ -1,83 +1,100 @@
 # Bitcoin Seed Scanner
 
-**Client-side recovery tool** for Bitcoin seeds that modern wallets often fail to scan completely.
+Простая программа, которая **ищет потерянные биткоины по seed-фразе** и позволяет их отправить.
 
-Scans **BIP44 · BIP49 · BIP84 · BIP86** (both receive and change chains), checks balances, and can sign & broadcast transactions.  
-The seed phrase and private keys **never leave the browser** and are never written to disk.
+Многие кошельки показывают только новые адреса. Старые (особенно начинающиеся на `3...`) «пропадают» из виду — хотя монеты на месте.  
+Этот инструмент проверяет **все** основные типы адресов сразу.
 
-> **Not a daily wallet.** Use only for recovery. Prefer a clean system or live USB for large amounts.
-
-## Why this exists
-
-Many wallets default only to the newest derivation path (usually BIP84).  
-Coins that were received on older paths (especially BIP49 nested SegWit `3...` addresses) become invisible after restoring the same seed.
-
-This tool deliberately scans all four standard paths with a configurable gap limit, including change addresses.
-
-## Features
-
-- BIP39 mnemonic (12/24 words) + optional passphrase
-- Derivation paths (receive `/0/i` + change `/1/i`):
-  - `m/44'/0'/0'/0|1/i` — Legacy (1…)
-  - `m/49'/0'/0'/0|1/i` — Nested SegWit (3…)
-  - `m/84'/0'/0'/0|1/i` — Native SegWit (bc1q…)
-  - `m/86'/0'/0'/0|1/i` — Taproot (bc1p…)
-- Configurable address gap (default 25) applied to each chain
-- Live balance check via [mempool.space](https://mempool.space)
-- Select any found address → prepare transaction → double confirmation → sign & broadcast
-- Smart UTXO selection (largest-first) and iterative fee estimation by address type
-- Fee rate hints from mempool.space
-- Hard memory cleanup on clear / tab close
-- Fully offline-capable after first load of libraries (CDN)
-
-## Security model
-
-| Aspect | Behavior |
-|--------|----------|
-| Seed storage | Only in RAM (DOM + JS variables) |
-| Persistence | None. Cleared on unload and explicit clear |
-| Network | Only mempool.space (balances, UTXOs, fees, broadcast) |
-| Private keys | Derived on demand, zeroed on clear |
-| Send protection | Must type last 6 characters of destination address |
-| Warnings | Explicit about malware / keyloggers |
-
-**Never** run this on a machine you do not fully trust when handling non-trivial amounts.
-
-## How to use
-
-1. Open `index.html` in a modern browser (Chrome, Firefox, Brave recommended).
-2. Paste the seed phrase (and passphrase if used).
-3. Set gap limit if needed (25 is usually enough).
-4. Click **Найти монеты** / Find coins.
-5. If funds appear — click **Выбрать** on the desired row.
-6. Enter destination + amount → Prepare → confirm last 6 chars of address → Broadcast.
-
-## Technical stack
-
-- Pure client-side (single HTML file, no build step)
-- Cryptography: [`@scure/bip39`](https://github.com/paulmillr/scure-bip39), [`@scure/bip32`](https://github.com/paulmillr/scure-bip32), [`@scure/btc-signer`](https://github.com/paulmillr/scure-btc-signer) via esm.sh
-- Blockchain data: mempool.space REST API
-- No backend, no telemetry, no analytics
-
-## Limitations (current)
-
-- Mainnet only
-- Single-source send (one address at a time)
-- Rate limits of mempool.space apply (sequential requests with small delays)
-
-## Roadmap
-
-- [x] Scan change paths (`/1/i`)
-- [x] Better UTXO selection & fee estimation
-- [ ] Testnet toggle
-- [ ] Offline mode documentation / local library mirror
-
-## Disclaimer
-
-This is free recovery software provided as-is.  
-You are solely responsible for verifying addresses, amounts, and the security of the environment you run it in.  
-The authors are not liable for any loss of funds.
+> ⚠️ Это **не** обычный кошелёк для ежедневных платежей.  
+> Используйте только для восстановления. Для крупных сумм — только на чистом компьютере или live-USB.
 
 ---
 
-**Use responsibly. Prefer hardware wallets for long-term storage.**
+## Как скачать и открыть (за 1 минуту)
+
+### Способ 1 — самый простой
+
+1. Откройте страницу:  
+   **https://github.com/olegsh247-stack/Bitcoin-Seed-Scanner**
+2. Нажмите зелёную кнопку **Code** → **Download ZIP**
+3. Распакуйте архив на компьютер
+4. Дважды кликните файл **`index.html`** — он откроется в браузере (Chrome, Firefox, Edge, Brave)
+
+Готово. Интернет нужен только чтобы проверить балансы и отправить транзакцию.
+
+### Способ 2 — сохранить один файл
+
+1. Откройте прямую ссылку на программу:  
+   **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
+2. Нажмите правой кнопкой → **«Сохранить как…»** (Save as…)
+3. Сохраните файл, например, на Рабочий стол
+4. Откройте сохранённый `index.html` двойным кликом
+
+---
+
+## Как пользоваться
+
+1. Вставьте свою **seed-фразу** (12 или 24 слова)
+2. Если при создании кошелька был **пароль / passphrase** — введите его
+3. Нажмите **«Найти монеты»**
+4. Подождите: программа проверит адреса разных типов
+5. Если нашлись средства — нажмите **«Выбрать»** у нужного адреса
+6. Укажите, куда отправить, и сумму
+7. Нажмите **«Подготовить транзакцию»**
+8. Для подтверждения введите **последние 6 символов** адреса получателя
+9. Нажмите **«Подписать и отправить»**
+
+После работы просто закройте вкладку браузера. Seed нигде не сохраняется.
+
+---
+
+## Что именно ищет программа
+
+| Тип адреса | Как выглядит | Пример пути |
+|------------|--------------|-------------|
+| Старые (Legacy) | начинаются на **1** | BIP44 |
+| Nested SegWit | начинаются на **3** | BIP49 |
+| Обычный SegWit | начинаются на **bc1q** | BIP84 |
+| Taproot | начинаются на **bc1p** | BIP86 |
+
+Проверяются и адреса для получения, и «сдачи» (change).
+
+---
+
+## Важно про безопасность
+
+- Seed и ключи **не уходят** на какой-либо сервер — всё считается только в вашем браузере
+- После закрытия вкладки данные из памяти стираются
+- Перед отправкой нужно вручную подтвердить адрес (защита от ошибки)
+- **Не вводите seed на чужом или заражённом компьютере**
+- Антивирус ловит не всё: кейлоггеры и стилеры могут видеть то, что вы печатаете
+
+Лучше всего: live-USB с чистой системой или hardware-кошелёк.
+
+---
+
+## Частые вопросы
+
+**Почему кошелёк показывает 0, а здесь находятся монеты?**  
+Кошелёк смотрит только один тип адресов. Здесь проверяются все четыре + change-адреса.
+
+**Нужен ли интернет?**  
+Да, чтобы узнать баланс и отправить транзакцию (через mempool.space). Сама seed-фраза в интернет не отправляется.
+
+**Можно ли пользоваться на телефоне?**  
+Технически да, но на компьютере удобнее и безопаснее.
+
+**Это бесплатно?**  
+Да. Комиссия сети Bitcoin при отправке — обычная, её берёт сеть, не эта программа.
+
+---
+
+## Ограничения
+
+- Только Bitcoin (основная сеть)
+- Отправка с одного адреса за раз
+- Не замена hardware-кошельку
+
+---
+
+**Используйте осознанно. За сохранность ваших средств отвечаете вы.**
