@@ -1,6 +1,7 @@
 {
   "name": "bitcoin-seed-scanner",
   "version": "1.1.0",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "description": "Single-file Bitcoin seed recovery scanner. index.html is built from src/ with all dependencies bundled (no CDN).",

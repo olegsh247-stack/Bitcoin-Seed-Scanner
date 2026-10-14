@@ -28,7 +28,7 @@ Copies from other sites or messengers may be modified to steal your seed.
 After saving `index.html`, verify the SHA-256 checksum:
 
 ```
-efada0854c6cb29d0bd851b1381f6fc9519d51a80327087f72737cc9e2d72730
+9dc83303a3664f75b1d0eb9ef6b979c1319854715cd84faceebae3686d24ef2f
 ```
 
 - **Linux / macOS:** `sha256sum index.html` (or `shasum -a 256 index.html`)
@@ -138,3 +138,11 @@ npm test
 ---
 
 **Use carefully. You are responsible for your funds.**
+
+---
+
+## License
+
+Released under the [MIT License](LICENSE): free to use, copy and modify, provided "as is", without warranty of any kind.
+
+> The donation addresses above are published **only in this README**, not inside the app, so nothing sits next to the seed-phrase field. Verify any address here, on the official repository, before sending.

@@ -29,7 +29,7 @@ Las copias de otros sitios o de mensajeros pueden estar modificadas para robar t
 Tras guardar `index.html`, verifica el SHA-256:
 
 ```
-efada0854c6cb29d0bd851b1381f6fc9519d51a80327087f72737cc9e2d72730
+9dc83303a3664f75b1d0eb9ef6b979c1319854715cd84faceebae3686d24ef2f
 ```
 
 - **Linux / macOS:** `sha256sum index.html` (o `shasum -a 256 index.html`)
@@ -137,3 +137,11 @@ npm test
 ---
 
 **Úsala con cuidado. Tú eres responsable de tus fondos.**
+
+---
+
+## Licencia
+
+Publicado bajo la [licencia MIT](LICENSE): uso, copia y modificación libres, «tal cual», sin garantía de ningún tipo.
+
+> Las direcciones de agradecimiento se publican **solo en este README**, no dentro de la aplicación, para que no estén junto al campo de la seed. Verifica cualquier dirección aquí, en el repositorio oficial, antes de enviar.

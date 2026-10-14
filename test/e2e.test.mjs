@@ -35,6 +35,11 @@ const ok = (name) => console.log("ok -", ++n, name);
     html.includes("connect-src https://mempool.space"),
     "CSP limits network to mempool.space",
   );
+  assert.ok(
+    !/TVXzchq|0x761B5365|1GgXo15B|3B6wA2Yu|bc1qy9ht50|bc1q56kmyw|bc1p6wk0ec/.test(html),
+    "no donation addresses inside the app",
+  );
+  assert.ok(html.includes("github.com/olegsh247-stack/Bitcoin-Seed-Scanner#gratitude"));
   ok("built file: no CDN, CSP hash matches the inline script");
 }
 

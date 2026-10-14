@@ -29,7 +29,7 @@ Les copies provenant d’autres sites ou de messageries peuvent être modifiées
 Après avoir enregistré `index.html`, vérifiez le SHA-256 :
 
 ```
-efada0854c6cb29d0bd851b1381f6fc9519d51a80327087f72737cc9e2d72730
+9dc83303a3664f75b1d0eb9ef6b979c1319854715cd84faceebae3686d24ef2f
 ```
 
 - **Linux / macOS :** `sha256sum index.html` (ou `shasum -a 256 index.html`)
@@ -137,3 +137,11 @@ npm test
 ---
 
 **Utilisez-le avec prudence. Vous êtes responsable de vos fonds.**
+
+---
+
+## Licence
+
+Publié sous [licence MIT](LICENSE) : utilisation, copie et modification libres, « en l’état », sans garantie d’aucune sorte.
+
+> Les adresses de remerciement sont publiées **uniquement dans ce README**, et non dans l’application, afin qu’aucune ne figure à côté du champ de la seed. Vérifiez toute adresse ici, sur le dépôt officiel, avant d’envoyer.
