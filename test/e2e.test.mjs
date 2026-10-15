@@ -157,6 +157,7 @@ const fillSeed = (d, phrase) => {
 async function scan(ctx, { account = "0" } = {}) {
   const { d } = ctx;
   fillSeed(d, MN);
+  d.getElementById("gap").value = "5";
   d.getElementById("account").value = account;
   click(d.getElementById("scanBtn"));
   await until(() => !d.getElementById("scanBtn").disabled);
@@ -320,8 +321,7 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   pick("ru");
   assert.match(d.getElementById("critBox").textContent, /Компьютер может быть заражён/);
   assert.equal(d.getElementById("accountLabel").textContent, "Номер аккаунта");
-  assert.match(d.getElementById("accountHint").textContent, /Обычно 0/);
-  assert.equal(d.getElementById("gap"), null, "no gap-limit field any more");
+  assert.match(d.getElementById("gapHint").textContent, /подряд неиспользованных/);
   assert.equal(d.documentElement.lang, "ru");
   await scan(L);
   assert.equal(d.querySelector("#tbody button").textContent, "Выбрать");

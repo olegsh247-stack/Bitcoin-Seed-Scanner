@@ -10,7 +10,6 @@ import {
   PATHS,
   CHAINS,
   DUST,
-  GAP_LIMIT,
   MAX_FEE_RATE,
   selectUtxos,
   calcFeeAndChange,
@@ -43,16 +42,18 @@ const LANGS = {
     seedBad: "✗ Checksum mismatch — a word is wrong or in the wrong order",
     seedWord: "✗ Not a valid BIP39 word",
     helpBody:
-      'What it does\nChecks one seed phrase against all four common Bitcoin address types — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — on both the receive and change chains, and lets you send coins from a found address. Many wallets only look at the newest type, so older coins can look "missing".\n\nHow to use\n1. Enter your 12 or 24 words, one per box (you can paste the whole phrase into any box). All boxes turn green when the phrase is valid and red when it is not.\n2. Add the passphrase if you used one.\n3. Press "Find coins" and wait.\n4. Press "Select" next to an address with a balance, enter the destination and amount, press "Prepare", type the last 6 characters of the destination, then "Sign and send".\n5. Close the tab when you are done.\n\nSettings\n• Account number: normally 0 (the first account of the wallet). Enter 1, 2… only if your wallet had several accounts and the coins were not found in the first.\n• The program scans each address list until it sees 25 unused addresses in a row — enough for almost all wallets.\n\nSecurity and privacy\n• The seed lives only in this tab\'s memory. It is never saved and never sent anywhere.\n• Only mempool.space is contacted (balances, fees, broadcast). It can see the addresses you check and your IP address; use Tor/VPN if that matters.\n• No code is loaded from the internet: every library is inside this single file.\n• For large amounts use a clean device. This is not a replacement for a hardware wallet.\n\nSource and license\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — MIT license, provided "as is" without warranty.',
+      'What it does\nChecks one seed phrase against all four common Bitcoin address types — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — on both the receive and change chains, and lets you send coins from a found address. Many wallets only look at the newest type, so older coins can look "missing".\n\nHow to use\n1. Enter your 12 or 24 words, one per box (you can paste the whole phrase into any box). All boxes turn green when the phrase is valid and red when it is not.\n2. Add the passphrase if you used one.\n3. Press "Find coins" and wait.\n4. Press "Select" next to an address with a balance, enter the destination and amount, press "Prepare", type the last 6 characters of the destination, then "Sign and send".\n5. Close the tab when you are done.\n\nSettings\n• Gap limit: how many unused addresses in a row to see before a chain is considered finished (default 25).\n• Account number: normally 0.\n\nSecurity and privacy\n• The seed lives only in this tab\'s memory. It is never saved and never sent anywhere.\n• Only mempool.space is contacted (balances, fees, broadcast). It can see the addresses you check and your IP address; use Tor/VPN if that matters.\n• No code is loaded from the internet: every library is inside this single file.\n• For large amounts use a clean device. This is not a replacement for a hardware wallet.\n\nSource and license\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — MIT license, provided "as is" without warranty. Compare this file\'s SHA-256 with the one in the README.',
     passLabel: "Passphrase (if used)",
     passPh: "optional",
+    gapLabel: "Gap limit (stop after N unused)",
+    gapHint:
+      "Scanning of each path stops after this many consecutive unused addresses. Default 25, range 5-100. Higher = slower, but finds coins farther along the chain.",
     accountLabel: "Account number",
-    accountHint:
-      "Normally 0 — the wallet's first account. Enter 1, 2… to check other accounts if no coins were found.",
     scanBtn: "Find coins",
+    scanNote: "Scanning can take up to several hours.",
     clearBtn: "Clear all",
     step2: "Found funds",
-    noFunds: "No coins found in the scanned range.\nCheck the passphrase and the account number.",
+    noFunds: "No coins found in the scanned range.\nTry a larger gap or check the passphrase.",
     step3: "Send",
     sourceHint: "Select an address in the table above first",
     toLabel: "Recipient address",
@@ -91,16 +92,19 @@ const LANGS = {
     seedBad: "✗ Контрольная сумма не сходится — неверное слово или порядок слов",
     seedWord: "✗ Такого слова нет в списке BIP39",
     helpBody:
-      "Что делает\nПроверяет одну seed-фразу сразу по всем четырём типам биткоин-адресов — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — по цепочкам receive и change, и позволяет отправить монеты с найденного адреса. Многие кошельки смотрят только новейший тип, поэтому старые монеты могут «пропадать».\n\nКак пользоваться\n1. Введите 12 или 24 слова по одному в окошко (можно вставить всю фразу целиком в любое окошко). Если фраза верна, все окошки станут зелёными, если нет — красными.\n2. Введите passphrase, если он был.\n3. Нажмите «Найти монеты» и дождитесь результата.\n4. Нажмите «Выбрать» у адреса с балансом, укажите получателя и сумму, нажмите «Подготовить», введите последние 6 символов адреса получателя и «Подписать и отправить».\n5. Закройте вкладку, когда закончите.\n\nНастройки\n• Номер аккаунта: обычно 0 (первый аккаунт кошелька). Введите 1, 2… только если в кошельке было несколько аккаунтов, а монеты в первом не нашлись.\n• Программа сама проверяет каждый список адресов, пока не встретит 25 неиспользованных подряд — этого хватает почти всем кошелькам.\n\nБезопасность и приватность\n• Seed живёт только в памяти этой вкладки. Он нигде не сохраняется и никуда не отправляется.\n• В сеть уходят только запросы к mempool.space (балансы, комиссии, отправка). Он видит проверяемые адреса и ваш IP; если это важно — используйте Tor/VPN.\n• Код из интернета не загружается: все библиотеки находятся внутри этого единственного файла.\n• Для крупных сумм используйте чистое устройство. Это не замена hardware-кошельку.\n\nИсточник и лицензия\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — лицензия MIT, «как есть», без гарантий.",
+      "Что делает\nПроверяет одну seed-фразу сразу по всем четырём типам биткоин-адресов — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — по цепочкам receive и change, и позволяет отправить монеты с найденного адреса. Многие кошельки смотрят только новейший тип, поэтому старые монеты могут «пропадать».\n\nКак пользоваться\n1. Введите 12 или 24 слова по одному в окошко (можно вставить всю фразу целиком в любое окошко). Если фраза верна, все окошки станут зелёными, если нет — красными.\n2. Введите passphrase, если он был.\n3. Нажмите «Найти монеты» и дождитесь результата.\n4. Нажмите «Выбрать» у адреса с балансом, укажите получателя и сумму, нажмите «Подготовить», введите последние 6 символов адреса получателя и «Подписать и отправить».\n5. Закройте вкладку, когда закончите.\n\nНастройки\n• Gap limit: сколько неиспользованных адресов подряд нужно увидеть, чтобы считать цепочку законченной (по умолчанию 25).\n• Номер аккаунта: обычно 0.\n\nБезопасность и приватность\n• Seed живёт только в памяти этой вкладки. Он нигде не сохраняется и никуда не отправляется.\n• В сеть уходят только запросы к mempool.space (балансы, комиссии, отправка). Он видит проверяемые адреса и ваш IP; если это важно — используйте Tor/VPN.\n• Код из интернета не загружается: все библиотеки находятся внутри этого единственного файла.\n• Для крупных сумм используйте чистое устройство. Это не замена hardware-кошельку.\n\nИсточник и лицензия\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — лицензия MIT, «как есть», без гарантий. Сверьте SHA-256 этого файла с указанным в README.",
     passLabel: "Passphrase (если использовали)",
     passPh: "необязательно",
+    gapLabel: "Gap limit (остановка после N неиспользованных)",
+    gapHint:
+      "Сканирование каждого пути прекращается после стольких подряд неиспользованных адресов. По умолчанию 25, диапазон 5-100. Больше — дольше, но находит монеты дальше по цепочке.",
     accountLabel: "Номер аккаунта",
-    accountHint:
-      "Обычно 0 — первый аккаунт кошелька. Введите 1, 2…, чтобы проверить другие аккаунты, если монеты не нашлись.",
     scanBtn: "Найти монеты",
+    scanNote: "Сканирование может занять до нескольких часов.",
     clearBtn: "Очистить всё",
     step2: "Найденные средства",
-    noFunds: "Монет в выбранном диапазоне не найдено.\nПроверьте passphrase и номер аккаунта.",
+    noFunds:
+      "Монет в выбранном диапазоне не найдено.\nПопробуйте больший gap или проверьте passphrase.",
     step3: "Отправка",
     sourceHint: "Сначала выберите адрес в таблице выше",
     toLabel: "Адрес получателя",
@@ -140,17 +144,19 @@ const LANGS = {
     seedBad: "✗ La suma de comprobación no coincide: hay una palabra incorrecta o en otro orden",
     seedWord: "✗ No es una palabra BIP39 válida",
     helpBody:
-      "Qué hace\nComprueba una frase seed en los cuatro tipos habituales de dirección Bitcoin — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — en las cadenas receive y change, y permite enviar monedas desde una dirección encontrada. Muchos monederos solo miran el tipo más nuevo, así que las monedas antiguas pueden parecer «perdidas».\n\nCómo usarla\n1. Escribe las 12 o 24 palabras, una por casilla (puedes pegar la frase completa en cualquier casilla). Todas las casillas se ponen en verde si la frase es válida y en rojo si no lo es.\n2. Añade la passphrase si la usaste.\n3. Pulsa «Buscar monedas» y espera.\n4. Pulsa «Elegir» junto a una dirección con saldo, indica destino e importe, pulsa «Preparar», escribe los últimos 6 caracteres del destino y «Firmar y enviar».\n5. Cierra la pestaña al terminar.\n\nAjustes\n• Número de cuenta: normalmente 0 (la primera cuenta del monedero). Escribe 1, 2… solo si tu monedero tenía varias cuentas y no se encontraron monedas en la primera.\n• El programa revisa cada lista de direcciones hasta ver 25 sin usar seguidas, suficiente para casi todos los monederos.\n\nSeguridad y privacidad\n• La seed solo existe en la memoria de esta pestaña. Nunca se guarda ni se envía a ningún sitio.\n• Solo se contacta con mempool.space (saldos, comisiones, envío). Puede ver las direcciones que consultas y tu IP; usa Tor/VPN si te importa.\n• No se carga código de internet: todas las bibliotecas están dentro de este único archivo.\n• Con cantidades grandes usa un dispositivo limpio. No sustituye a un monedero hardware.\n\nFuente y licencia\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — licencia MIT, «tal cual», sin garantía.",
+      "Qué hace\nComprueba una frase seed en los cuatro tipos habituales de dirección Bitcoin — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — en las cadenas receive y change, y permite enviar monedas desde una dirección encontrada. Muchos monederos solo miran el tipo más nuevo, así que las monedas antiguas pueden parecer «perdidas».\n\nCómo usarla\n1. Escribe las 12 o 24 palabras, una por casilla (puedes pegar la frase completa en cualquier casilla). Todas las casillas se ponen en verde si la frase es válida y en rojo si no lo es.\n2. Añade la passphrase si la usaste.\n3. Pulsa «Buscar monedas» y espera.\n4. Pulsa «Elegir» junto a una dirección con saldo, indica destino e importe, pulsa «Preparar», escribe los últimos 6 caracteres del destino y «Firmar y enviar».\n5. Cierra la pestaña al terminar.\n\nAjustes\n• Gap limit: cuántas direcciones sin usar seguidas deben aparecer para dar por terminada una cadena (25 por defecto).\n• Número de cuenta: normalmente 0.\n\nSeguridad y privacidad\n• La seed solo existe en la memoria de esta pestaña. Nunca se guarda ni se envía a ningún sitio.\n• Solo se contacta con mempool.space (saldos, comisiones, envío). Puede ver las direcciones que consultas y tu IP; usa Tor/VPN si te importa.\n• No se carga código de internet: todas las bibliotecas están dentro de este único archivo.\n• Con cantidades grandes usa un dispositivo limpio. No sustituye a un monedero hardware.\n\nFuente y licencia\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — licencia MIT, «tal cual», sin garantía. Compara el SHA-256 de este archivo con el del README.",
     passLabel: "Passphrase (si la usaste)",
     passPh: "opcional",
+    gapLabel: "Gap limit (parar tras N sin usar)",
+    gapHint:
+      "El escaneo de cada ruta se detiene tras tantas direcciones consecutivas sin usar. Por defecto 25, rango 5-100. Más alto = más lento, pero encuentra monedas más adelante en la cadena.",
     accountLabel: "Número de cuenta",
-    accountHint:
-      "Normalmente 0: la primera cuenta del monedero. Escribe 1, 2… para revisar otras cuentas si no se encontraron monedas.",
     scanBtn: "Buscar monedas",
+    scanNote: "El escaneo puede tardar hasta varias horas.",
     clearBtn: "Borrar todo",
     step2: "Fondos encontrados",
     noFunds:
-      "No se encontraron monedas en el rango escaneado.\nRevisa la passphrase y el número de cuenta.",
+      "No se encontraron monedas en el rango escaneado.\nPrueba un gap mayor o revisa la passphrase.",
     step3: "Enviar",
     sourceHint: "Selecciona primero una dirección en la tabla de arriba",
     toLabel: "Dirección de destino",
@@ -190,17 +196,19 @@ const LANGS = {
     seedBad: "✗ Somme de contrôle invalide — un mot est faux ou dans le mauvais ordre",
     seedWord: "✗ Mot absent de la liste BIP39",
     helpBody:
-      "À quoi ça sert\nVérifie une phrase seed sur les quatre types d'adresses Bitcoin courants — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — sur les chaînes receive et change, et permet d'envoyer des pièces depuis une adresse trouvée. Beaucoup de portefeuilles ne regardent que le type le plus récent : les anciennes pièces peuvent sembler « disparues ».\n\nMode d'emploi\n1. Saisissez vos 12 ou 24 mots, un par case (vous pouvez coller toute la phrase dans n'importe quelle case). Toutes les cases deviennent vertes si la phrase est valide, rouges sinon.\n2. Ajoutez la passphrase si vous en avez utilisé une.\n3. Cliquez sur « Trouver les pièces » et attendez.\n4. Cliquez sur « Choisir » à côté d'une adresse avec un solde, indiquez destinataire et montant, cliquez sur « Préparer », tapez les 6 derniers caractères de l'adresse de destination, puis « Signer et envoyer ».\n5. Fermez l'onglet quand vous avez terminé.\n\nRéglages\n• Numéro de compte : normalement 0 (le premier compte du portefeuille). Saisissez 1, 2… seulement si votre portefeuille avait plusieurs comptes et que les pièces n'ont pas été trouvées dans le premier.\n• Le programme parcourt chaque liste d'adresses jusqu'à voir 25 adresses inutilisées d'affilée, ce qui suffit à presque tous les portefeuilles.\n\nSécurité et confidentialité\n• La seed n'existe que dans la mémoire de cet onglet. Elle n'est jamais enregistrée ni envoyée.\n• Seul mempool.space est contacté (soldes, frais, diffusion). Il voit les adresses vérifiées et votre IP ; utilisez Tor/VPN si cela compte pour vous.\n• Aucun code n'est chargé depuis Internet : toutes les bibliothèques sont dans ce fichier unique.\n• Pour de gros montants, utilisez un appareil propre. Ce n'est pas un remplacement d'un portefeuille matériel.\n\nSource et licence\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — licence MIT, « en l'état », sans garantie.",
+      "À quoi ça sert\nVérifie une phrase seed sur les quatre types d'adresses Bitcoin courants — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — sur les chaînes receive et change, et permet d'envoyer des pièces depuis une adresse trouvée. Beaucoup de portefeuilles ne regardent que le type le plus récent : les anciennes pièces peuvent sembler « disparues ».\n\nMode d'emploi\n1. Saisissez vos 12 ou 24 mots, un par case (vous pouvez coller toute la phrase dans n'importe quelle case). Toutes les cases deviennent vertes si la phrase est valide, rouges sinon.\n2. Ajoutez la passphrase si vous en avez utilisé une.\n3. Cliquez sur « Trouver les pièces » et attendez.\n4. Cliquez sur « Choisir » à côté d'une adresse avec un solde, indiquez destinataire et montant, cliquez sur « Préparer », tapez les 6 derniers caractères de l'adresse de destination, puis « Signer et envoyer ».\n5. Fermez l'onglet quand vous avez terminé.\n\nRéglages\n• Gap limit : combien d'adresses inutilisées consécutives il faut voir pour considérer une chaîne terminée (25 par défaut).\n• Numéro de compte : normalement 0.\n\nSécurité et confidentialité\n• La seed n'existe que dans la mémoire de cet onglet. Elle n'est jamais enregistrée ni envoyée.\n• Seul mempool.space est contacté (soldes, frais, diffusion). Il voit les adresses vérifiées et votre IP ; utilisez Tor/VPN si cela compte pour vous.\n• Aucun code n'est chargé depuis Internet : toutes les bibliothèques sont dans ce fichier unique.\n• Pour de gros montants, utilisez un appareil propre. Ce n'est pas un remplacement d'un portefeuille matériel.\n\nSource et licence\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — licence MIT, « en l'état », sans garantie. Comparez le SHA-256 de ce fichier à celui du README.",
     passLabel: "Passphrase (si utilisée)",
     passPh: "facultatif",
+    gapLabel: "Gap limit (arrêt après N inutilisées)",
+    gapHint:
+      "Le scan de chaque chemin s'arrête après autant d'adresses inutilisées consécutives. Par défaut 25, plage 5-100. Plus élevé = plus lent, mais trouve des pièces plus loin dans la chaîne.",
     accountLabel: "Numéro de compte",
-    accountHint:
-      "Normalement 0 : le premier compte du portefeuille. Saisissez 1, 2… pour vérifier d'autres comptes si aucune pièce n'a été trouvée.",
     scanBtn: "Trouver les pièces",
+    scanNote: "L'analyse peut prendre jusqu'à plusieurs heures.",
     clearBtn: "Tout effacer",
     step2: "Fonds trouvés",
     noFunds:
-      "Aucune pièce trouvée dans la plage scannée.\nVérifiez la passphrase et le numéro de compte.",
+      "Aucune pièce trouvée dans la plage scannée.\nEssayez un gap plus grand ou vérifiez la passphrase.",
     step3: "Envoyer",
     sourceHint: "Sélectionnez d'abord une adresse dans le tableau ci-dessus",
     toLabel: "Adresse du destinataire",
@@ -260,14 +268,16 @@ function applyLang() {
       "<strong>" + L.saferTitle + "</strong><br>" + L.saferBody.replace(/\n/g, "<br>");
   const map = [
     ["accountLabel", L.accountLabel],
-    ["accountHint", L.accountHint],
     ["step1Title", L.step1],
     ["seedLabel", L.seedLabel],
     ["helpBtn", L.helpBtn],
     ["helpTitle", L.helpTitle],
     ["helpBody", L.helpBody],
     ["passLabel", L.passLabel],
+    ["gapLabel", L.gapLabel],
+    ["gapHint", L.gapHint],
     ["scanBtn", L.scanBtn],
+    ["scanNote", L.scanNote],
     ["clearBtn", L.clearBtn],
     ["step2Title", L.step2],
     ["noFunds", L.noFunds],
@@ -317,6 +327,7 @@ applyLang();
 // ------------------------------------------------------------ DOM refs ----
 const $ = (id) => document.getElementById(id);
 const passphraseEl = $("passphrase"),
+  gapEl = $("gap"),
   accountEl = $("account"),
   scanBtn = $("scanBtn"),
   clearBtn = $("clearBtn"),
@@ -591,7 +602,8 @@ async function fetchFeeHints() {
 scanBtn.onclick = async () => {
   const mnemonic = seedWords().join(" ").replace(/\s+/g, " ").trim();
   const passphrase = passphraseEl.value || "";
-  const gap = GAP_LIMIT; // stop a chain after this many CONSECUTIVE unused addresses
+  // Gap limit: stop a chain after this many CONSECUTIVE unused addresses.
+  const gap = Math.min(100, Math.max(5, parseInt(gapEl.value) || 25));
   const account = Math.min(99, Math.max(0, parseInt(accountEl.value) || 0));
   const MAX_PER_CHAIN = 500; // hard safety cap per path/chain
   const MAX_CONSECUTIVE_FAILURES = 10; // API down: stop instead of hammering it

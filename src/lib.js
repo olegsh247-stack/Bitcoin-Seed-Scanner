@@ -3,9 +3,6 @@ import * as btc from "@scure/btc-signer";
 
 export const DUST = 546n;
 
-// Standard BIP44 gap limit: stop a chain after this many consecutive unused addresses.
-export const GAP_LIMIT = 25;
-
 export const PATHS = [
   { name: "BIP44", type: "Legacy", purpose: 44, makePayment: (pub) => btc.p2pkh(pub) },
   {
