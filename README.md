@@ -42,18 +42,20 @@ If the hash does not match — do not use that file.
 
 ## Download and open (1 minute)
 
-### Option 1 — easiest
+You only need **one file**: `index.html`. No installation, no ZIP.
 
-1. Open **https://github.com/olegsh247-stack/Bitcoin-Seed-Scanner**
-2. Click green **Code** → **Download ZIP**
-3. Unzip the archive
-4. Double-click **`index.html`** — it opens in your browser
+### Option 1 — single file (recommended)
 
-### Option 2 — single file
+1. **Right-click** this link → **Save link as…** (or "Save target as…"):
+   **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
+2. Check the SHA-256 of the saved file (see above).
+3. Double-click the saved **`index.html`** — it opens in your browser.
 
-1. Open: **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
-2. Right-click → **Save as…**
-3. Open the saved file
+> You can also open `index.html` in this repository and press the **Download raw file** button (the ⬇ icon above the file view).
+
+### Option 2 — whole repository (ZIP)
+
+Green **Code** button → **Download ZIP**. The archive also contains the source code and tests; you still only open `index.html`.
 
 Internet is only needed to check balances and broadcast a transaction. The seed never leaves your browser.
 
@@ -61,7 +63,7 @@ Internet is only needed to check balances and broadcast a transaction. The seed 
 
 ## How to use
 
-1. Paste your **seed phrase** (12 or 24 words)
+1. Enter your **seed phrase**, one word per box (12 or 24 — switch above the boxes). You can paste the whole phrase into any box. The boxes turn **green** when the phrase is valid and **red** when it is not.
 2. Enter **passphrase** if you used one
 3. Click **Find coins**
 4. Wait while all address types are checked
@@ -71,6 +73,8 @@ Internet is only needed to check balances and broadcast a transaction. The seed 
 8. **Sign and send**
 
 Then close the browser tab. Nothing is stored on disk.
+
+The **Help** button (top right of the app) shows this guide inside the app itself.
 
 ---
 

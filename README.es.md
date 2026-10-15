@@ -43,18 +43,20 @@ Si el hash no coincide — no uses ese archivo.
 
 ## Descargar y abrir (1 minuto)
 
-### Opción 1 — la más fácil
+Solo necesitas **un archivo**: `index.html`. Sin instalar nada y sin ZIP.
 
-1. Abre **https://github.com/olegsh247-stack/Bitcoin-Seed-Scanner**
-2. Botón verde **Code** → **Download ZIP**
-3. Descomprime el archivo
-4. Haz doble clic en **`index.html`** — se abre en el navegador
+### Opción 1 — un solo archivo (recomendada)
 
-### Opción 2 — un solo archivo
+1. **Clic derecho** en este enlace → **Guardar enlace como…**:
+   **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
+2. Comprueba el SHA-256 del archivo guardado (ver arriba).
+3. Haz doble clic en el **`index.html`** guardado — se abre en el navegador.
 
-1. Abre: **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
-2. Clic derecho → **Guardar como…**
-3. Abre el archivo guardado
+> También puedes abrir `index.html` en este repositorio y pulsar el botón **Download raw file** (icono ⬇ sobre el contenido del archivo).
+
+### Opción 2 — todo el repositorio (ZIP)
+
+Botón verde **Code** → **Download ZIP**. El archivo incluye también el código fuente y las pruebas; sigues abriendo solo `index.html`.
 
 Solo hace falta internet para consultar saldos y difundir la transacción. La seed no sale del navegador.
 
@@ -62,7 +64,7 @@ Solo hace falta internet para consultar saldos y difundir la transacción. La se
 
 ## Cómo usarla
 
-1. Pega tu **frase seed** (12 o 24 palabras)
+1. Escribe tu **frase seed**, una palabra por casilla (12 o 24: interruptor sobre las casillas). Puedes pegar la frase completa en cualquier casilla. Las casillas se ponen en **verde** si la frase es válida y en **rojo** si no lo es.
 2. Introduce la **passphrase** si la usaste
 3. Pulsa **Find coins**
 4. Espera a que se comprueben todos los tipos de dirección
@@ -72,6 +74,8 @@ Solo hace falta internet para consultar saldos y difundir la transacción. La se
 8. **Sign and send**
 
 Luego cierra la pestaña. No se guarda nada en el disco.
+
+El botón **«Ayuda»** (arriba a la derecha en la aplicación) muestra esta guía dentro de la propia aplicación.
 
 ---
 

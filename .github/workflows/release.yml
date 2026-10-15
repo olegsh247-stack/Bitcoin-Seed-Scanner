@@ -1,0 +1,52 @@
+# Publishes a GitHub Release whose only download is the single file index.html,
+# so users can fetch it directly (no ZIP, no source tree):
+#   https://github.com/olegsh247-stack/Bitcoin-Seed-Scanner/releases/latest/download/index.html
+# Run it from the Actions tab ("Run workflow") or by pushing a tag like v1.2.0.
+name: Release single file
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: The committed index.html must be exactly what the source builds
+        run: |
+          npm run build
+          git diff --exit-code -- index.html README.md README.ru.md README.es.md README.fr.md
+
+      - name: Create or update the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v$(node -p "require('./package.json').version")"
+          SHA="$(sha256sum index.html | cut -d' ' -f1)"
+          NOTES="Download the single file **index.html** and open it in your browser.
+
+          SHA-256: \`$SHA\`
+
+          Verify it before use: \`sha256sum index.html\`. Official source only: https://github.com/${GITHUB_REPOSITORY}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" index.html --clobber
+            gh release edit "$TAG" --notes "$NOTES"
+          else
+            gh release create "$TAG" index.html --target "$GITHUB_SHA" --title "$TAG" --notes "$NOTES"
+          fi

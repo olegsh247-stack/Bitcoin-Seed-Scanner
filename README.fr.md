@@ -43,18 +43,20 @@ Si le hash ne correspond pas — n’utilisez pas ce fichier.
 
 ## Télécharger et ouvrir (1 minute)
 
-### Option 1 — la plus simple
+Il vous faut **un seul fichier** : `index.html`. Sans installation et sans ZIP.
 
-1. Ouvrez **https://github.com/olegsh247-stack/Bitcoin-Seed-Scanner**
-2. Bouton vert **Code** → **Download ZIP**
-3. Décompressez l’archive
-4. Double-cliquez sur **`index.html`** — ouverture dans le navigateur
+### Option 1 — un seul fichier (recommandée)
 
-### Option 2 — un seul fichier
+1. **Clic droit** sur ce lien → **Enregistrer le lien sous…** :
+   **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
+2. Vérifiez le SHA-256 du fichier enregistré (voir ci-dessus).
+3. Double-cliquez sur le **`index.html`** enregistré — il s’ouvre dans le navigateur.
 
-1. Ouvrez : **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
-2. Clic droit → **Enregistrer sous…**
-3. Ouvrez le fichier enregistré
+> Vous pouvez aussi ouvrir `index.html` dans ce dépôt et cliquer sur **Download raw file** (icône ⬇ au-dessus du contenu du fichier).
+
+### Option 2 — tout le dépôt (ZIP)
+
+Bouton vert **Code** → **Download ZIP**. L’archive contient aussi le code source et les tests ; vous n’ouvrez toujours que `index.html`.
 
 Internet n’est nécessaire que pour les soldes et la diffusion de la transaction. La seed ne quitte pas le navigateur.
 
@@ -62,7 +64,7 @@ Internet n’est nécessaire que pour les soldes et la diffusion de la transacti
 
 ## Mode d’emploi
 
-1. Collez votre **phrase seed** (12 ou 24 mots)
+1. Saisissez votre **phrase seed**, un mot par case (12 ou 24 : commutateur au-dessus des cases). Vous pouvez coller toute la phrase dans n’importe quelle case. Les cases deviennent **vertes** si la phrase est valide et **rouges** sinon.
 2. Entrez la **passphrase** si vous en aviez une
 3. Cliquez sur **Find coins**
 4. Attendez le scan de tous les types d’adresses
@@ -72,6 +74,8 @@ Internet n’est nécessaire que pour les soldes et la diffusion de la transacti
 8. **Sign and send**
 
 Ensuite fermez l’onglet. Rien n’est enregistré sur le disque.
+
+Le bouton **« Aide »** (en haut à droite dans l’application) affiche ce guide dans l’application elle-même.
 
 ---
 
