@@ -351,8 +351,8 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   // layout: info blocks left; address check first in the left column, seed on the right
   const left = [...d.querySelectorAll(".col-left > *")].map((e) => e.id);
   const right = [...d.querySelectorAll(".col-right > *")].map((e) => e.id);
-  assert.deepEqual(left, ["critBox", "saferBox", "addrCard", "donateCard"]);
-  assert.deepEqual(right, ["seedCard", "resultsCard", "sendCard"]);
+  assert.deepEqual(left, ["critBox", "addrCard", "donateCard"]);
+  assert.deepEqual(right, ["saferBox", "seedCard", "resultsCard", "sendCard"]);
   ok("address check: type, balance, invalid and failure messages; two-column layout");
 }
 
