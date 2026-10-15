@@ -124,7 +124,7 @@ Released under the [MIT License](LICENSE): free to use, copy and modify, provide
 After saving `index.html`, verify the SHA-256 checksum:
 
 ```
-bfbba0ac67b523c10a9a650f13e214c565e1c82e7eb3e0c4149b962dd3214fc2
+23b192f3c3da42a18aba3293c745f0536cc5ecf0d824a9d2c49b2ebf156ed513
 ```
 
 - **Linux / macOS:** `sha256sum index.html` (or `shasum -a 256 index.html`)
