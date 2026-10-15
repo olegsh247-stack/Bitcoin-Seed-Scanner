@@ -515,6 +515,7 @@ helpBtn.onclick = () => {
   const open = helpCard.style.display === "none";
   helpCard.style.display = open ? "block" : "none";
   helpBtn.setAttribute("aria-expanded", String(open));
+  helpBtn.classList.toggle("active", open);
 };
 buildBoxes(12);
 
