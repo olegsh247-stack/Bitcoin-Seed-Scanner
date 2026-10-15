@@ -6,6 +6,7 @@ import { wordlist } from "@scure/bip39/wordlists/english";
 import { HDKey } from "@scure/bip32";
 import * as btc from "@scure/btc-signer";
 import { hex } from "@scure/base";
+import { initAddressCheck } from "./addrcheck.js";
 import {
   PATHS,
   CHAINS,
@@ -52,6 +53,15 @@ const LANGS = {
     passHint: "Leave empty if you did not set this phrase when creating the wallet.",
     accountHint: "Normally 0. If no coins were found and you are sure they are there, try 1, 2…",
     scanBtn: "Find coins",
+    addrTitle: "Check an address",
+    addrPh: "Paste a Bitcoin address",
+    addrBtn: "Check",
+    addrRowAddr: "Address",
+    addrRowType: "Type",
+    addrRowBal: "Balance",
+    addrInvalid: "Invalid address (check for typos; mainnet only)",
+    addrBalFail: "Could not get the balance, try again",
+    addrChecking: "Checking…",
     scanNote: "Scanning can take up to several hours.",
     clearBtn: "Clear all",
     step2: "Found funds",
@@ -104,6 +114,15 @@ const LANGS = {
     passHint: "Оставьте пустым, если не задавали эту фразу при создании кошелька.",
     accountHint: "Обычно 0. Если монеты не найдены, а вы уверены что они там есть, попробуйте 1, 2…",
     scanBtn: "Найти монеты",
+    addrTitle: "Проверка адреса",
+    addrPh: "Вставьте адрес Bitcoin",
+    addrBtn: "Проверить",
+    addrRowAddr: "Адрес",
+    addrRowType: "Тип",
+    addrRowBal: "Баланс",
+    addrInvalid: "Неверный адрес (проверьте опечатки; только основная сеть)",
+    addrBalFail: "Баланс не удалось получить, повторите",
+    addrChecking: "Проверяю…",
     scanNote: "Сканирование может занять до нескольких часов.",
     clearBtn: "Очистить всё",
     step2: "Найденные средства",
@@ -158,6 +177,15 @@ const LANGS = {
     passHint: "Déjelo vacío si no estableció esta frase al crear la billetera.",
     accountHint: "Normalmente 0. Si no se encontraron monedas y está seguro de que existen, pruebe 1, 2…",
     scanBtn: "Buscar monedas",
+    addrTitle: "Comprobar una dirección",
+    addrPh: "Pegue una dirección Bitcoin",
+    addrBtn: "Comprobar",
+    addrRowAddr: "Dirección",
+    addrRowType: "Tipo",
+    addrRowBal: "Saldo",
+    addrInvalid: "Dirección no válida (compruebe errores; solo mainnet)",
+    addrBalFail: "No se pudo obtener el saldo, inténtelo de nuevo",
+    addrChecking: "Comprobando…",
     scanNote: "El escaneo puede tardar hasta varias horas.",
     clearBtn: "Borrar todo",
     step2: "Fondos encontrados",
@@ -212,6 +240,15 @@ const LANGS = {
     passHint: "Laissez vide si vous n’avez pas défini cette phrase lors de la création du portefeuille.",
     accountHint: "Normalement 0. Si aucune pièce n’est trouvée et que vous êtes sûr qu’elles existent, essayez 1, 2…",
     scanBtn: "Trouver les pièces",
+    addrTitle: "Vérifier une adresse",
+    addrPh: "Collez une adresse Bitcoin",
+    addrBtn: "Vérifier",
+    addrRowAddr: "Adresse",
+    addrRowType: "Type",
+    addrRowBal: "Solde",
+    addrInvalid: "Adresse invalide (vérifiez les fautes de frappe ; mainnet uniquement)",
+    addrBalFail: "Impossible d’obtenir le solde, réessayez",
+    addrChecking: "Vérification…",
     scanNote: "L'analyse peut prendre jusqu'à plusieurs heures.",
     clearBtn: "Tout effacer",
     step2: "Fonds trouvés",
@@ -259,6 +296,7 @@ function storeSet(key, value) {
 let lang = storeGet("bss_lang") || (navigator.language || "en").slice(0, 2);
 if (!LANGS[lang]) lang = "en";
 
+let addressCheck = null; // set up below, once the network helpers exist
 function applyLang() {
   const L = LANGS[lang];
   const s = document.getElementById("subtitle");
@@ -288,6 +326,8 @@ function applyLang() {
     ["gapHint", L.gapHint],
     ["scanBtn", L.scanBtn],
     ["scanNote", L.scanNote],
+    ["addrTitle", L.addrTitle],
+    ["addrCheckBtn", L.addrBtn],
     ["clearBtn", L.clearBtn],
     ["step2Title", L.step2],
     ["noFunds", L.noFunds],
@@ -315,6 +355,9 @@ function applyLang() {
       el.innerHTML = text.replace(/\n/g, "<br>");
     else el.textContent = text;
   }
+  const addrIn = document.getElementById("addrInput");
+  if (addrIn) addrIn.placeholder = L.addrPh;
+  if (addressCheck) addressCheck.refresh();
   const pass = document.getElementById("passphrase");
   if (pass) pass.placeholder = L.passPh;
   document
@@ -594,6 +637,8 @@ async function fetchAddressInfo(addr) {
   const used = (chain.tx_count || 0) + (mem.tx_count || 0) > 0;
   return { balance, used };
 }
+
+addressCheck = initAddressCheck({ fetchAddressInfo, getText: () => LANGS[lang] });
 
 async function fetchUtxos(addr) {
   return await (await fetchRetry(`${API}/address/${addr}/utxo`)).json();

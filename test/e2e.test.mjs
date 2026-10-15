@@ -311,6 +311,51 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   ok("failed lookups are re-checked automatically; warning only if some stay unchecked");
 }
 
+// ---- 7c. address check block ----------------------------------------------
+{
+  const asked = [];
+  const chk = boot(async (url, init, posted) => {
+    asked.push(url);
+    if (url.endsWith(`/address/${SEGWIT.address}`))
+      return {
+        status: 200,
+        json: {
+          chain_stats: { funded_txo_sum: 150_000, spent_txo_sum: 0, tx_count: 1 },
+          mempool_stats: {},
+        },
+      };
+    return mempool(url, init, posted);
+  });
+  const { d } = chk;
+  const go = async (v, cond) => {
+    type(d.getElementById("addrInput"), v);
+    click(d.getElementById("addrCheckBtn"));
+    await until(cond);
+  };
+  const res = () => d.getElementById("addrResult").textContent;
+  await go(`  ${SEGWIT.address} `, () => /0\.00150000 BTC/.test(res()));
+  assert.match(res(), /Native SegWit \(BIP84\)/);
+  assert.ok(res().includes(SEGWIT.address));
+  await go("bc1qinvalidaddress", () => /Invalid address/.test(res()));
+  assert.ok(!/Balance/.test(res()), "no balance shown for an invalid address");
+  assert.ok(!asked.some((u) => u.includes("bc1qinvalidaddress")), "invalid address is never sent");
+  const dead = boot(async () => ({ status: 500, text: "boom" }));
+  type(dead.d.getElementById("addrInput"), SEGWIT.address);
+  click(dead.d.getElementById("addrCheckBtn"));
+  await until(() => /try again/.test(dead.d.getElementById("addrResult").textContent));
+  assert.match(dead.d.getElementById("addrResult").textContent, /Could not get the balance/);
+  // language switch re-renders the result
+  click(d.querySelector('.lang-btn[data-lang="ru"]'));
+  await go(SEGWIT.address, () => /Баланс/.test(res()));
+  assert.equal(d.getElementById("addrTitle").textContent, "Проверка адреса");
+  // layout: info blocks left; address check first in the left column, seed on the right
+  const left = [...d.querySelectorAll(".col-left > *")].map((e) => e.id);
+  const right = [...d.querySelectorAll(".col-right > *")].map((e) => e.id);
+  assert.deepEqual(left, ["critBox", "saferBox", "addrCard", "donateCard"]);
+  assert.deepEqual(right, ["seedCard", "resultsCard", "sendCard"]);
+  ok("address check: type, balance, invalid and failure messages; two-column layout");
+}
+
 // ---- 8. account number is honoured -----------------------------------------
 {
   const asked = new Set();

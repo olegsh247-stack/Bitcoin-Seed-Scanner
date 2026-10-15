@@ -16,6 +16,7 @@ import {
   selectUtxos,
   isValidMainnetAddress,
   feeWarning,
+  describeAddress,
 } from "../src/lib.js";
 
 let n = 0;
@@ -176,6 +177,17 @@ t("feeWarning", () => {
   assert.equal(feeWarning(1_000n, 1_000_000n), null);
   assert.equal(feeWarning(200_000n, 1_000_000n), "Fee is 20% of the amount sent");
   assert.equal(feeWarning(600n, 3_000n), null); // tiny absolute fee: no nagging
+});
+
+t("describeAddress: type per address kind, null for invalid", () => {
+  assert.equal(describeAddress(VECTORS.BIP44), "Legacy / P2PKH (BIP44)");
+  assert.equal(describeAddress(VECTORS.BIP49), "Nested SegWit / P2SH (BIP49)");
+  assert.equal(describeAddress(VECTORS.BIP84), "Native SegWit (BIP84)");
+  assert.equal(describeAddress(VECTORS.BIP86), "Taproot (BIP86)");
+  assert.equal(describeAddress("  " + VECTORS.BIP84 + "\n"), "Native SegWit (BIP84)"); // trims
+  assert.equal(describeAddress(VECTORS.BIP84.slice(0, -1) + "q"), null);
+  assert.equal(describeAddress("tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx"), null);
+  assert.equal(describeAddress(""), null);
 });
 
 console.log(`\n${n} logic tests passed`);

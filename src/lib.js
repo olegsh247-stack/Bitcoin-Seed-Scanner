@@ -108,3 +108,27 @@ export function feeWarning(feeSats, amountSats) {
   }
   return null;
 }
+
+// Human-readable kind of a mainnet address, or null if it is not a valid mainnet address.
+export function describeAddress(addr) {
+  let d;
+  try {
+    d = btc.Address(btc.NETWORK).decode(String(addr).trim());
+  } catch (_) {
+    return null;
+  }
+  switch (d.type) {
+    case "pkh":
+      return "Legacy / P2PKH (BIP44)";
+    case "sh":
+      return "Nested SegWit / P2SH (BIP49)";
+    case "wpkh":
+      return "Native SegWit (BIP84)";
+    case "wsh":
+      return "Native SegWit script / P2WSH";
+    case "tr":
+      return "Taproot (BIP86)";
+    default:
+      return String(d.type);
+  }
+}
