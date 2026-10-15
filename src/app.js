@@ -49,6 +49,7 @@ const LANGS = {
     gapHint:
       "Scanning of each path stops after this many consecutive unused addresses. Default 25, range 5-100. Higher = slower, but finds coins farther along the chain.",
     accountLabel: "Account number",
+    accountHint: "Normally 0. If no coins were found and you are sure they are there, try 1, 2…",
     scanBtn: "Find coins",
     scanNote: "Scanning can take up to several hours.",
     clearBtn: "Clear all",
@@ -99,6 +100,7 @@ const LANGS = {
     gapHint:
       "Сканирование каждого пути прекращается после стольких подряд неиспользованных адресов. По умолчанию 25, диапазон 5-100. Больше — дольше, но находит монеты дальше по цепочке.",
     accountLabel: "Номер аккаунта",
+    accountHint: "Обычно 0. Если монеты не найдены, а вы уверены что они там есть, попробуйте 1, 2…",
     scanBtn: "Найти монеты",
     scanNote: "Сканирование может занять до нескольких часов.",
     clearBtn: "Очистить всё",
@@ -151,6 +153,7 @@ const LANGS = {
     gapHint:
       "El escaneo de cada ruta se detiene tras tantas direcciones consecutivas sin usar. Por defecto 25, rango 5-100. Más alto = más lento, pero encuentra monedas más adelante en la cadena.",
     accountLabel: "Número de cuenta",
+    accountHint: "Normalmente 0. Si no se encontraron monedas y está seguro de que existen, pruebe 1, 2…",
     scanBtn: "Buscar monedas",
     scanNote: "El escaneo puede tardar hasta varias horas.",
     clearBtn: "Borrar todo",
@@ -203,6 +206,7 @@ const LANGS = {
     gapHint:
       "Le scan de chaque chemin s'arrête après autant d'adresses inutilisées consécutives. Par défaut 25, plage 5-100. Plus élevé = plus lent, mais trouve des pièces plus loin dans la chaîne.",
     accountLabel: "Numéro de compte",
+    accountHint: "Normalement 0. Si aucune pièce n’est trouvée et que vous êtes sûr qu’elles existent, essayez 1, 2…",
     scanBtn: "Trouver les pièces",
     scanNote: "L'analyse peut prendre jusqu'à plusieurs heures.",
     clearBtn: "Tout effacer",
@@ -268,6 +272,7 @@ function applyLang() {
       "<strong>" + L.saferTitle + "</strong><br>" + L.saferBody.replace(/\n/g, "<br>");
   const map = [
     ["accountLabel", L.accountLabel],
+    ["accountHint", L.accountHint],
     ["step1Title", L.step1],
     ["seedLabel", L.seedLabel],
     ["helpBtn", L.helpBtn],
