@@ -26,23 +26,14 @@ Les copies provenant d’autres sites ou de messageries peuvent être modifiées
 
 ---
 
-## Télécharger et ouvrir (1 minute)
+## Comment télécharger et lancer
 
-Il vous faut **un seul fichier** : `index.html`. Sans installation et sans ZIP.
-
-### Option 1 — un seul fichier (recommandée)
-
-1. **Clic droit** sur ce lien → **Enregistrer le lien sous…** :
+1. Faites un **clic droit** sur ce lien → **« Enregistrer le lien sous… »** et enregistrez le fichier `index.html` (par exemple sur le bureau) :
    **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
-2. Double-cliquez sur le **`index.html`** enregistré — il s’ouvre dans le navigateur. (S’il s’ouvre comme du texte dans le Bloc-notes : clic droit sur le fichier → **Ouvrir avec** → votre navigateur.)
+2. Faites un **double-clic** sur le fichier enregistré. Il s’ouvre dans le navigateur. S’il s’est ouvert dans le Bloc-notes : clic droit sur le fichier → **« Ouvrir avec »** → votre navigateur.
+3. Internet ne sert qu’à consulter les soldes et envoyer une transaction. Votre phrase secrète ne quitte jamais le navigateur.
 
-> Vous pouvez aussi ouvrir `index.html` dans ce dépôt et cliquer sur **Download raw file** (icône ⬇ au-dessus du contenu du fichier).
-
-### Option 2 — tout le dépôt (ZIP)
-
-Bouton vert **Code** → **Download ZIP**. L’archive contient aussi le code source et les tests ; vous n’ouvrez toujours que `index.html`.
-
-Internet n’est nécessaire que pour les soldes et la diffusion de la transaction. La seed ne quitte pas le navigateur.
+Téléchargez uniquement depuis cette page GitHub. N’utilisez pas un fichier reçu par e-mail ou par messagerie.
 
 ---
 
@@ -134,7 +125,7 @@ Publié sous [licence MIT](LICENSE) : utilisation, copie et modification libres,
 Après avoir enregistré `index.html`, vérifiez le SHA-256 :
 
 ```
-b93341a69f30c21068573f418dd184725ce977055670b4903205cc6409987b53
+9723387311cb3aea08ddd25f311b0c39f5604baabca1b0aa3e8c0ce0139be99d
 ```
 
 - **Linux / macOS :** `sha256sum index.html` (ou `shasum -a 256 index.html`)

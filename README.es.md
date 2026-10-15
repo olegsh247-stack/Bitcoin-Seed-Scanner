@@ -26,23 +26,14 @@ Las copias de otros sitios o de mensajeros pueden estar modificadas para robar t
 
 ---
 
-## Descargar y abrir (1 minuto)
+## Cómo descargar y ejecutar
 
-Solo necesitas **un archivo**: `index.html`. Sin instalar nada y sin ZIP.
-
-### Opción 1 — un solo archivo (recomendada)
-
-1. **Clic derecho** en este enlace → **Guardar enlace como…**:
+1. Haga clic con el **botón derecho** en este enlace → **«Guardar enlace como…»** y guarde el archivo `index.html` (por ejemplo, en el escritorio):
    **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
-2. Haz doble clic en el **`index.html`** guardado — se abre en el navegador. (Si se abre como texto en el Bloc de notas: clic derecho en el archivo → **Abrir con** → tu navegador.)
+2. Haga **doble clic** en el archivo guardado. Se abrirá en el navegador. Si se abrió el Bloc de notas: clic derecho en el archivo → **«Abrir con»** → su navegador.
+3. Internet solo hace falta para consultar saldos y enviar una transacción. Su frase semilla nunca sale del navegador.
 
-> También puedes abrir `index.html` en este repositorio y pulsar el botón **Download raw file** (icono ⬇ sobre el contenido del archivo).
-
-### Opción 2 — todo el repositorio (ZIP)
-
-Botón verde **Code** → **Download ZIP**. El archivo incluye también el código fuente y las pruebas; sigues abriendo solo `index.html`.
-
-Solo hace falta internet para consultar saldos y difundir la transacción. La seed no sale del navegador.
+Descargue solo desde esta página de GitHub. No use archivos recibidos por correo o chat.
 
 ---
 
@@ -134,7 +125,7 @@ Publicado bajo la [licencia MIT](LICENSE): uso, copia y modificación libres, «
 Tras guardar `index.html`, verifica el SHA-256:
 
 ```
-b93341a69f30c21068573f418dd184725ce977055670b4903205cc6409987b53
+9723387311cb3aea08ddd25f311b0c39f5604baabca1b0aa3e8c0ce0139be99d
 ```
 
 - **Linux / macOS:** `sha256sum index.html` (o `shasum -a 256 index.html`)
