@@ -24,21 +24,6 @@ Descarga **solo** desde este repositorio:
 
 Las copias de otros sitios o de mensajeros pueden estar modificadas para robar tu seed.
 
-### Comprobar el archivo (opcional, recomendado)
-
-Tras guardar `index.html`, verifica el SHA-256:
-
-```
-fc3005ccc2f00b210ef83ad982a5d3c27f640ee2c765e965f4947482bc7b2ea3
-```
-
-- **Linux / macOS:** `sha256sum index.html` (o `shasum -a 256 index.html`)
-- **Windows (PowerShell):** `Get-FileHash index.html -Algorithm SHA256`
-
-Si el hash no coincide — no uses ese archivo.
-
-*(Actualiza este hash en cada nueva versión de `index.html`.)*
-
 ---
 
 ## Descargar y abrir (1 minuto)
@@ -49,8 +34,7 @@ Solo necesitas **un archivo**: `index.html`. Sin instalar nada y sin ZIP.
 
 1. **Clic derecho** en este enlace → **Guardar enlace como…**:
    **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
-2. Comprueba el SHA-256 del archivo guardado (ver arriba).
-3. Haz doble clic en el **`index.html`** guardado — se abre en el navegador.
+2. Haz doble clic en el **`index.html`** guardado — se abre en el navegador. (Si se abre como texto en el Bloc de notas: clic derecho en el archivo → **Abrir con** → tu navegador.)
 
 > También puedes abrir `index.html` en este repositorio y pulsar el botón **Download raw file** (icono ⬇ sobre el contenido del archivo).
 
@@ -88,7 +72,9 @@ El botón **«Ayuda»** (arriba a la derecha en la aplicación) muestra esta gu�
 | Native SegWit | empieza por **bc1q** | BIP84 |
 | Taproot | empieza por **bc1p** | BIP86 |
 
-Se escanean receive y change, cada cadena hasta encontrar **N direcciones consecutivas sin usar** («gap limit», 25 por defecto). Puedes elegir el **número de cuenta** (0 por defecto).
+Se escanean receive y change. Cada lista de direcciones se revisa hasta encontrar **25 direcciones sin usar seguidas** («gap limit»: valor estándar, suficiente para casi todos los monederos; **25 por defecto**, no hay nada que configurar).
+
+**Número de cuenta** (por defecto **0**): la primera cuenta del monedero. Escribe 1, 2… solo si tu monedero tenía varias cuentas y no se encontraron monedas en la primera.
 
 ---
 
@@ -96,7 +82,7 @@ Se escanean receive y change, cada cadena hasta encontrar **N direcciones consec
 
 - Seed y claves solo **en la memoria del navegador**
 - Se borran al cerrar la pestaña o al pulsar Clear
-- Solo se contacta con mempool.space (saldos, comisiones, broadcast). **No se carga código desde ningún CDN**: todas las bibliotecas están incluidas en `index.html` y una Content-Security-Policy limita la página a ese único script y a mempool.space.
+- Solo se contacta con mempool.space (saldos, comisiones, envío). **No se descarga nada de internet**: todo el programa está dentro del único archivo.
 - **Privacidad:** para consultar saldos, la página envía todas las direcciones derivadas a mempool.space, por lo que ese servicio (y quien observe tu conexión) puede vincularlas entre sí y ver tu IP. Usa Tor/VPN o tu propio nodo si te importa.
 - Si falla la consulta de un saldo (red, límite de peticiones), la herramienta lo avisa en lugar de indicar «sin fondos». Si ves esa advertencia, repite el escaneo.
 - El envío exige escribir los últimos 6 caracteres del destino
@@ -120,18 +106,6 @@ Si este programa te ayudó a recuperar tus fondos — aceptaremos con gusto tu a
 
 ---
 
-## Compilar desde el código fuente (opcional)
-
-`index.html` se genera a partir de `src/` (edita `src/template.html` y `src/app.js`, **no** `index.html`). Para reproducirlo byte a byte y compararlo con la suma de verificación de arriba:
-
-```
-npm ci
-npm run build   # escribe index.html y actualiza el SHA-256 en todos los README
-npm test
-```
-
----
-
 ## Límites
 
 - Solo Bitcoin (red principal)
@@ -149,3 +123,35 @@ npm test
 Publicado bajo la [licencia MIT](LICENSE): uso, copia y modificación libres, «tal cual», sin garantía de ningún tipo.
 
 > Las direcciones de agradecimiento se publican **solo en este README**, no dentro de la aplicación, para que no estén junto al campo de la seed. Verifica cualquier dirección aquí, en el repositorio oficial, antes de enviar.
+
+---
+
+<details>
+<summary>Para usuarios avanzados: comprobar el archivo / compilar</summary>
+
+### Comprobar el archivo (opcional, recomendado)
+
+Tras guardar `index.html`, verifica el SHA-256:
+
+```
+b93341a69f30c21068573f418dd184725ce977055670b4903205cc6409987b53
+```
+
+- **Linux / macOS:** `sha256sum index.html` (o `shasum -a 256 index.html`)
+- **Windows (PowerShell):** `Get-FileHash index.html -Algorithm SHA256`
+
+Si el hash no coincide — no uses ese archivo.
+
+*(Actualiza este hash en cada nueva versión de `index.html`.)*
+
+### Compilar desde el código fuente (opcional)
+
+`index.html` se genera a partir de `src/` (edita `src/template.html` y `src/app.js`, **no** `index.html`). Para reproducirlo byte a byte y compararlo con la suma de verificación de arriba:
+
+```
+npm ci
+npm run build   # escribe index.html y actualiza el SHA-256 en todos los README
+npm test
+```
+
+</details>

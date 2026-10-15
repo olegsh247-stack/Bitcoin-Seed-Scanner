@@ -23,21 +23,6 @@ Download **only** from this repository:
 
 Copies from other sites or messengers may be modified to steal your seed.
 
-### Check file integrity (optional but recommended)
-
-After saving `index.html`, verify the SHA-256 checksum:
-
-```
-fc3005ccc2f00b210ef83ad982a5d3c27f640ee2c765e965f4947482bc7b2ea3
-```
-
-- **Linux / macOS:** `sha256sum index.html` (or `shasum -a 256 index.html`)
-- **Windows (PowerShell):** `Get-FileHash index.html -Algorithm SHA256`
-
-If the hash does not match — do not use that file.
-
-*(Update this hash whenever `index.html` is released anew.)*
-
 ---
 
 ## Download and open (1 minute)
@@ -48,8 +33,7 @@ You only need **one file**: `index.html`. No installation, no ZIP.
 
 1. **Right-click** this link → **Save link as…** (or "Save target as…"):
    **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
-2. Check the SHA-256 of the saved file (see above).
-3. Double-click the saved **`index.html`** — it opens in your browser.
+2. Double-click the saved **`index.html`** — it opens in your browser. (If it opens as text in Notepad instead: right-click the file → **Open with** → your browser.)
 
 > You can also open `index.html` in this repository and press the **Download raw file** button (the ⬇ icon above the file view).
 
@@ -87,9 +71,9 @@ The **Help** button (top right of the app) shows this guide inside the app itsel
 | Native SegWit | starts with **bc1q** | BIP84 |
 | Taproot | starts with **bc1p** | BIP86 |
 
-Receive and change chains are both scanned, each until **N consecutive unused addresses** (the "gap limit", default 25) are found. You can pick the **account number** (default 0).
+Receive and change addresses are both scanned. Each address list is checked until the program sees **25 unused addresses in a row** (the "gap limit" — the standard value, enough for almost all wallets; **default 25, nothing to set**).
 
-**Gap limit** range: **5–100** (default **25**). Higher values scan farther along each chain but take longer.
+**Account number** (default **0**): the wallet's first account. Enter 1, 2… only if your wallet had several accounts and the coins were not found in the first one.
 
 ---
 
@@ -97,7 +81,7 @@ Receive and change chains are both scanned, each until **N consecutive unused ad
 
 - Seed and keys stay **only in browser memory**
 - Cleared when you close the tab or click Clear
-- Network calls go only to mempool.space (balances, fees, broadcast). **No code is loaded from any CDN**: all libraries are bundled into `index.html`, and a Content-Security-Policy restricts the page to that one script and to mempool.space.
+- Network calls go only to mempool.space (balances, fees, sending). **Nothing is loaded from the internet**: the whole program is inside the one file.
 - **Privacy:** to check balances the page sends every derived address to mempool.space, so that service (and anyone watching your connection) can link those addresses together and see your IP. Use Tor/VPN, or your own node, if that matters.
 - If a balance lookup fails (network, rate limit), the tool says so instead of reporting "no funds". Re-run the scan if you see that warning.
 - Send requires typing the last 6 characters of the destination
@@ -121,18 +105,6 @@ If this program helped you recover your funds — we would gladly accept your vo
 
 ---
 
-## Build from source (optional)
-
-`index.html` is generated from `src/` (edit `src/template.html` and `src/app.js`, **not** `index.html`). To reproduce it byte for byte and compare with the checksum above:
-
-```
-npm ci
-npm run build   # writes index.html, refreshes the SHA-256 in all READMEs
-npm test
-```
-
----
-
 ## Limits
 
 - Bitcoin mainnet only
@@ -150,3 +122,35 @@ npm test
 Released under the [MIT License](LICENSE): free to use, copy and modify, provided "as is", without warranty of any kind.
 
 > The donation addresses above are published **only in this README**, not inside the app, so nothing sits next to the seed-phrase field. Verify any address here, on the official repository, before sending.
+
+---
+
+<details>
+<summary>For advanced users: check the file / build from source</summary>
+
+### Check file integrity (optional but recommended)
+
+After saving `index.html`, verify the SHA-256 checksum:
+
+```
+b93341a69f30c21068573f418dd184725ce977055670b4903205cc6409987b53
+```
+
+- **Linux / macOS:** `sha256sum index.html` (or `shasum -a 256 index.html`)
+- **Windows (PowerShell):** `Get-FileHash index.html -Algorithm SHA256`
+
+If the hash does not match — do not use that file.
+
+*(Update this hash whenever `index.html` is released anew.)*
+
+### Build from source (optional)
+
+`index.html` is generated from `src/` (edit `src/template.html` and `src/app.js`, **not** `index.html`). To reproduce it byte for byte and compare with the checksum above:
+
+```
+npm ci
+npm run build   # writes index.html, refreshes the SHA-256 in all READMEs
+npm test
+```
+
+</details>

@@ -58,8 +58,7 @@
 <div id="seedGrid" class="seed-grid"></div>
 <div class="row">
 <div><label for="passphrase" id="passLabel">Passphrase (if used)</label><input type="text" id="passphrase" placeholder="optional" autocomplete="off"></div>
-<div><label for="gap" id="gapLabel">Gap limit (stop after N unused)</label><input type="number" id="gap" value="25" min="5" max="100"><div class="hint" id="gapHint">Scanning of each path stops after this many consecutive unused addresses. Default 25, range 5-100. Higher = slower, but finds coins farther along the chain.</div></div>
-<div><label for="account" id="accountLabel">Account number</label><input type="number" id="account" value="0" min="0" max="99"></div>
+<div><label for="account" id="accountLabel">Account number</label><input type="number" id="account" value="0" min="0" max="99"><div class="hint" id="accountHint">Normally 0 — the wallet's first account. Enter 1, 2… to check other accounts if no coins were found.</div></div>
 </div>
 <div class="btn-row">
 <button class="btn-primary" id="scanBtn">Find coins</button>
