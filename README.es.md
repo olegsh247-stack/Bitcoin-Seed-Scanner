@@ -125,7 +125,7 @@ Publicado bajo la [licencia MIT](LICENSE): uso, copia y modificación libres, «
 Tras guardar `index.html`, verifica el SHA-256:
 
 ```
-ca138c8558a5854693c3987d137906d08e1f7ba592d177c787c3c8cc903d6ad6
+b9bbc8af5d6ebb567d3aded73b3fd3db1ea0e77f4f488bea3e58530a01774bd4
 ```
 
 - **Linux / macOS:** `sha256sum index.html` (o `shasum -a 256 index.html`)

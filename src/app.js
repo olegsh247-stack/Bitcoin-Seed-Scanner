@@ -49,6 +49,7 @@ const LANGS = {
     gapHint:
       "Scanning of each path stops after this many consecutive unused addresses. Default 25, range 5-100. Higher = slower, but finds coins farther along the chain.",
     accountLabel: "Account number",
+    passHint: "Leave empty if you did not set this phrase when creating the wallet.",
     accountHint: "Normally 0. If no coins were found and you are sure they are there, try 1, 2…",
     scanBtn: "Find coins",
     scanNote: "Scanning can take up to several hours.",
@@ -100,6 +101,7 @@ const LANGS = {
     gapHint:
       "Сканирование каждого пути прекращается после стольких подряд неиспользованных адресов. По умолчанию 25, диапазон 5-100. Больше — дольше, но находит монеты дальше по цепочке.",
     accountLabel: "Номер аккаунта",
+    passHint: "Оставьте пустым, если не задавали эту фразу при создании кошелька.",
     accountHint: "Обычно 0. Если монеты не найдены, а вы уверены что они там есть, попробуйте 1, 2…",
     scanBtn: "Найти монеты",
     scanNote: "Сканирование может занять до нескольких часов.",
@@ -153,6 +155,7 @@ const LANGS = {
     gapHint:
       "El escaneo de cada ruta se detiene tras tantas direcciones consecutivas sin usar. Por defecto 25, rango 5-100. Más alto = más lento, pero encuentra monedas más adelante en la cadena.",
     accountLabel: "Número de cuenta",
+    passHint: "Déjelo vacío si no estableció esta frase al crear la billetera.",
     accountHint: "Normalmente 0. Si no se encontraron monedas y está seguro de que existen, pruebe 1, 2…",
     scanBtn: "Buscar monedas",
     scanNote: "El escaneo puede tardar hasta varias horas.",
@@ -206,6 +209,7 @@ const LANGS = {
     gapHint:
       "Le scan de chaque chemin s'arrête après autant d'adresses inutilisées consécutives. Par défaut 25, plage 5-100. Plus élevé = plus lent, mais trouve des pièces plus loin dans la chaîne.",
     accountLabel: "Numéro de compte",
+    passHint: "Laissez vide si vous n’avez pas défini cette phrase lors de la création du portefeuille.",
     accountHint: "Normalement 0. Si aucune pièce n’est trouvée et que vous êtes sûr qu’elles existent, essayez 1, 2…",
     scanBtn: "Trouver les pièces",
     scanNote: "L'analyse peut prendre jusqu'à plusieurs heures.",
@@ -273,6 +277,7 @@ function applyLang() {
   const map = [
     ["accountLabel", L.accountLabel],
     ["accountHint", L.accountHint],
+    ["passHint", L.passHint],
     ["step1Title", L.step1],
     ["seedLabel", L.seedLabel],
     ["helpBtn", L.helpBtn],
