@@ -28,10 +28,10 @@ Les copies provenant d’autres sites ou de messageries peuvent être modifiées
 
 ## Comment télécharger et lancer
 
-1. Faites un **clic droit** sur ce lien → **« Enregistrer le lien sous… »** et enregistrez le fichier `index.html` (par exemple sur le bureau) :
-   **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
-2. Faites un **double-clic** sur le fichier enregistré. Il s’ouvre dans le navigateur. S’il s’est ouvert dans le Bloc-notes : clic droit sur le fichier → **« Ouvrir avec »** → votre navigateur.
-3. Internet ne sert qu’à consulter les soldes et envoyer une transaction. Votre phrase secrète ne quitte jamais le navigateur.
+1. Ouvrez cette page GitHub et cliquez sur le bouton vert **Code** → **Download ZIP**.
+2. Décompressez l’archive téléchargée : clic droit → **« Extraire tout… »** (sur Mac : double-clic).
+3. Dans le dossier décompressé, double-cliquez sur le fichier **`index.html`**. Il s’ouvre dans le navigateur. Inutile de toucher aux autres fichiers du dossier.
+4. Internet ne sert qu’à consulter les soldes et envoyer une transaction. Votre phrase secrète ne quitte jamais le navigateur.
 
 Téléchargez uniquement depuis cette page GitHub. N’utilisez pas un fichier reçu par e-mail ou par messagerie.
 

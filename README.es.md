@@ -28,10 +28,10 @@ Las copias de otros sitios o de mensajeros pueden estar modificadas para robar t
 
 ## Cómo descargar y ejecutar
 
-1. Haga clic con el **botón derecho** en este enlace → **«Guardar enlace como…»** y guarde el archivo `index.html` (por ejemplo, en el escritorio):
-   **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
-2. Haga **doble clic** en el archivo guardado. Se abrirá en el navegador. Si se abrió el Bloc de notas: clic derecho en el archivo → **«Abrir con»** → su navegador.
-3. Internet solo hace falta para consultar saldos y enviar una transacción. Su frase semilla nunca sale del navegador.
+1. Abra esta página de GitHub y pulse el botón verde **Code** → **Download ZIP**.
+2. Descomprima el archivo descargado: clic derecho → **«Extraer todo…»** (en Mac: doble clic).
+3. En la carpeta descomprimida, haga doble clic en el archivo **`index.html`**. Se abrirá en el navegador. No hace falta tocar los demás archivos de la carpeta.
+4. Internet solo hace falta para consultar saldos y enviar una transacción. Su frase semilla nunca sale del navegador.
 
 Descargue solo desde esta página de GitHub. No use archivos recibidos por correo o chat.
 

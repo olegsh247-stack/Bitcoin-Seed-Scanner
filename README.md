@@ -27,10 +27,10 @@ Copies from other sites or messengers may be modified to steal your seed.
 
 ## How to download and run
 
-1. **Right-click** this link → **Save link as…** and save the file `index.html` (for example, to your desktop):
-   **https://raw.githubusercontent.com/olegsh247-stack/Bitcoin-Seed-Scanner/main/index.html**
-2. **Double-click** the saved file. It opens in your browser. If it opened in Notepad instead: right-click the file → **Open with** → your browser.
-3. The internet is needed only to check balances and send a transaction. Your seed phrase never leaves your browser.
+1. Open this GitHub page and click the green **Code** button → **Download ZIP**.
+2. Unpack the downloaded archive: right-click → **Extract All…** (on Mac: double-click).
+3. In the unpacked folder, double-click the file **`index.html`**. It opens in your browser. You do not need to touch the other files in the folder.
+4. The internet is needed only to check balances and send a transaction. Your seed phrase never leaves your browser.
 
 Download only from this GitHub page. Do not use a file received by email or in a chat.
 
