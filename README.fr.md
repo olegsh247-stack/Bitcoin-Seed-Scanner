@@ -4,7 +4,7 @@
 
 # Bitcoin Seed Scanner
 
-Outil simple pour **retrouver des bitcoins que beaucoup de portefeuilles ne montrent pas** après restauration d’une seed — et les envoyer.
+Les portefeuilles modernes n’affichent souvent pas le **solde** après la restauration d’une phrase seed. Un programme simple qui **retrouve vos bitcoins** et permet de les **envoyer**.
 
 Beaucoup de portefeuilles ne regardent que le type d’adresse le plus récent. Les anciennes pièces (surtout les adresses en `3...`) peuvent « disparaître » de l’interface alors qu’elles sont toujours sur la blockchain.  
 Cet outil vérifie **tous les types d’adresses courants d’un coup**.

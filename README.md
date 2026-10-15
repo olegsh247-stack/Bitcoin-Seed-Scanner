@@ -4,7 +4,7 @@
 
 # Bitcoin Seed Scanner
 
-Simple tool to **find Bitcoin that modern wallets often miss** after restoring a seed — and send it out.
+Modern wallets often fail to show the **balance** after a seed phrase is restored. A simple program that **finds your bitcoin** and lets you **send it**.
 
 Many wallets only look at the newest address type. Older coins (especially addresses starting with `3...`) can become invisible even though they are still on the blockchain.  
 This tool checks **all common address types at once**.

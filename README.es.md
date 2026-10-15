@@ -4,7 +4,7 @@
 
 # Bitcoin Seed Scanner
 
-Herramienta sencilla para **encontrar bitcoin que muchos monederos no muestran** al restaurar una seed — y enviarlo.
+Los monederos modernos a menudo no muestran el **saldo** tras restaurar una frase seed. Un programa sencillo que **encuentra tus bitcoin** y permite **enviarlos**.
 
 Muchos monederos solo miran el tipo de dirección más nuevo. Las monedas antiguas (sobre todo direcciones que empiezan por `3...`) pueden «desaparecer» de la vista aunque sigan en la blockchain.  
 Esta herramienta comprueba **todos los tipos de dirección habituales de una vez**.
