@@ -290,6 +290,27 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   ok("HTTP 429 is retried and the funded address is still found");
 }
 
+// ---- 7b. failed lookups are re-checked automatically; warn only if still unchecked
+{
+  let n = 0;
+  const hiccup = boot(async (url, init, posted) => {
+    // First lookup fails all 4 attempts, the automatic re-check then succeeds.
+    if (url.endsWith(`/address/${LEGACY.address}`) && n++ < 4) return { status: 429, text: "slow" };
+    return mempool(url, init, posted);
+  });
+  await scan(hiccup);
+  const st = hiccup.d.getElementById("status").textContent;
+  assert.ok(!/Warning/.test(st), `no warning once the re-check succeeds: ${st}`);
+  assert.equal(hiccup.d.querySelectorAll("#tbody tr").length, 2, "funds found via re-check");
+  const stuck = boot(async (url, init, posted) => {
+    if (url.endsWith(`/address/${LEGACY.address}`)) return { status: 429, text: "slow" };
+    return mempool(url, init, posted);
+  });
+  await scan(stuck);
+  assert.match(stuck.d.getElementById("status").textContent, /Warning: 1 of \d+ address lookups could not be checked/);
+  ok("failed lookups are re-checked automatically; warning only if some stay unchecked");
+}
+
 // ---- 8. account number is honoured -----------------------------------------
 {
   const asked = new Set();

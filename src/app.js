@@ -559,14 +559,21 @@ clearBtn.onclick = () => {
 // ------------------------------------------------------------- network ----
 // Retries on network errors, HTTP 429 and 5xx with exponential backoff.
 // Other 4xx responses fail immediately.
+// Adaptive pacing: extra pause between lookups that grows only while the service
+// answers "too many requests" (or a server error) and fades away once it recovers.
+let penaltyMs = 0;
 async function fetchRetry(url, init, tries = 4) {
   let lastErr;
   for (let attempt = 0; attempt < tries; attempt++) {
     try {
       const res = await fetch(url, init);
-      if (res.ok) return res;
+      if (res.ok) {
+        penaltyMs = penaltyMs < 200 ? 0 : Math.floor(penaltyMs / 2);
+        return res;
+      }
       lastErr = new Error(`HTTP ${res.status}`);
       if (res.status !== 429 && res.status < 500) break;
+      penaltyMs = Math.min(8000, Math.max(500, penaltyMs * 2));
     } catch (e) {
       lastErr = e;
     }
@@ -645,7 +652,11 @@ scanBtn.onclick = async () => {
     const combos = PATHS.length * CHAINS.length;
     let comboIdx = 0,
       lookups = 0,
-      failedLookups = 0;
+      failed = []; // addresses whose lookup failed; re-checked after the main scan
+    penaltyMs = 0;
+    const recordFound = (f, info) => {
+      if (info.balance > 0) foundFunds.push({ ...f, balanceSats: info.balance });
+    };
 
     for (const p of PATHS) {
       for (const change of CHAINS) {
@@ -670,7 +681,7 @@ scanBtn.onclick = async () => {
             consecutiveFailures = 0;
           } catch (_) {
             // Never read a failed lookup as "empty": count it and keep scanning.
-            failedLookups++;
+            failed.push({ p, path, address, child, payment });
             consecutiveFailures++;
             streak = 0;
             if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES)
@@ -680,24 +691,56 @@ scanBtn.onclick = async () => {
           }
           if (info) {
             streak = info.used ? 0 : streak + 1;
-            if (info.balance > 0) {
-              foundFunds.push({
+            recordFound(
+              {
                 path,
                 type: p.type,
                 name: p.name,
                 address,
-                balanceSats: info.balance,
                 privateKey: child.privateKey,
                 payment,
                 pub: child.publicKey,
-              });
-            }
+              },
+              info,
+            );
           }
-          await sleep(80);
+          await sleep(80 + penaltyMs);
         }
         comboIdx++;
       }
     }
+    // Second chance for failed lookups: wait, then ask again (only those addresses).
+    for (let round = 1; round <= 3 && failed.length > 0; round++) {
+      const waitSec = 5 * round;
+      for (let s = waitSec; s > 0; s--) {
+        statusEl.textContent = `Re-checking ${failed.length} address(es) that failed — retry ${round} of 3 in ${s}s...`;
+        await sleep(1000);
+      }
+      const still = [];
+      for (const f of failed) {
+        statusEl.textContent = `Re-checking ${failed.length} address(es) that failed — retry ${round} of 3...`;
+        try {
+          const info = await fetchAddressInfo(f.address);
+          recordFound(
+            {
+              path: f.path,
+              type: f.p.type,
+              name: f.p.name,
+              address: f.address,
+              privateKey: f.child.privateKey,
+              payment: f.payment,
+              pub: f.child.publicKey,
+            },
+            info,
+          );
+        } catch (_) {
+          still.push(f);
+        }
+        await sleep(80 + penaltyMs);
+      }
+      failed = still;
+    }
+    const failedLookups = failed.length;
     progressBar.style.width = "100%";
 
     resultsCard.style.display = "block";
@@ -727,7 +770,7 @@ scanBtn.onclick = async () => {
     }
 
     if (failedLookups > 0) {
-      statusEl.textContent = `Warning: ${failedLookups} of ${lookups} address lookups failed (network or rate limit). The result may be incomplete — run the scan again.`;
+      statusEl.textContent = `Warning: ${failedLookups} of ${lookups} address lookups could not be checked even after retrying (network or rate limit). The result may be incomplete — wait a minute and run the scan again.`;
       statusEl.className = "status err";
     } else if (foundFunds.length === 0) {
       statusEl.textContent = "Done. No funds found.";
