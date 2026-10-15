@@ -8,7 +8,125 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23F7931A'/%3E%3Cpath fill='%23fff' d='M44.3 27.5c.6-4-2.4-6.1-6.6-7.5l1.3-5.4-3.3-.8-1.3 5.2c-.9-.2-1.7-.4-2.6-.6l1.3-5.2-3.3-.8-1.3 5.4c-.7-.2-1.4-.3-2.1-.5l-4.5-1.1-.9 3.5s2.4.6 2.4.6c1.3.3 1.6 1.2 1.5 1.9l-1.5 6.2c.1 0 .2.1.3.1l-.3-.1-2.2 8.7c-.2.4-.6 1.1-1.5.8 0 0-2.4-.6-2.4-.6l-1.6 3.8 4.3 1.1c.8.2 1.6.4 2.3.6l-1.4 5.5 3.3.8 1.3-5.4c.9.2 1.7.4 2.6.6l-1.3 5.3 3.3.8 1.4-5.5c5.6 1.1 9.9.6 11.7-4.5 1.4-4.1-.1-6.5-3-8 2.2-.5 3.8-1.9 4.3-4.9zm-7.6 10.7c-1 4.1-8 1.9-10.3 1.3l1.8-7.4c2.3.6 9.6 1.7 8.5 6.1zm1-10.8c-.9 3.7-6.6 1.8-8.4 1.4l1.7-6.7c1.8.4 7.7 1.3 6.7 5.3z'/%3E%3C/svg%3E">
 <style>
 :root{--bg:#0B1120;--bg2:#0F172A;--card:#1E293B;--card-hover:#243044;--border:#334155;--text:#F1F5F9;--muted:#94A3B8;--accent:#3B82F6;--accent-hover:#2563EB;--success:#22C55E;--warning:#F59E0B;--danger:#EF4444;--orange:#F97316}
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;padding:20px}.container{max-width:1120px;margin:0 auto}header{margin-bottom:28px}h1{font-size:1.55rem;font-weight:700;letter-spacing:-0.02em}.subtitle{color:var(--muted);font-size:0.95rem;margin-top:8px;width:100%}.warn{background:linear-gradient(135deg,#1c1917 0%,#292524 100%);border:1px solid #78350f;border-left:4px solid var(--orange);color:#FDBA74;padding:14px 16px;border-radius:10px;margin-bottom:20px;font-size:0.9rem}.danger-box{background:#1f1215;border:1px solid #7f1d1d;border-left:4px solid var(--danger);color:#FCA5A5;padding:14px 16px;border-radius:10px;margin-bottom:20px;font-size:0.9rem}.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:18px}.card h2{font-size:1.05rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}.step{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:var(--accent);color:white;border-radius:50%;font-size:0.8rem;font-weight:700}label{display:block;font-size:0.82rem;color:var(--muted);margin-bottom:6px;font-weight:500}textarea,input[type=text],input[type=number]{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:9px;font-size:0.95rem;font-family:ui-monospace,"SF Mono",Menlo,monospace;transition:border-color .15s}textarea:focus,input:focus{outline:none;border-color:var(--accent)}textarea{min-height:88px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}@media(max-width:600px){.row{grid-template-columns:1fr}.header-top{flex-wrap:wrap}}.btn-primary{background:var(--accent);color:white}.btn-primary:hover:not(:disabled){background:var(--accent-hover)}.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border)}.btn-secondary:hover:not(:disabled){background:var(--card-hover)}.btn-danger{background:var(--danger);color:white}button{font-family:inherit;font-weight:600;font-size:0.95rem;border:none;border-radius:9px;padding:12px 20px;cursor:pointer;transition:background .15s,transform .1s}button:active{transform:scale(.98)}button:disabled{opacity:.45;cursor:not-allowed}.btn-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}.status{margin-top:14px;font-size:0.9rem;color:var(--muted);min-height:1.4em}.status.ok{color:var(--success)}.status.err{color:var(--danger)}table{width:100%;border-collapse:collapse;font-size:0.88rem;margin-top:12px}th{text-align:left;color:var(--muted);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border)}td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:middle}tr.found{background:rgba(34,197,94,.08)}.path{font-family:ui-monospace,monospace;font-size:0.82rem;color:var(--muted)}.addr{font-family:ui-monospace,monospace;font-size:0.84rem;word-break:break-all}.bal{color:var(--success);font-weight:600}.empty-state{text-align:center;padding:36px 16px;color:var(--muted);font-size:0.95rem}.send-form{display:none}.send-form.active{display:block}.confirm-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;margin:16px 0;font-size:0.92rem}.confirm-box .big{font-size:1.15rem;font-weight:600;margin:6px 0;word-break:break-all}footer{margin-top:36px;padding-top:20px;border-top:1px solid var(--border);font-size:0.8rem;color:var(--muted);text-align:center;line-height:1.6}.progress{height:4px;background:var(--border);border-radius:2px;margin-top:12px;overflow:hidden;display:none}.progress.active{display:block}.progress-bar{height:100%;background:var(--accent);width:0%;transition:width .3s}.source-info{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:14px;font-size:0.9rem}.fee-hints{font-size:0.8rem;color:var(--muted);margin-top:6px}.brand{display:flex;align-items:center;gap:12px}.logo{width:40px;height:40px;border-radius:50%;background:#F7931A;display:flex;align-items:center;justify-content:center;flex-shrink:0}.logo svg{width:26px;height:26px}.lang-switch{display:flex;gap:4px;flex-shrink:0}.lang-btn{background:var(--bg2);border:1px solid var(--border);color:var(--muted);padding:6px 10px;border-radius:7px;font-size:0.78rem;font-weight:600;cursor:pointer}.lang-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}.donate-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:12px;font-size:0.88rem}.donate-box code{display:block;word-break:break-all;font-family:ui-monospace,monospace;background:var(--bg);padding:8px 10px;border-radius:6px;margin:4px 0 10px;border:1px solid var(--border);font-size:0.82rem}.donate-label{color:var(--muted);font-size:0.8rem;margin-top:6px}.header-top{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}.header-top .brand{min-width:0}.header-top h1{margin:0;font-size:1.55rem}.hint{font-size:0.78rem;color:var(--muted);margin-top:6px;line-height:1.4}.seed-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}.seed-tools{display:flex;align-items:center;gap:12px;margin:10px 0;flex-wrap:wrap}.wc-switch{display:flex;gap:4px}.wc-btn{background:var(--bg2);border:1px solid var(--border);color:var(--muted);padding:6px 12px;border-radius:7px;font-size:0.78rem}.wc-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}.seed-state{font-size:0.85rem;color:var(--muted)}.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 20px;align-items:start}.col{min-width:0}@media(max-width:900px){.layout{display:flex;flex-direction:column}.col{display:contents}#addrCard{order:1}#seedCard{order:2}#resultsCard{order:3}#sendCard{order:4}#critBox{order:5}#saferBox{order:6}#donateCard{order:7}}.addr-form{display:flex;gap:8px;align-items:stretch}.addr-form input{flex:1;min-width:0}.addr-form button{flex-shrink:0}.addr-result{margin-top:12px}.addr-row{margin-top:10px}.addr-label{font-size:0.78rem;color:var(--muted)}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}input[type=number]{-moz-appearance:textfield}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;padding:20px}.container{max-width:1120px;margin:0 auto}header{margin-bottom:28px}h1{font-size:1.55rem;font-weight:700;letter-spacing:-0.02em}.subtitle{color:var(--muted);font-size:0.95rem;margin-top:8px;width:100%}.warn{background:linear-gradient(135deg,#1c1917 0%,#292524 100%);border:1px solid #78350f;border-left:4px solid var(--orange);color:#FDBA74;padding:14px 16px;border-radius:10px;margin-bottom:20px;font-size:0.9rem}.danger-box{background:#1f1215;border:1px solid #7f1d1d;border-left:4px solid var(--danger);color:#FCA5A5;padding:14px 16px;border-radius:10px;margin-bottom:20px;font-size:0.9rem}.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:18px}.card h2{font-size:1.05rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}.step{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:var(--accent);color:white;border-radius:50%;font-size:0.8rem;font-weight:700}label{display:block;font-size:0.82rem;color:var(--muted);margin-bottom:6px;font-weight:500}textarea,input[type=text],input[type=number]{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:9px;font-size:0.95rem;font-family:ui-monospace,"SF Mono",Menlo,monospace;transition:border-color .15s}textarea:focus,input:focus{outline:none;border-color:var(--accent)}textarea{min-height:88px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}@media(max-width:600px){.row{grid-template-columns:1fr}.header-top{flex-wrap:wrap}}.btn-primary{background:var(--accent);color:white}.btn-primary:hover:not(:disabled){background:var(--accent-hover)}.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border)}.btn-secondary:hover:not(:disabled){background:var(--card-hover)}.btn-danger{background:var(--danger);color:white}button{font-family:inherit;font-weight:600;font-size:0.95rem;border:none;border-radius:9px;padding:12px 20px;cursor:pointer;transition:background .15s,transform .1s}button:active{transform:scale(.98)}button:disabled{opacity:.45;cursor:not-allowed}.btn-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}.status{margin-top:14px;font-size:0.9rem;color:var(--muted);min-height:1.4em}.status.ok{color:var(--success)}.status.err{color:var(--danger)}table{width:100%;border-collapse:collapse;font-size:0.88rem;margin-top:12px}th{text-align:left;color:var(--muted);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border)}td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:middle}tr.found{background:rgba(34,197,94,.08)}.path{font-family:ui-monospace,monospace;font-size:0.82rem;color:var(--muted)}.addr{font-family:ui-monospace,monospace;font-size:0.84rem;word-break:break-all}.bal{color:var(--success);font-weight:600}.empty-state{text-align:center;padding:36px 16px;color:var(--muted);font-size:0.95rem}.send-form{display:none}.send-form.active{display:block}.confirm-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;margin:16px 0;font-size:0.92rem}.confirm-box .big{font-size:1.15rem;font-weight:600;margin:6px 0;word-break:break-all}footer{margin-top:36px;padding-top:20px;border-top:1px solid var(--border);font-size:0.8rem;color:var(--muted);text-align:center;line-height:1.6}.progress{height:4px;background:var(--border);border-radius:2px;margin-top:12px;overflow:hidden;display:none}.progress.active{display:block}.progress-bar{height:100%;background:var(--accent);width:0%;transition:width .3s}.source-info{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:14px;font-size:0.9rem}.fee-hints{font-size:0.8rem;color:var(--muted);margin-top:6px}.brand{display:flex;align-items:center;gap:12px}.logo{width:40px;height:40px;border-radius:50%;background:#F7931A;display:flex;align-items:center;justify-content:center;flex-shrink:0}.logo svg{width:26px;height:26px}.lang-switch{display:flex;gap:4px;flex-shrink:0}.lang-btn{background:var(--bg2);border:1px solid var(--border);color:var(--muted);padding:6px 10px;border-radius:7px;font-size:0.78rem;font-weight:600;cursor:pointer}.lang-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}.donate-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:12px;font-size:0.88rem}.donate-box code{display:block;word-break:break-all;font-family:ui-monospace,monospace;background:var(--bg);padding:8px 10px;border-radius:6px;margin:4px 0 10px;border:1px solid var(--border);font-size:0.82rem}.donate-label{color:var(--muted);font-size:0.8rem;margin-top:6px}.header-top{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}.header-top .brand{min-width:0}.header-top h1{margin:0;font-size:1.55rem}.hint{font-size:0.78rem;color:var(--muted);margin-top:6px;line-height:1.4}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}input[type=number]{-moz-appearance:textfield;appearance:textfield}
+</style>
+<style>
+.seed-tools{display:flex;align-items:center;gap:12px;margin:2px 0 10px;flex-wrap:wrap}
+.wc-switch{display:flex;gap:4px}
+.wc-btn,.help-btn{background:var(--bg2);border:1px solid var(--border);color:var(--muted);padding:6px 10px;border-radius:7px;font-size:0.78rem;font-weight:600;cursor:pointer}
+.help-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.wc-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.seed-state{font-size:0.82rem;color:var(--muted)}
+.seed-state.ok{color:var(--success)}
+.seed-state.bad{color:var(--danger)}
+.seed-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.sw{position:relative}
+.sw span{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:0.7rem;color:var(--muted);pointer-events:none}
+.sw input{padding:10px 10px 10px 30px;font-size:0.9rem}
+.sw input.ok{border-color:var(--success);box-shadow:0 0 0 1px var(--success)}
+.sw input.bad{border-color:var(--danger);box-shadow:0 0 0 1px var(--danger)}
+.help-body{font-size:0.9rem;line-height:1.65}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 20px;align-items:start}.col{min-width:0}
+@media(max-width:900px){.layout{display:flex;flex-direction:column}.col{display:contents}#addrCard{order:1}#seedCard{order:2}#resultsCard{order:3}#sendCard{order:4}#critBox{order:5}#saferBox{order:6}#donateCard{order:7}}
+.addr-form{display:flex;gap:10px}.addr-form input{flex:1;min-width:0}.addr-form button{flex-shrink:0}.addr-result{margin-top:12px}.addr-row{margin-top:10px}.addr-label{font-size:0.78rem;color:var(--muted);margin-bottom:2px}.addr-value{font-size:0.92rem;word-break:break-all}.addr-value.addr{font-family:ui-monospace,monospace;font-size:0.84rem}.addr-value.bal{color:var(--success);font-weight:600}.addr-error{color:var(--danger);font-size:0.9rem}
 </style>
 </head>
 <body>
+<div class="container">
+<header>
+<div class="header-top">
+<div class="brand">
+<div class="logo" aria-hidden="true"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="32" fill="#F7931A"/><path fill="#fff" d="M44.3 27.5c.6-4-2.4-6.1-6.6-7.5l1.3-5.4-3.3-.8-1.3 5.2c-.9-.2-1.7-.4-2.6-.6l1.3-5.2-3.3-.8-1.3 5.4c-.7-.2-1.4-.3-2.1-.5l-4.5-1.1-.9 3.5s2.4.6 2.4.6c1.3.3 1.6 1.2 1.5 1.9l-1.5 6.2c.1 0 .2.1.3.1l-.3-.1-2.2 8.7c-.2.4-.6 1.1-1.5.8 0 0-2.4-.6-2.4-.6l-1.6 3.8 4.3 1.1c.8.2 1.6.4 2.3.6l-1.4 5.5 3.3.8 1.3-5.4c.9.2 1.7.4 2.6.6l-1.3 5.3 3.3.8 1.4-5.5c5.6 1.1 9.9.6 11.7-4.5 1.4-4.1-.1-6.5-3-8 2.2-.5 3.8-1.9 4.3-4.9zm-7.6 10.7c-1 4.1-8 1.9-10.3 1.3l1.8-7.4c2.3.6 9.6 1.7 8.5 6.1zm1-10.8c-.9 3.7-6.6 1.8-8.4 1.4l1.7-6.7c1.8.4 7.7 1.3 6.7 5.3z"/></svg></div>
+<div><h1>Bitcoin Seed Scanner</h1></div>
+</div>
+<div class="lang-switch">
+<button type="button" class="lang-btn active" data-lang="en">EN</button>
+<button type="button" class="lang-btn" data-lang="ru">RU</button>
+<button type="button" class="lang-btn" data-lang="es">ES</button>
+<button type="button" class="lang-btn" data-lang="fr">FR</button>
+<button type="button" class="help-btn" id="helpBtn" aria-expanded="false" aria-controls="helpCard">Help</button>
+</div>
+</div>
+<p class="subtitle" id="subtitle">Find coins on BIP44 / 49 / 84 / 86 + send. Seed stays in browser memory only.</p>
+</header>
+<div class="card" id="helpCard" style="display:none">
+<h2 id="helpTitle">About this tool</h2>
+<div id="helpBody" class="help-body"></div>
+</div>
+<div class="layout">
+<div class="col col-left">
+<div class="danger-box" id="critBox"><strong>Critical</strong><br>Your computer may be infected. Malware can swap addresses, read the seed from browser memory, and monitor what you type.<br><br>Before you start:<br>• For large amounts use a clean device: a new or reinstalled PC, a live USB, or a hardware wallet;<br>• Scan the system with an up-to-date antivirus;<br>• Never enter a seed on someone else's, public, or suspicious computer;<br>• First only find coins; send only when you are sure the environment is safe.<br><br>This tool is for recovery, not everyday payments. You are responsible for your funds.</div>
+<div class="card" id="addrCard">
+<h2 id="addrTitle">Check an address</h2>
+<div class="addr-form"><input type="text" id="addrInput" placeholder="Paste a Bitcoin address" autocomplete="off" spellcheck="false"><button type="button" class="btn-primary" id="addrCheckBtn">Check</button></div>
+<div id="addrResult" class="addr-result" aria-live="polite"></div>
+</div>
+<div class="card" id="donateCard">
+<h2 id="donateTitle">Gratitude</h2>
+<p id="donateText" style="color:var(--muted);font-size:0.92rem;margin-bottom:10px">If this program helped you recover your funds — we would gladly accept your voluntary thank-you. It is never required, and it will surely be counted by the Almighty. 🙏</p>
+<p style="font-size:0.88rem"><a href="https://github.com/olegsh247-stack/Bitcoin-Seed-Scanner#gratitude" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">github.com/olegsh247-stack/Bitcoin-Seed-Scanner</a></p>
+</div>
+</div>
+<div class="col col-right">
+<div class="warn" id="saferBox"><strong>Safer workflow:</strong><br>1. First only find coins.<br>2. Send only when sure, with double confirmation.<br>3. Close the tab when done. Seed is never saved.</div>
+<div class="card" id="seedCard">
+<h2><span class="step">1</span> <span id="step1Title">Seed phrase</span></h2>
+<label id="seedLabel">Seed (12 or 24 words)</label>
+<div class="seed-tools"><div class="wc-switch"><button type="button" class="wc-btn active" data-count="12">12</button><button type="button" class="wc-btn" data-count="24">24</button></div><span id="seedState" class="seed-state" role="status" aria-live="polite"></span></div>
+<div id="seedGrid" class="seed-grid"></div>
+<div class="row">
+<div><label for="passphrase" id="passLabel">Passphrase (if used)</label><input type="text" id="passphrase" placeholder="optional" autocomplete="off"><div class="hint" id="passHint">Leave empty if you did not set this phrase when creating the wallet.</div></div>
+<div><label for="gap" id="gapLabel">Gap limit (stop after N unused)</label><input type="number" id="gap" value="25" min="5" max="100"><div class="hint" id="gapHint">Scanning of each path stops after this many consecutive unused addresses. Default 25, range 5-100. Higher = slower, but finds coins farther along the chain.</div></div>
+<div><label for="account" id="accountLabel">Account number</label><input type="number" id="account" value="0" min="0" max="99"><div class="hint" id="accountHint">Normally 0. If no coins were found and you are sure they are there, try 1, 2…</div></div>
+</div>
+<div class="btn-row">
+<button class="btn-primary" id="scanBtn">Find coins</button>
+<button class="btn-secondary" id="clearBtn">Clear all</button>
+</div>
+<div class="hint" id="scanNote">Scanning can take up to several hours.</div>
+<div class="progress" id="progress"><div class="progress-bar" id="progressBar"></div></div>
+<div class="status" id="status"></div>
+</div>
+<div class="card" id="resultsCard" style="display:none">
+<h2><span class="step">2</span> <span id="step2Title">Found funds</span></h2>
+<div id="summary"></div>
+<div style="overflow-x:auto"><table><thead><tr><th id="thPath">Path</th><th id="thType">Type</th><th id="thAddr">Address</th><th id="thBal">Balance</th><th></th></tr></thead><tbody id="tbody"></tbody></table></div>
+<div id="noFunds" class="empty-state" style="display:none">No coins found in the scanned range.<br>Try a larger gap or check the passphrase.</div>
+</div>
+<div class="card send-form" id="sendCard">
+<h2><span class="step">3</span> <span id="step3Title">Send</span></h2>
+<div class="source-info" id="sourceInfo">Select an address in the table above first</div>
+<label for="toAddress" id="toLabel">Recipient address</label>
+<input type="text" id="toAddress" placeholder="bc1q... / 3... / 1... / bc1p..." autocomplete="off">
+<div class="row" style="margin-top:14px">
+<div><label for="amount" id="amountLabel">Amount (BTC)</label><input type="text" id="amount" placeholder="0.001"></div>
+<div><label for="feeRate" id="feeLabel">Fee (sat/vB)</label><input type="number" id="feeRate" value="5" min="1"><div class="fee-hints" id="feeHints"></div></div>
+</div>
+<div class="btn-row">
+<button class="btn-primary" id="prepareBtn">Prepare transaction</button>
+<button class="btn-secondary" id="maxBtn">Maximum</button>
+</div>
+<div id="confirmArea" style="display:none">
+<div class="confirm-box">
+<div>Recipient:</div><div class="big" id="confirmTo"></div>
+<div style="margin-top:10px">Amount:</div><div class="big" id="confirmAmount"></div>
+<div style="margin-top:10px">Fee (approx.):</div><div class="big" id="confirmFee"></div>
+<div style="margin-top:10px;color:var(--muted);font-size:0.85rem" id="confirmHint">Double-check everything. This cannot be undone.</div>
+</div>
+<label for="confirmText" id="confirmLabel">Type the last 6 characters of the recipient address</label>
+<input type="text" id="confirmText" placeholder="......" maxlength="8" autocomplete="off">
+<div class="btn-row">
+<button class="btn-danger" id="broadcastBtn" disabled>Sign and send</button>
+<button class="btn-secondary" id="cancelSendBtn">Cancel</button>
+</div>
+</div>
+<div class="status" id="sendStatus"></div>
+</div>
+</div>
+</div>
+<footer id="footerText">Local tool. Seed and keys exist only in browser RAM.<br>Closing the tab clears them. Not a replacement for a hardware wallet.<br>BIP44 = Legacy (1…) · BIP49 = Nested SegWit (3…) · BIP84 = Native SegWit (bc1q…) · BIP86 = Taproot (bc1p…)<br>Scans receive (/0/i) and change (/1/i).</footer>
+</div>
+<!--APP_SCRIPT-->
+</body>
+</html>
