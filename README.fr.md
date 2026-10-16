@@ -63,7 +63,7 @@ Le bouton **« Aide »** (en haut à droite dans l’application) affiche ce gui
 | Native SegWit | commence par **bc1q** | BIP84 |
 | Taproot | commence par **bc1p** | BIP86 |
 
-Les chaînes receive et change sont toutes deux scannées. Chaque liste d’adresses est parcourue jusqu’à **25 adresses inutilisées d’affilée** (« gap limit » : valeur standard, suffisante pour presque tous les portefeuilles ; **25 par défaut**, rien à régler).
+Les chaînes receive et change sont toutes deux scannées. Chaque liste d’adresses est parcourue jusqu’à **25 adresses inutilisées d’affilée** (« gap limit » : valeur standard, suffisante pour presque tous les portefeuilles ; **25 par défaut**, modifiable si vous le souhaitez).
 
 **Numéro de compte** (**0** par défaut) : le premier compte du portefeuille. Saisissez 1, 2… seulement si votre portefeuille avait plusieurs comptes et que les pièces n’ont pas été trouvées dans le premier.
 

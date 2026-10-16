@@ -62,7 +62,7 @@ The **Help** button (top right of the app) shows this guide inside the app itsel
 | Native SegWit | starts with **bc1q** | BIP84 |
 | Taproot | starts with **bc1p** | BIP86 |
 
-Receive and change addresses are both scanned. Each address list is checked until the program sees **25 unused addresses in a row** (the "gap limit" — the standard value, enough for almost all wallets; **default 25, nothing to set**).
+Receive and change addresses are both scanned. Each address list is checked until the program sees **25 unused addresses in a row** (the "gap limit" — the standard value, enough for almost all wallets; **default 25; you can change it if you wish**).
 
 **Account number** (default **0**): the wallet's first account. Enter 1, 2… only if your wallet had several accounts and the coins were not found in the first one.
 

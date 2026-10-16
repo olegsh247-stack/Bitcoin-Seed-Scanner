@@ -63,7 +63,7 @@ El botón **«Ayuda»** (arriba a la derecha en la aplicación) muestra esta gu�
 | Native SegWit | empieza por **bc1q** | BIP84 |
 | Taproot | empieza por **bc1p** | BIP86 |
 
-Se escanean receive y change. Cada lista de direcciones se revisa hasta encontrar **25 direcciones sin usar seguidas** («gap limit»: valor estándar, suficiente para casi todos los monederos; **25 por defecto**, no hay nada que configurar).
+Se escanean receive y change. Cada lista de direcciones se revisa hasta encontrar **25 direcciones sin usar seguidas** («gap limit»: valor estándar, suficiente para casi todos los monederos; **25 por defecto**, se puede cambiar si lo desea).
 
 **Número de cuenta** (por defecto **0**): la primera cuenta del monedero. Escribe 1, 2… solo si tu monedero tenía varias cuentas y no se encontraron monedas en la primera.
 
