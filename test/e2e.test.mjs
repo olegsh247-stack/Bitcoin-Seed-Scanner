@@ -276,6 +276,26 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   ok("total API outage is reported as an error, not as 'No funds found'");
 }
 
+// ---- 6b. a temporary outage is waited out instead of aborting the scan ------
+{
+  let calls = 0;
+  const waits = [];
+  const patient = boot(async (url, init, posted) => {
+    if (/\/address\/[^/]+$/.test(url) && calls++ < 40) return { status: 500, text: "boom" }; // 10 lookups x 4 tries
+    return mempool(url, init, posted);
+  });
+  const obs = new patient.w.MutationObserver(() => {
+    const t = patient.d.getElementById("status").textContent;
+    if (/Waiting \d+s/.test(t) && !waits.includes(t.replace(/\d+s,/, "Ns,"))) waits.push(t.replace(/\d+s,/, "Ns,"));
+  });
+  obs.observe(patient.d.getElementById("status"), { childList: true, characterData: true, subtree: true });
+  await scan(patient);
+  assert.ok(waits.length >= 1, "showed a waiting message");
+  assert.equal(patient.d.querySelectorAll("#tbody tr").length, 2, "funds found after the outage ended");
+  assert.ok(!/not responding/.test(patient.d.getElementById("status").textContent));
+  ok("temporary outage: scan pauses, continues and re-checks instead of aborting");
+}
+
 // ---- 7. transient 429s are retried and partial failures are flagged --------
 {
   let hits = 0;

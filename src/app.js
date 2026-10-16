@@ -669,7 +669,8 @@ scanBtn.onclick = async () => {
   const gap = Math.min(100, Math.max(5, parseInt(gapEl.value) || 25));
   const account = Math.min(99, Math.max(0, parseInt(accountEl.value) || 0));
   const MAX_PER_CHAIN = 500; // hard safety cap per path/chain
-  const MAX_CONSECUTIVE_FAILURES = 10; // API down: stop instead of hammering it
+  const MAX_CONSECUTIVE_FAILURES = 10; // this many failures in a row -> pause and wait
+  const MAX_COOLDOWNS = 5; // give up only after this many waits in a row without any success
 
   const fail = (msg) => {
     statusEl.textContent = msg;
@@ -697,7 +698,8 @@ scanBtn.onclick = async () => {
     const combos = PATHS.length * CHAINS.length;
     let comboIdx = 0,
       lookups = 0,
-      failed = []; // addresses whose lookup failed; re-checked after the main scan
+      failed = [], // addresses whose lookup failed; re-checked after the main scan
+      cooldowns = 0; // consecutive waits because the service stopped answering
     penaltyMs = 0;
     const recordFound = (f, info) => {
       if (info.balance > 0) foundFunds.push({ ...f, balanceSats: info.balance });
@@ -724,15 +726,26 @@ scanBtn.onclick = async () => {
           try {
             info = await fetchAddressInfo(address);
             consecutiveFailures = 0;
+            cooldowns = 0;
           } catch (_) {
             // Never read a failed lookup as "empty": count it and keep scanning.
             failed.push({ p, path, address, child, payment });
             consecutiveFailures++;
             streak = 0;
-            if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES)
-              throw new Error(
-                "mempool.space is not responding (network blocked or rate-limited). Try again later or use a VPN.",
-              );
+            if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+              // The service stopped answering (rate limit or outage): wait and carry on
+              // instead of giving up. Failed addresses are re-checked at the end.
+              if (++cooldowns > MAX_COOLDOWNS)
+                throw new Error(
+                  "mempool.space is not responding (network blocked or rate-limited). Try again later or use a VPN.",
+                );
+              const waitSec = Math.min(60, 20 + 10 * cooldowns);
+              for (let s = waitSec; s > 0; s--) {
+                statusEl.textContent = `mempool.space is busy or not responding. Waiting ${s}s, then continuing (pause ${cooldowns} of ${MAX_COOLDOWNS})...`;
+                await sleep(1000);
+              }
+              consecutiveFailures = MAX_CONSECUTIVE_FAILURES - 1; // next failure pauses again
+            }
           }
           if (info) {
             streak = info.used ? 0 : streak + 1;
