@@ -376,6 +376,45 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   ok("address check: type, balance, invalid and failure messages; two-column layout");
 }
 
+// ---- 7d. address-type picker -----------------------------------------------
+{
+  const asked = [];
+  const pick = boot(async (url, init, posted) => {
+    asked.push(url);
+    return mempool(url, init, posted);
+  });
+  const { d } = pick;
+  const btns = [...d.querySelectorAll(".bip-btn")];
+  assert.deepEqual(btns.map((b) => b.dataset.bip), ["BIP44", "BIP49", "BIP84", "BIP86"]);
+  assert.ok(btns.every((b) => b.classList.contains("active")), "all four on by default");
+  // switch BIP44 and BIP49 off: only BIP84 / BIP86 addresses may be queried
+  click(btns[0]);
+  click(btns[1]);
+  assert.ok(!btns[0].classList.contains("active") && btns[2].classList.contains("active"));
+  await scan(pick);
+  const queried = new Set(asked.map((u) => u.split("/address/")[1]?.split("/")[0]).filter(Boolean));
+  assert.ok(!queried.has(LEGACY.address), "BIP44 not scanned when switched off");
+  assert.ok(queried.has(SEGWIT.address), "BIP84 still scanned");
+  assert.equal(d.querySelectorAll("#tbody tr").length, 1, "only the BIP84 funds are found");
+  // all off: nothing is requested, a clear message is shown
+  btns.forEach((b) => b.classList.contains("active") && click(b));
+  const before = asked.length;
+  await scan(pick);
+  assert.match(d.getElementById("status").textContent, /at least one address type/i);
+  assert.equal(asked.length, before, "no network requests with every type off");
+  // Clear all switches everything back on
+  click(d.getElementById("clearBtn"));
+  assert.ok(btns.every((b) => b.classList.contains("active")), "Clear all re-enables all types");
+  // translated
+  click(d.querySelector('.lang-btn[data-lang="ru"]'));
+  assert.equal(d.getElementById("typeLabel").textContent, "Тип адреса");
+  assert.equal(d.getElementById("addrCaption").textContent, "Проверьте тип адреса и баланс");
+  // a fresh page always starts with all four on (nothing is remembered)
+  const fresh = boot(mempool);
+  assert.ok([...fresh.d.querySelectorAll(".bip-btn")].every((b) => b.classList.contains("active")));
+  ok("address-type picker: subset scanned, none selected is blocked, Clear all resets, not remembered");
+}
+
 // ---- 8. account number is honoured -----------------------------------------
 {
   const asked = new Set();
@@ -407,7 +446,8 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   pick("ru");
   assert.match(d.getElementById("critBox").textContent, /Компьютер может быть заражён/);
   assert.equal(d.getElementById("accountLabel").textContent, "Номер аккаунта");
-  assert.match(d.getElementById("gapHint").textContent, /подряд неиспользованных/);
+  assert.match(d.getElementById("gapHint").textContent, /По умолчанию 25/);
+  assert.ok(!/подряд неиспользованных/.test(d.getElementById("gapHint").textContent));
   assert.equal(d.documentElement.lang, "ru");
   await scan(L);
   assert.equal(d.querySelector("#tbody button").textContent, "Выбрать");

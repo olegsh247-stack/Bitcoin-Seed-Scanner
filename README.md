@@ -66,6 +66,8 @@ Receive and change addresses are both scanned. Each address list is checked unti
 
 **Account number** (default **0**): the wallet's first account. Enter 1, 2… only if your wallet had several accounts and the coins were not found in the first one.
 
+**Save time:** if you already know your addresses, first check their types in the **Check an address** block, then scan only the types you need. Under the seed boxes, the **Address type** buttons (BIP44 / BIP49 / BIP84 / BIP86) switch each type on or off; by default all four are on.
+
 ---
 
 ## Security
@@ -124,7 +126,7 @@ Released under the [MIT License](LICENSE): free to use, copy and modify, provide
 After saving `index.html`, verify the SHA-256 checksum:
 
 ```
-344ab3823d5f2a4d1a081dad303442ff592899fe5fb047bc8dea351b86bcfa79
+a4866a52479fe6849c0d7caf9ce8d302db79b5d8a07ae4ac908db524745e096f
 ```
 
 - **Linux / macOS:** `sha256sum index.html` (or `shasum -a 256 index.html`)

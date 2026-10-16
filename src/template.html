@@ -12,11 +12,12 @@
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}input[type=number]{-moz-appearance:textfield;appearance:textfield}
 </style>
 <style>
+.seed-top{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}.type-pick{grid-column:span 2}@media(max-width:340px){.type-pick{grid-column:auto}}.type-btns{display:flex;gap:4px;margin:2px 0 10px}.bip-btn{flex:1;padding:6px 4px}
 .seed-tools{display:flex;align-items:center;gap:12px;margin:2px 0 10px;flex-wrap:wrap}
 .wc-switch{display:flex;gap:4px}
-.wc-btn,.help-btn{background:var(--bg2);border:1px solid var(--border);color:var(--muted);padding:6px 10px;border-radius:7px;font-size:0.78rem;font-weight:600;cursor:pointer}
+.wc-btn,.help-btn,.bip-btn{background:var(--bg2);border:1px solid var(--border);color:var(--muted);padding:6px 10px;border-radius:7px;font-size:0.78rem;font-weight:600;cursor:pointer}
 .help-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.wc-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.wc-btn.active,.bip-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 .seed-state{font-size:0.82rem;color:var(--muted)}
 .seed-state.ok{color:var(--success)}
 .seed-state.bad{color:var(--danger)}
@@ -61,6 +62,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 <h2 id="addrTitle">Check an address</h2>
 <div class="addr-form"><input type="text" id="addrInput" placeholder="Paste a Bitcoin address" autocomplete="off" spellcheck="false"><button type="button" class="btn-primary" id="addrCheckBtn">Check</button></div>
 <div id="addrResult" class="addr-result" aria-live="polite"></div>
+<div class="hint" id="addrCaption">Check the address type and balance</div>
 </div>
 <div class="card" id="donateCard">
 <h2 id="donateTitle">Gratitude</h2>
@@ -72,12 +74,20 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 <div class="warn" id="saferBox"><strong>Safer workflow:</strong><br>1. First only find coins.<br>2. Send only when sure, with double confirmation.<br>3. Close the tab when done. Seed is never saved.</div>
 <div class="card" id="seedCard">
 <h2><span class="step">1</span> <span id="step1Title">Seed phrase</span></h2>
+<div class="seed-top">
+<div class="seed-left">
 <label id="seedLabel">Seed (12 or 24 words)</label>
 <div class="seed-tools"><div class="wc-switch"><button type="button" class="wc-btn active" data-count="12">12</button><button type="button" class="wc-btn" data-count="24">24</button></div><span id="seedState" class="seed-state" role="status" aria-live="polite"></span></div>
+</div>
+<div class="type-pick">
+<label id="typeLabel">Address type</label>
+<div class="type-btns" role="group" aria-labelledby="typeLabel"><button type="button" class="bip-btn active" data-bip="BIP44" aria-pressed="true">BIP44</button><button type="button" class="bip-btn active" data-bip="BIP49" aria-pressed="true">BIP49</button><button type="button" class="bip-btn active" data-bip="BIP84" aria-pressed="true">BIP84</button><button type="button" class="bip-btn active" data-bip="BIP86" aria-pressed="true">BIP86</button></div>
+</div>
+</div>
 <div id="seedGrid" class="seed-grid"></div>
 <div class="row">
 <div><label for="passphrase" id="passLabel">Passphrase (if used)</label><input type="text" id="passphrase" placeholder="optional" autocomplete="off"><div class="hint" id="passHint">Leave empty if you did not set this phrase when creating the wallet.</div></div>
-<div><label for="gap" id="gapLabel">Gap limit (stop after N unused)</label><input type="number" id="gap" value="25" min="5" max="100"><div class="hint" id="gapHint">Scanning of each path stops after this many consecutive unused addresses. Default 25, range 5-100. Higher = slower, but finds coins farther along the chain.</div></div>
+<div><label for="gap" id="gapLabel">Gap limit (stop after N unused)</label><input type="number" id="gap" value="25" min="5" max="100"><div class="hint" id="gapHint">Default 25, range 5-100. Higher = slower, but finds coins farther along the chain.</div></div>
 <div><label for="account" id="accountLabel">Account number</label><input type="number" id="account" value="0" min="0" max="99"><div class="hint" id="accountHint">Normally 0. If no coins were found and you are sure they are there, try 1, 2…</div></div>
 </div>
 <div class="btn-row">

@@ -67,6 +67,8 @@ Les chaînes receive et change sont toutes deux scannées. Chaque liste d’adre
 
 **Numéro de compte** (**0** par défaut) : le premier compte du portefeuille. Saisissez 1, 2… seulement si votre portefeuille avait plusieurs comptes et que les pièces n’ont pas été trouvées dans le premier.
 
+**Gagnez du temps :** si vous connaissez déjà vos adresses, vérifiez d’abord leur type dans le bloc **« Vérifier une adresse »**, puis ne scannez que les types utiles. Les boutons **« Type d’adresse »** (BIP44 / BIP49 / BIP84 / BIP86), au-dessus des cases du seed, activent ou désactivent chaque type ; les quatre sont activés par défaut.
+
 ---
 
 ## Sécurité
@@ -125,7 +127,7 @@ Publié sous [licence MIT](LICENSE) : utilisation, copie et modification libres,
 Après avoir enregistré `index.html`, vérifiez le SHA-256 :
 
 ```
-344ab3823d5f2a4d1a081dad303442ff592899fe5fb047bc8dea351b86bcfa79
+a4866a52479fe6849c0d7caf9ce8d302db79b5d8a07ae4ac908db524745e096f
 ```
 
 - **Linux / macOS :** `sha256sum index.html` (ou `shasum -a 256 index.html`)

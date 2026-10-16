@@ -67,6 +67,8 @@ Se escanean receive y change. Cada lista de direcciones se revisa hasta encontra
 
 **Número de cuenta** (por defecto **0**): la primera cuenta del monedero. Escribe 1, 2… solo si tu monedero tenía varias cuentas y no se encontraron monedas en la primera.
 
+**Ahorre tiempo:** si ya conoce sus direcciones, compruebe primero sus tipos en el bloque **«Comprobar una dirección»** y escanee solo los que necesite. Los botones **«Tipo de dirección»** (BIP44 / BIP49 / BIP84 / BIP86), sobre las casillas del seed, activan o desactivan cada tipo; por defecto están activados los cuatro.
+
 ---
 
 ## Seguridad
@@ -125,7 +127,7 @@ Publicado bajo la [licencia MIT](LICENSE): uso, copia y modificación libres, «
 Tras guardar `index.html`, verifica el SHA-256:
 
 ```
-344ab3823d5f2a4d1a081dad303442ff592899fe5fb047bc8dea351b86bcfa79
+a4866a52479fe6849c0d7caf9ce8d302db79b5d8a07ae4ac908db524745e096f
 ```
 
 - **Linux / macOS:** `sha256sum index.html` (o `shasum -a 256 index.html`)
