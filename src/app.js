@@ -633,14 +633,30 @@ clearBtn.onclick = () => {
 // Adaptive pacing: extra pause between lookups that grows only while the service
 // answers "too many requests" (or a server error) and fades away once it recovers.
 let penaltyMs = 0;
+
+// A connection that never answers must not freeze the app: every request is cut off
+// after a time limit (the body is read inside the same limit) and counts as a failure.
+const FETCH_TIMEOUT_MS = 20000;
+async function fetchWithTimeout(url, init = {}, ms = FETCH_TIMEOUT_MS) {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), ms);
+  try {
+    const res = await fetch(url, { ...init, signal: ctl.signal });
+    const text = await res.text();
+    return { ok: res.ok, status: res.status, statusText: res.statusText, text };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function fetchRetry(url, init, tries = 4) {
   let lastErr;
   for (let attempt = 0; attempt < tries; attempt++) {
     try {
-      const res = await fetch(url, init);
+      const res = await fetchWithTimeout(url, init);
       if (res.ok) {
         penaltyMs = penaltyMs < 200 ? 0 : Math.floor(penaltyMs / 2);
-        return res;
+        return { json: async () => JSON.parse(res.text), text: async () => res.text };
       }
       lastErr = new Error(`HTTP ${res.status}`);
       if (res.status !== 429 && res.status < 500) break;
@@ -656,8 +672,17 @@ async function fetchRetry(url, init, tries = 4) {
 // Balance plus "has this address ever been used" (needed for the gap limit).
 async function fetchAddressInfo(addr) {
   const data = await (await fetchRetry(`${API}/address/${addr}`)).json();
-  const chain = data.chain_stats || {},
-    mem = data.mempool_stats || {};
+  // Fail closed: an answer without real address data must never be read as "empty".
+  const chain = data && data.chain_stats;
+  if (
+    !chain ||
+    typeof chain !== "object" ||
+    !Number.isFinite(chain.funded_txo_sum) ||
+    !Number.isFinite(chain.spent_txo_sum) ||
+    !Number.isFinite(chain.tx_count)
+  )
+    throw new Error("Unexpected response from mempool.space");
+  const mem = data.mempool_stats || {};
   const balance =
     (chain.funded_txo_sum || 0) +
     (mem.funded_txo_sum || 0) -
@@ -669,7 +694,9 @@ async function fetchAddressInfo(addr) {
 addressCheck = initAddressCheck({ fetchAddressInfo, getText: () => LANGS[lang] });
 
 async function fetchUtxos(addr) {
-  return await (await fetchRetry(`${API}/address/${addr}/utxo`)).json();
+  const list = await (await fetchRetry(`${API}/address/${addr}/utxo`)).json();
+  if (!Array.isArray(list)) throw new Error("Unexpected response from mempool.space");
+  return list;
 }
 
 // Legacy (P2PKH) inputs must be signed against the full previous transaction.
@@ -1020,12 +1047,21 @@ broadcastBtn.onclick = async () => {
     const txHex = hex.encode(tx.extract());
 
     sendStatus.textContent = "Broadcasting...";
-    const res = await fetch(`${API}/tx`, { method: "POST", body: txHex });
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(errText || res.statusText);
+    let res;
+    try {
+      // Never retried automatically: a second POST could double-send.
+      res = await fetchWithTimeout(`${API}/tx`, { method: "POST", body: txHex }, 30000);
+    } catch (_) {
+      // No answer: we cannot know whether the network accepted the transaction.
+      sendStatus.textContent =
+        "No response from mempool.space. The transaction may already have been sent — check your address on mempool.space before trying again.";
+      sendStatus.className = "status err";
+      confirmArea.style.display = "none";
+      preparedTx = null;
+      return;
     }
-    const txid = (await res.text()).trim();
+    if (!res.ok) throw new Error(res.text || res.statusText);
+    const txid = res.text.trim();
 
     if (!/^[0-9a-f]{64}$/i.test(txid)) {
       // The node accepted the request but did not return a txid. Do not offer a

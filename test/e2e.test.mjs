@@ -331,6 +331,60 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   ok("failed lookups are re-checked automatically; warning only if some stay unchecked");
 }
 
+// ---- 7e. connection robustness: hangs and malformed answers -----------------
+{
+  // A request that never answers is cut off by the app's own time limit.
+  const hang = (init) =>
+    new Promise((_, reject) =>
+      init.signal.addEventListener("abort", () => reject(new Error("aborted"))),
+    );
+  const isLegacyLookup = (u) => u.endsWith(`/address/${LEGACY.address}`);
+
+  const hung = boot(async (url, init, posted) =>
+    isLegacyLookup(url) ? hang(init) : mempool(url, init, posted),
+  );
+  await scan(hung);
+  assert.match(hung.d.getElementById("status").textContent, /Warning: 1 of \d+ address lookups/);
+  assert.equal(hung.d.querySelectorAll("#tbody tr").length, 1, "other funds are still found");
+
+  for (const bad of [{}, { error: "busy" }, { chain_stats: {} }, [], "oops"]) {
+    const odd = boot(async (url, init, posted) =>
+      isLegacyLookup(url) ? { status: 200, json: bad } : mempool(url, init, posted),
+    );
+    await scan(odd);
+    const st = odd.d.getElementById("status").textContent;
+    assert.match(st, /Warning: 1 of/, `malformed 200 ${JSON.stringify(bad)} must not read as empty: ${st}`);
+    assert.ok(!/No funds found/.test(st));
+  }
+
+  // address check: a hanging server ends in a clear message, not "Checking…" forever
+  const hungCheck = boot(async (url, init, posted) =>
+    url.endsWith(`/address/${SEGWIT.address}`) ? hang(init) : mempool(url, init, posted),
+  );
+  type(hungCheck.d.getElementById("addrInput"), SEGWIT.address);
+  click(hungCheck.d.getElementById("addrCheckBtn"));
+  await until(() => /Could not get the balance/.test(hungCheck.d.getElementById("addrResult").textContent));
+
+  // broadcast with no answer: tell the user the tx may have gone out, offer no blind retry
+  const noAns = boot(async (url, init, posted) =>
+    init.method === "POST" && url.endsWith("/tx") ? hang(init) : mempool(url, init, posted),
+  );
+  await scan(noAns);
+  const { d } = noAns;
+  click([...d.querySelectorAll("#tbody button")].find((b) => b.closest("tr").textContent.includes(SEGWIT.address)));
+  type(d.getElementById("toAddress"), DEST);
+  type(d.getElementById("amount"), "0.001");
+  d.getElementById("feeRate").value = "5";
+  click(d.getElementById("prepareBtn"));
+  await until(() => d.getElementById("confirmArea").style.display === "block");
+  type(d.getElementById("confirmText"), DEST.slice(-6));
+  click(d.getElementById("broadcastBtn"));
+  await until(() => /may already have been sent/.test(d.getElementById("sendStatus").textContent));
+  assert.equal(d.getElementById("confirmArea").style.display, "none", "no blind retry offered");
+  assert.equal(noAns.posted.length, 0);
+  ok("hung requests time out, malformed 200s are never 'no funds', unanswered broadcast is not retried");
+}
+
 // ---- 7c. address check block ----------------------------------------------
 {
   const asked = [];
