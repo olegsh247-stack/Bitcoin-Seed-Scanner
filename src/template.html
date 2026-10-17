@@ -29,7 +29,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .sw input.bad{border-color:var(--danger);box-shadow:0 0 0 1px var(--danger)}
 .help-body{font-size:0.9rem;line-height:1.65}
 .layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 20px;align-items:start}.col{min-width:0}
-@media(max-width:900px){.layout{display:flex;flex-direction:column}.col{display:contents}#addrCard{order:1}#seedCard{order:2}#resultsCard{order:3}#sendCard{order:4}#critBox{order:5}#saferBox{order:6}#donateCard{order:7}}
+@media(max-width:900px){.layout{display:flex;flex-direction:column}.col{display:contents}#addrCard{order:1}#seedCard{order:2}#resultsCard{order:3}#addrListCard{order:4}#sendCard{order:5}#critBox{order:6}#saferBox{order:7}#donateCard{order:8}}
 .addr-form{display:flex;gap:10px}.addr-form input{flex:1;min-width:0}.addr-form button{flex-shrink:0}.addr-result{margin-top:12px}.addr-row{margin-top:10px}.addr-label{font-size:0.78rem;color:var(--muted);margin-bottom:2px}.addr-value{font-size:0.92rem;word-break:break-all}.addr-value.addr{font-family:ui-monospace,monospace;font-size:0.84rem}.addr-value.bal{color:var(--success);font-weight:600}.addr-error{color:var(--danger);font-size:0.9rem}
 </style>
 </head>
@@ -58,8 +58,9 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 <div class="layout">
 <div class="col col-left">
 <div class="danger-box" id="critBox"><strong>Critical</strong><br>Your computer may be infected. Malware can swap addresses, read the seed from browser memory, and monitor what you type.<br><br>Before you start:<br>• For large amounts use a clean device: a new or reinstalled PC, a live USB, or a hardware wallet;<br>• Scan the system with an up-to-date antivirus;<br>• Never enter a seed on someone else's, public, or suspicious computer;<br>• First only find coins; send only when you are sure the environment is safe.<br><br>This tool is for recovery, not everyday payments. You are responsible for your funds.</div>
+<div class="warn" id="saferBox"><strong>Safer workflow:</strong><br>1. First only find coins.<br>2. Send only when sure, with double confirmation.<br>3. Close the tab when done. Seed is never saved.</div>
 <div class="card" id="addrCard">
-<h2 id="addrTitle">Check an address</h2>
+<h2 id="addrTitle">Check an address (if known)</h2>
 <div class="addr-form"><input type="text" id="addrInput" placeholder="Paste a Bitcoin address" autocomplete="off" spellcheck="false"><button type="button" class="btn-primary" id="addrCheckBtn">Check</button></div>
 <div id="addrResult" class="addr-result" aria-live="polite"></div>
 <div class="hint" id="addrCaption">Check the address type and balance</div>
@@ -71,7 +72,6 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 </div>
 </div>
 <div class="col col-right">
-<div class="warn" id="saferBox"><strong>Safer workflow:</strong><br>1. First only find coins.<br>2. Send only when sure, with double confirmation.<br>3. Close the tab when done. Seed is never saved.</div>
 <div class="card" id="seedCard">
 <h2><span class="step">1</span> <span id="step1Title">Seed phrase</span></h2>
 <div class="seed-top">
@@ -104,6 +104,12 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 <div style="overflow-x:auto"><table><thead><tr><th id="thPath">Path</th><th id="thType">Type</th><th id="thAddr">Address</th><th id="thBal">Balance</th><th></th></tr></thead><tbody id="tbody"></tbody></table></div>
 <div id="noFunds" class="empty-state" style="display:none">No coins found in the scanned range.<br>Try a larger gap or check the passphrase.</div>
 </div>
+<div class="card" id="addrListCard" style="display:none">
+<h2 id="alTitle">Addresses of this seed phrase</h2>
+<div class="hint" id="alHint">Public addresses only (no keys). Compare them with your wallet. Nothing is saved.</div>
+<div style="overflow-x:auto"><table><thead><tr><th id="alThPath">Path</th><th id="alThType">Type</th><th id="alThAddr">Address</th><th id="alThStatus">Status</th></tr></thead><tbody id="alBody"></tbody></table></div>
+<div class="btn-row"><button type="button" class="btn-secondary" id="alCopy">Copy</button><span id="alCopied" class="status ok" role="status" aria-live="polite"></span></div>
+</div>
 <div class="card send-form" id="sendCard">
 <h2><span class="step">3</span> <span id="step3Title">Send</span></h2>
 <div class="source-info" id="sourceInfo">Select an address in the table above first</div>
@@ -121,7 +127,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 <div class="confirm-box">
 <div>Recipient:</div><div class="big" id="confirmTo"></div>
 <div style="margin-top:10px">Amount:</div><div class="big" id="confirmAmount"></div>
-<div style="margin-top:10px">Fee (approx.):</div><div class="big" id="confirmFee"></div>
+<div style="margin-top:10px">Fee (approx.):</div><div class="big" id="confirmFee"></div><div class="hint" id="confirmDust" style="display:none"></div>
 <div style="margin-top:10px;color:var(--muted);font-size:0.85rem" id="confirmHint">Double-check everything. This cannot be undone.</div>
 </div>
 <label for="confirmText" id="confirmLabel">Type the last 6 characters of the recipient address</label>

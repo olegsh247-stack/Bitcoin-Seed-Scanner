@@ -7,6 +7,7 @@ import { HDKey } from "@scure/bip32";
 import * as btc from "@scure/btc-signer";
 import { hex } from "@scure/base";
 import { initAddressCheck } from "./addrcheck.js";
+import { initAddrList } from "./addrlist.js";
 import {
   PATHS,
   CHAINS,
@@ -60,7 +61,18 @@ const LANGS = {
     passHint: "Leave empty if you did not set this phrase when creating the wallet.",
     accountHint: "Default 0. If no coins were found, try 1, 2…",
     scanBtn: "Find coins",
-    addrTitle: "Check an address",
+    addrTitle: "Check an address (if known)",
+    alTitle: "Addresses of this seed phrase",
+    alHint: "Public addresses only (no keys). Compare them with your wallet. Nothing is saved.",
+    alThStatus: "Status",
+    alStFunded: "Balance {b} BTC",
+    alStUsed: "Had transactions, balance 0",
+    alStUnused: "No transactions",
+    alStUnknown: "Could not be checked",
+    alCopy: "Copy",
+    alCopied: "Copied",
+    alCopyFail: "Could not copy — select the text and copy it manually",
+    dustNote: "Leftover of {n} sats (below the network minimum) was added to the fee.",
     addrPh: "Paste a Bitcoin address",
     addrBtn: "Check",
     addrRowAddr: "Address",
@@ -124,7 +136,18 @@ const LANGS = {
     passHint: "Оставьте пустым, если не задавали эту фразу при создании кошелька.",
     accountHint: "По умолчанию 0. Если монеты не найдены, попробуйте 1, 2…",
     scanBtn: "Найти монеты",
-    addrTitle: "Проверка адреса",
+    addrTitle: "Проверка адреса (если известен)",
+    alTitle: "Адреса этой seed-фразы",
+    alHint: "Только публичные адреса (без ключей). Сверьте их с вашим кошельком. Ничего не сохраняется.",
+    alThStatus: "Статус",
+    alStFunded: "Баланс {b} BTC",
+    alStUsed: "Были операции, баланс 0",
+    alStUnused: "Операций не было",
+    alStUnknown: "Не удалось проверить",
+    alCopy: "Копировать",
+    alCopied: "Скопировано",
+    alCopyFail: "Не удалось скопировать — выделите текст и скопируйте вручную",
+    dustNote: "Остаток {n} сатоши (меньше минимума сети) добавлен к комиссии.",
     addrPh: "Вставьте адрес Bitcoin",
     addrBtn: "Проверить",
     addrRowAddr: "Адрес",
@@ -190,7 +213,18 @@ const LANGS = {
     passHint: "Déjelo vacío si no estableció esta frase al crear la billetera.",
     accountHint: "Por defecto 0. Si no se encontraron monedas, pruebe 1, 2…",
     scanBtn: "Buscar monedas",
-    addrTitle: "Comprobar una dirección",
+    addrTitle: "Comprobar una dirección (si la conoce)",
+    alTitle: "Direcciones de esta frase seed",
+    alHint: "Solo direcciones públicas (sin claves). Compárelas con su monedero. No se guarda nada.",
+    alThStatus: "Estado",
+    alStFunded: "Saldo {b} BTC",
+    alStUsed: "Hubo operaciones, saldo 0",
+    alStUnused: "Sin operaciones",
+    alStUnknown: "No se pudo comprobar",
+    alCopy: "Copiar",
+    alCopied: "Copiado",
+    alCopyFail: "No se pudo copiar: seleccione el texto y cópielo a mano",
+    dustNote: "Un resto de {n} sats (por debajo del mínimo de la red) se añadió a la comisión.",
     addrPh: "Pegue una dirección Bitcoin",
     addrBtn: "Comprobar",
     addrRowAddr: "Dirección",
@@ -256,7 +290,18 @@ const LANGS = {
     passHint: "Laissez vide si vous n’avez pas défini cette phrase lors de la création du portefeuille.",
     accountHint: "Par défaut 0. Si aucune pièce n’est trouvée, essayez 1, 2…",
     scanBtn: "Trouver les pièces",
-    addrTitle: "Vérifier une adresse",
+    addrTitle: "Vérifier une adresse (si vous la connaissez)",
+    alTitle: "Adresses de cette phrase seed",
+    alHint: "Adresses publiques uniquement (sans clés). Comparez-les avec votre portefeuille. Rien n’est enregistré.",
+    alThStatus: "État",
+    alStFunded: "Solde {b} BTC",
+    alStUsed: "Des opérations ont eu lieu, solde 0",
+    alStUnused: "Aucune opération",
+    alStUnknown: "Vérification impossible",
+    alCopy: "Copier",
+    alCopied: "Copié",
+    alCopyFail: "Copie impossible : sélectionnez le texte et copiez-le à la main",
+    dustNote: "Un reste de {n} sats (sous le minimum du réseau) a été ajouté aux frais.",
     addrPh: "Collez une adresse Bitcoin",
     addrBtn: "Vérifier",
     addrRowAddr: "Adresse",
@@ -316,6 +361,7 @@ let lang = storeGet("bss_lang") || (navigator.language || "en").slice(0, 2);
 if (!LANGS[lang]) lang = "en";
 
 let addressCheck = null; // set up below, once the network helpers exist
+let addrList = null;
 function applyLang() {
   const L = LANGS[lang];
   const s = document.getElementById("subtitle");
@@ -379,6 +425,7 @@ function applyLang() {
   const addrIn = document.getElementById("addrInput");
   if (addrIn) addrIn.placeholder = L.addrPh;
   if (addressCheck) addressCheck.refresh();
+  if (addrList) addrList.refresh();
   const pass = document.getElementById("passphrase");
   if (pass) pass.placeholder = L.passPh;
   document
@@ -422,6 +469,7 @@ const passphraseEl = $("passphrase"),
   confirmTo = $("confirmTo"),
   confirmAmount = $("confirmAmount"),
   confirmFee = $("confirmFee"),
+  confirmDust = $("confirmDust"),
   confirmText = $("confirmText"),
   broadcastBtn = $("broadcastBtn"),
   cancelSendBtn = $("cancelSendBtn"),
@@ -597,6 +645,7 @@ buildBoxes(12);
 // Forget everything tied to the previous scan: key material, the chosen source and any
 // prepared (not yet sent) transaction. Used by "Clear all" and before every new scan.
 function resetSendState() {
+  if (addrList) addrList.clear();
   // Overwrite key material in place before dropping references.
   for (const f of foundFunds) {
     try {
@@ -723,6 +772,7 @@ async function fetchAddressInfo(addr) {
 }
 
 addressCheck = initAddressCheck({ fetchAddressInfo, getText: () => LANGS[lang] });
+addrList = initAddrList({ getText: () => LANGS[lang] });
 
 async function fetchUtxos(addr) {
   const list = await (await fetchRetry(`${API}/address/${addr}/utxo`)).json();
@@ -791,7 +841,14 @@ scanBtn.onclick = async () => {
       failed = [], // addresses whose lookup failed; re-checked after the main scan
       cooldowns = 0; // consecutive waits because the service stopped answering
     penaltyMs = 0;
+    // Every address looked at, for the "Addresses of this seed phrase" block.
+    const known = new Map();
     const recordFound = (f, info) => {
+      const k = known.get(f.address);
+      if (k) {
+        k.status = info.balance > 0 ? "funded" : info.used ? "used" : "unused";
+        k.balanceSats = info.balance;
+      }
       if (info.balance > 0) foundFunds.push({ ...f, balanceSats: info.balance });
     };
 
@@ -812,6 +869,15 @@ scanBtn.onclick = async () => {
             continue;
           }
           lookups++;
+          known.set(address, {
+            name: p.name,
+            type: p.type,
+            path,
+            address,
+            first: change === 0 && i === 0,
+            status: "unknown", // until the lookup succeeds
+            balanceSats: 0,
+          });
           let info = null;
           try {
             info = await fetchAddressInfo(address);
@@ -893,6 +959,12 @@ scanBtn.onclick = async () => {
 
     resultsCard.style.display = "block";
     sendCard.classList.add("active");
+    // First receive address of each scanned type + every address with history.
+    addrList.show(
+      [...known.values()].filter(
+        (e) => e.first || e.status === "funded" || e.status === "used",
+      ),
+    );
 
     if (foundFunds.length === 0) {
       noFunds.style.display = "block";
@@ -1053,6 +1125,9 @@ prepareBtn.onclick = async () => {
     const warn = feeWarning(feeSats, amountSats);
     confirmFee.textContent = `~${satsToBtc(feeSats)} BTC (${feeRate} sat/vB, ~${vsize} vB, UTXO: ${selected.length})${warn ? " ⚠ " + warn : ""}`;
     confirmFee.style.color = warn ? "var(--danger)" : "";
+    const leftover = changeSats === 0n ? feeSats - minFee : 0n; // dust that went into the fee
+    confirmDust.textContent = leftover > 0n ? LANGS[lang].dustNote.replace("{n}", String(leftover)) : "";
+    confirmDust.style.display = leftover > 0n ? "block" : "none";
     confirmArea.style.display = "block";
     confirmText.value = "";
     broadcastBtn.disabled = true;

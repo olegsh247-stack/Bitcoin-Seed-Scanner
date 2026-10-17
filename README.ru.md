@@ -127,7 +127,7 @@
 После сохранения `index.html` сверьте SHA-256:
 
 ```
-edac48243e8946ce9e2ccf25fa2e16c1b66bf926d2a6c94cce9a8ab1e49eeb89
+259e7f6fd3f7c48fd2ab6958e5276e99aceedeedb11cb98ab553e115f76eecf3
 ```
 
 - **Linux / macOS:** `sha256sum index.html` (или `shasum -a 256 index.html`)

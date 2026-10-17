@@ -11,7 +11,12 @@ Minor tweaks (wording, layout fixes, hash refreshes) are not included.
 - Strict checks of server data: every UTXO is validated (txid, output index, amount, duplicates); for Legacy addresses the previous transaction must match the txid, amount and address reported by the server.
 - A new scan wipes the previous key material and forgets the selected source and any prepared transaction.
 
+### Added
+- "Addresses of this seed phrase" block under the found funds: the first receive address of every scanned type plus every address with history (receive and change), with path and status, and a Copy button. Public data only; nothing is saved.
+- The confirmation announces when a sub-minimum leftover (below 546 sats) is added to the fee.
+
 ### Changed
+- "Check an address" is now "Check an address (if known)" (all languages); the "Safer workflow" block moved under "Important".
 - Fee rate must be a valid positive number (decimals such as 1.5 are allowed); invalid input is refused instead of silently replaced with 5.
 - Fee estimates use the real output size of the recipient and change address types (Legacy, Nested SegWit, Native SegWit, Taproot); "Maximum" uses the same model.
 - The fee-hint request has a time limit and its numbers are validated.

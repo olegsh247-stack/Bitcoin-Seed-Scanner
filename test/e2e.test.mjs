@@ -421,12 +421,12 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   // language switch re-renders the result
   click(d.querySelector('.lang-btn[data-lang="ru"]'));
   await go(SEGWIT.address, () => /Баланс/.test(res()));
-  assert.equal(d.getElementById("addrTitle").textContent, "Проверка адреса");
+  assert.equal(d.getElementById("addrTitle").textContent, "Проверка адреса (если известен)");
   // layout: info blocks left; address check first in the left column, seed on the right
   const left = [...d.querySelectorAll(".col-left > *")].map((e) => e.id);
   const right = [...d.querySelectorAll(".col-right > *")].map((e) => e.id);
-  assert.deepEqual(left, ["critBox", "addrCard", "donateCard"]);
-  assert.deepEqual(right, ["saferBox", "seedCard", "resultsCard", "sendCard"]);
+  assert.deepEqual(left, ["critBox", "saferBox", "addrCard", "donateCard"]);
+  assert.deepEqual(right, ["seedCard", "resultsCard", "addrListCard", "sendCard"]);
   ok("address check: type, balance, invalid and failure messages; two-column layout");
 }
 
@@ -788,6 +788,99 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   assert.equal(r.shown, false);
   assert.match(r.msg, /amount or address/);
   ok("legacy: previous transaction must match txid, amount and address reported by the server");
+}
+
+// ---- 15. "Addresses of this seed phrase" block + dust note -------------------
+{
+  const BIP84_1 = addrAt(84, 0, 1); // used earlier, balance 0
+  const BIP49_0 = addrAt(49, 0, 0);
+  const variant = (failFirst49) => async (url, init, posted) => {
+    const a = url.match(/\/address\/([^/]+)$/);
+    if (a && a[1] === BIP84_1.address)
+      return {
+        status: 200,
+        json: {
+          chain_stats: { funded_txo_sum: 50_000, spent_txo_sum: 50_000, tx_count: 2 },
+          mempool_stats: { funded_txo_sum: 0, spent_txo_sum: 0, tx_count: 0 },
+        },
+      };
+    if (failFirst49 && a && a[1] === BIP49_0.address) return { status: 503, text: "down" };
+    return mempool(url, init, posted);
+  };
+  const c = boot(variant(false));
+  let clip = null;
+  Object.defineProperty(c.w.navigator, "clipboard", {
+    value: { writeText: async (t) => (clip = t) },
+  });
+  await scan(c);
+  const { d } = c;
+  const g = (id) => d.getElementById(id);
+  assert.equal(g("addrListCard").style.display, "block");
+  const rows = () => [...d.querySelectorAll("#alBody tr")].map((r) => [...r.children].map((x) => x.textContent));
+  const rs = rows();
+  // BIP44 #0 (funded), BIP49 #0, BIP84 #0, BIP84 #1 (used, empty), BIP84 #2 (funded), BIP86 #0
+  assert.deepEqual(
+    rs.map((r) => r[2]),
+    [LEGACY.address, BIP49_0.address, addrAt(84, 0, 0).address, BIP84_1.address, SEGWIT.address, addrAt(86, 0, 0).address],
+  );
+  assert.match(rs[0][3], /^Balance 0\.00100000 BTC$/);
+  assert.equal(rs[1][3], "No transactions");
+  assert.equal(rs[3][3], "Had transactions, balance 0");
+  assert.match(rs[4][3], /^Balance 0\.00150000 BTC$/);
+  assert.match(rs[3][0], /^m\/84'\/0'\/0'\/0\/1$/);
+  assert.equal(new Set(rs.map((r) => r[2])).size, rs.length, "no duplicates");
+  // no private data anywhere in the block
+  assert.ok(!/[KL][1-9A-HJ-NP-Za-km-z]{50,}|xprv/.test(g("addrListCard").textContent));
+  ok("address block: first address of every type + used addresses, with status, no duplicates");
+
+  let sawCopied = false; // the message fades after a moment (timers are instant in this test)
+  new c.w.MutationObserver(() => {
+    if (g("alCopied").textContent === "Copied") sawCopied = true;
+  }).observe(g("alCopied"), { childList: true, characterData: true, subtree: true });
+  click(g("alCopy"));
+  await until(() => clip !== null && sawCopied);
+  assert.equal(clip.split("\n").length, rs.length);
+  assert.ok(clip.includes(SEGWIT.address) && clip.includes("m/84'/0'/0'/0/2"));
+  ok("copy button puts the whole list on the clipboard as text");
+
+  click(d.querySelector('.lang-btn[data-lang="ru"]'));
+  assert.equal(g("alTitle").textContent, "Адреса этой seed-фразы");
+  assert.equal(rows()[1][3], "Операций не было");
+  assert.match(rows()[0][3], /^Баланс /);
+  assert.equal(g("alCopy").textContent, "Копировать");
+  click(d.querySelector('.lang-btn[data-lang="en"]'));
+
+  click(g("clearBtn"));
+  assert.equal(g("addrListCard").style.display, "none");
+  assert.equal(d.querySelectorAll("#alBody tr").length, 0);
+  ok("address block is translated live and wiped by Clear all");
+
+  // a first address that could not be checked is shown honestly, never as "empty"
+  const c2 = boot(variant(true));
+  await scan(c2);
+  const r2 = [...c2.d.querySelectorAll("#alBody tr")].map((r) => [...r.children].map((x) => x.textContent));
+  const row49 = r2.find((r) => r[2] === BIP49_0.address);
+  assert.equal(row49[3], "Could not be checked");
+  ok("address that could not be checked is marked as such, not as empty");
+
+  // dust leftover note in the confirmation
+  const c3 = boot(mempool);
+  await scan(c3);
+  const d3 = c3.d;
+  click([...d3.querySelectorAll("#tbody button")].find((b) => b.closest("tr").textContent.includes(SEGWIT.address)));
+  type(d3.getElementById("toAddress"), DEST);
+  type(d3.getElementById("feeRate"), "5");
+  const prep = async (amt) => {
+    type(d3.getElementById("amount"), amt);
+    click(d3.getElementById("prepareBtn"));
+    await until(() => d3.getElementById("confirmArea").style.display === "block");
+  };
+  await prep("0.001493"); // 150000 - 149300 = 700 sats left, minimum fee for 1-output tx is 550
+  assert.equal(d3.getElementById("confirmDust").style.display, "block");
+  assert.match(d3.getElementById("confirmDust").textContent, /150 sats/);
+  await prep("0.001"); // normal case, real change output
+  assert.equal(d3.getElementById("confirmDust").style.display, "none");
+  ok("a sub-minimum leftover added to the fee is announced in the confirmation");
 }
 
 console.log(`\n${n} e2e checks passed`);
