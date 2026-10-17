@@ -616,5 +616,179 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   ok("help button toggles the in-app guide, translated in all languages");
 }
 
+// ---- 13. send safety: the confirmation belongs to one exact prepared transaction ----
+{
+  const OTHER = "bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu";
+  const TAPROOT = "bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr";
+  const c = boot(mempool);
+  await scan(c);
+  const { d, posted } = c;
+  const g = (id) => d.getElementById(id);
+  const select = (address) =>
+    click(
+      [...d.querySelectorAll("#tbody button")].find((b) =>
+        b.closest("tr").textContent.includes(address),
+      ),
+    );
+  const prepare = async (to, amount, fee = "5") => {
+    type(g("toAddress"), to);
+    type(g("amount"), amount);
+    type(g("feeRate"), fee);
+    g("sendStatus").textContent = "";
+    click(g("prepareBtn"));
+    await until(
+      () =>
+        g("confirmArea").style.display === "block" ||
+        /error|Enter|must|valid|Not enough/i.test(g("sendStatus").textContent),
+    );
+  };
+  const shown = () => g("confirmArea").style.display === "block";
+
+  select(SEGWIT.address);
+  await prepare(DEST, "0.001");
+  assert.ok(shown());
+
+  // (a) change the recipient after preparing: confirmation is cancelled, nothing can be sent
+  type(g("toAddress"), OTHER);
+  assert.equal(shown(), false);
+  assert.equal(g("broadcastBtn").disabled, true);
+  type(g("confirmText"), OTHER.slice(-6));
+  assert.equal(g("broadcastBtn").disabled, true, "typing the NEW address must not unlock sending");
+  click(g("broadcastBtn"));
+  await new Promise((r) => setTimeout(r, 30));
+  assert.equal(posted.length, 0, "nothing was broadcast");
+  assert.match(g("sendStatus").textContent, /Prepare again/);
+
+  // (b) change amount / fee / source after preparing: same
+  await prepare(DEST, "0.001");
+  assert.ok(shown());
+  type(g("amount"), "0.002");
+  assert.equal(shown(), false);
+  await prepare(DEST, "0.001");
+  type(g("feeRate"), "6");
+  assert.equal(shown(), false);
+  await prepare(DEST, "0.001");
+  select(LEGACY.address);
+  assert.equal(shown(), false);
+  assert.equal(g("broadcastBtn").disabled, true);
+  select(SEGWIT.address);
+
+  // (c) the confirmation is compared with the prepared recipient: this still works normally
+  await prepare(DEST, "0.001");
+  type(g("confirmText"), OTHER.slice(-6));
+  assert.equal(g("broadcastBtn").disabled, true, "wrong characters keep the button locked");
+  type(g("confirmText"), DEST.slice(-6));
+  assert.equal(g("broadcastBtn").disabled, false);
+  click(g("broadcastBtn"));
+  await until(() => /Sent successfully|error/i.test(g("sendStatus").textContent));
+  assert.match(g("sendStatus").textContent, /Sent successfully/);
+  assert.equal(posted.length, 1);
+  const sent = btc.Transaction.fromRaw(hex.decode(posted[0]));
+  assert.equal(btc.Address(btc.NETWORK).encode(btc.OutScript.decode(sent.getOutput(0).script)), DEST);
+  ok("send safety: changing recipient, amount, fee or source after Prepare cancels the confirmation");
+
+  // (d) strict fee rate: no silent default, decimals allowed
+  select(SEGWIT.address);
+  for (const bad of ["-3", "abc", "0.5", "0", "5.9999"]) {
+    await prepare(DEST, "0.001", bad);
+    assert.equal(shown(), false, `fee ${bad} must be refused`);
+    assert.match(g("sendStatus").textContent, /fee rate|Fee rate/i);
+  }
+  await prepare(DEST, "0.001", "1.5");
+  assert.ok(shown(), "decimal fee rate 1.5 is accepted");
+  assert.match(g("confirmFee").textContent, /1\.5 sat\/vB/);
+  ok("fee rate must be a positive number (decimals allowed); nothing is silently replaced");
+
+  // (e) output size follows the recipient type: Taproot costs 12 vB more than native SegWit
+  const vsOf = () => Number(g("confirmFee").textContent.match(/~(\d+) vB/)[1]);
+  await prepare(OTHER, "0.001");
+  const vsSegwit = vsOf();
+  await prepare(TAPROOT, "0.001");
+  assert.equal(vsOf() - vsSegwit, 12);
+  ok("fee estimate uses the real output size of the recipient address type");
+
+  // (f) a new scan forgets the chosen source and any prepared transaction
+  await prepare(DEST, "0.001");
+  assert.ok(shown());
+  await scan(c);
+  assert.equal(shown(), false);
+  assert.equal(g("broadcastBtn").disabled, true);
+  const before = posted.length;
+  click(g("broadcastBtn"));
+  click(g("prepareBtn"));
+  await new Promise((r) => setTimeout(r, 30));
+  assert.equal(posted.length, before);
+  assert.match(g("sendStatus").textContent, /Select a source address first/);
+  ok("rescan clears the selected source and the prepared transaction");
+}
+
+// ---- 14. send safety: untrusted server data is checked strictly --------------
+{
+  const variant = (over) => async (url, init, posted) => {
+    const u = url.replace("https://mempool.space/api", "");
+    const m = u.match(/^\/address\/([^/]+)\/utxo$/);
+    if (m && over.utxo && over.utxo[m[1]]) return { status: 200, json: over.utxo[m[1]] };
+    if (over.hex && u.match(/^\/tx\/([0-9a-f]{64})\/hex$/)) return over.hex(u);
+    return mempool(url, init, posted);
+  };
+  const tryPrepare = async (handler, address, amount = "0.0005") => {
+    const c = boot(handler);
+    await scan(c);
+    const { d } = c;
+    click(
+      [...d.querySelectorAll("#tbody button")].find((b) =>
+        b.closest("tr").textContent.includes(address),
+      ),
+    );
+    type(d.getElementById("toAddress"), DEST);
+    type(d.getElementById("amount"), amount);
+    type(d.getElementById("feeRate"), "5");
+    d.getElementById("sendStatus").textContent = "";
+    click(d.getElementById("prepareBtn"));
+    await until(
+      () =>
+        d.getElementById("confirmArea").style.display === "block" ||
+        /error/i.test(d.getElementById("sendStatus").textContent),
+    );
+    return {
+      shown: d.getElementById("confirmArea").style.display === "block",
+      msg: d.getElementById("sendStatus").textContent,
+    };
+  };
+  const good = SEGWIT_UTXO;
+  const badLists = [
+    [{ ...good, value: -5 }],
+    [{ ...good, value: 1.5 }],
+    [{ ...good, vout: -1 }],
+    [{ ...good, txid: "xyz" }],
+    [good, { ...good }],
+    [{ txid: good.txid, vout: 1 }],
+  ];
+  for (const list of badLists) {
+    const r = await tryPrepare(variant({ utxo: { [SEGWIT.address]: list } }), SEGWIT.address, "0.001");
+    assert.equal(r.shown, false, JSON.stringify(list));
+    assert.match(r.msg, /Prepare error: .*(UTXO|server)/);
+  }
+  ok("malformed UTXO answers (bad value, vout, txid, duplicate, missing field) stop the preparation");
+
+  // Legacy: previous transaction that is not the one named, or whose amount differs
+  const wrongTx = prevTxFor(LEGACY, 90_000n).raw;
+  let r = await tryPrepare(
+    variant({ hex: () => ({ status: 200, text: hex.encode(wrongTx) }) }),
+    LEGACY.address,
+  );
+  assert.equal(r.shown, false);
+  assert.match(r.msg, /Previous transaction/);
+  r = await tryPrepare(
+    variant({
+      utxo: { [LEGACY.address]: [{ txid: LEGACY_PREV.txid, vout: 0, value: 120_000 }] },
+    }),
+    LEGACY.address,
+  );
+  assert.equal(r.shown, false);
+  assert.match(r.msg, /amount or address/);
+  ok("legacy: previous transaction must match txid, amount and address reported by the server");
+}
+
 console.log(`\n${n} e2e checks passed`);
 process.exit(0);

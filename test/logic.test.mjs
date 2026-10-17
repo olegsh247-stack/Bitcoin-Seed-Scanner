@@ -17,6 +17,14 @@ import {
   isValidMainnetAddress,
   feeWarning,
   describeAddress,
+  parseFeeRate,
+  feeFor,
+  outputVSizeFor,
+  changeVSize,
+  validateUtxos,
+  verifyPrevOutput,
+  auditTransaction,
+  checkFinalFeeRate,
 } from "../src/lib.js";
 
 let n = 0;
@@ -188,6 +196,143 @@ t("describeAddress: type per address kind, null for invalid", () => {
   assert.equal(describeAddress(VECTORS.BIP84.slice(0, -1) + "q"), null);
   assert.equal(describeAddress("tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx"), null);
   assert.equal(describeAddress(""), null);
+});
+
+// ---- send safety ------------------------------------------------------------
+t("parseFeeRate: strict positive number, decimals allowed, no silent default", () => {
+  assert.deepEqual(parseFeeRate("5"), { ok: true, rate: 5 });
+  assert.deepEqual(parseFeeRate(" 1.5 "), { ok: true, rate: 1.5 });
+  for (const bad of ["", "abc", "-3", "0", "0.5", "5.9999", "1e2", "1,5", "1001", "NaN"])
+    assert.equal(parseFeeRate(bad).ok, false, `should reject ${JSON.stringify(bad)}`);
+  assert.match(parseFeeRate("5000").error, /typo/);
+});
+
+t("feeFor: exact BigInt rounding up, decimals work", () => {
+  assert.equal(feeFor(141, 5), 705n);
+  assert.equal(feeFor(141, 1.5), 212n); // 211.5 -> 212
+  assert.equal(feeFor(100, 1), 100n);
+  assert.equal(feeFor(110, 1), 110n);
+  assert.equal(feeFor(1, 1.001), 2n);
+});
+
+t("output sizes follow the address type (Legacy 34, P2SH 32, P2WPKH 31, Taproot 43)", () => {
+  assert.equal(outputVSizeFor(VECTORS.BIP44), 34);
+  assert.equal(outputVSizeFor(VECTORS.BIP49), 32);
+  assert.equal(outputVSizeFor(VECTORS.BIP84), 31);
+  assert.equal(outputVSizeFor(VECTORS.BIP86), 43);
+  assert.equal(outputVSizeFor("garbage"), 43);
+  assert.deepEqual(["BIP44", "BIP49", "BIP84", "BIP86"].map(changeVSize), [34, 32, 31, 43]);
+  // paying a Taproot address costs more than paying a native SegWit one
+  const a = calcFeeAndChange(1_000_000n, 100_000n, 1, 10, "BIP84", 31, 31);
+  const b = calcFeeAndChange(1_000_000n, 100_000n, 1, 10, "BIP84", 43, 31);
+  assert.equal(b.fee - a.fee, 120n);
+});
+
+t("validateUtxos: accepts good data, rejects every kind of bad entry", () => {
+  const good = { txid: "AB".repeat(32), vout: 0, value: 1000 };
+  assert.deepEqual(validateUtxos([good]), [{ txid: "ab".repeat(32), vout: 0, value: 1000 }]);
+  assert.deepEqual(validateUtxos([]), []);
+  const bads = [
+    null,
+    "x",
+    {},
+    { ...good, txid: "zz".repeat(32) },
+    { ...good, txid: "ab".repeat(31) },
+    { ...good, txid: 5 },
+    { ...good, vout: -1 },
+    { ...good, vout: 1.5 },
+    { ...good, vout: "0" },
+    { ...good, vout: 2 ** 32 },
+    { ...good, value: 0 },
+    { ...good, value: -5 },
+    { ...good, value: 10.5 },
+    { ...good, value: "1000" },
+    { ...good, value: 2100000000000001 },
+    { txid: good.txid, vout: 0 },
+  ];
+  for (const b of bads) assert.throws(() => validateUtxos([good, b]), /UTXO|server/);
+  assert.throws(() => validateUtxos({}), /Unexpected/);
+  assert.throws(() => validateUtxos([good, { ...good }]), /Duplicate/);
+});
+
+const legacy = root.derive("m/44'/0'/0'/0/0");
+const legacyPay = PATHS[0].makePayment(legacy.publicKey);
+const prevRaw = btc.RawTx.encode({
+  version: 2,
+  inputs: [
+    {
+      txid: new Uint8Array(32).fill(1),
+      index: 0,
+      finalScriptSig: new Uint8Array(),
+      sequence: 0xffffffff,
+    },
+  ],
+  outputs: [
+    { amount: 5000n, script: new Uint8Array([0x6a]) },
+    { amount: 100000n, script: legacyPay.script },
+  ],
+  lockTime: 0,
+});
+const prevTxid = Buffer.from(
+  createHash("sha256").update(createHash("sha256").update(prevRaw).digest()).digest(),
+)
+  .reverse()
+  .toString("hex");
+
+t("verifyPrevOutput: previous tx must match txid, output index, amount and script", () => {
+  verifyPrevOutput(prevRaw, prevTxid, 1, 100000, legacyPay.script); // genuine: no throw
+  assert.throws(() => verifyPrevOutput(prevRaw, "aa".repeat(32), 1, 100000, legacyPay.script), /does not match/);
+  assert.throws(() => verifyPrevOutput(prevRaw, prevTxid, 1, 99999, legacyPay.script), /amount or address/);
+  assert.throws(() => verifyPrevOutput(prevRaw, prevTxid, 1, 100001, legacyPay.script), /amount or address/);
+  assert.throws(() => verifyPrevOutput(prevRaw, prevTxid, 0, 5000, legacyPay.script), /amount or address/);
+  assert.throws(() => verifyPrevOutput(prevRaw, prevTxid, 7, 100000, legacyPay.script), /does not match/);
+  assert.throws(() => verifyPrevOutput(prevRaw.slice(0, 20), prevTxid, 1, 100000, legacyPay.script), /does not match/);
+});
+
+// Build a transaction the way the app does, to audit it.
+function buildLegacySpend({ amount = 40_000n, change = 59_000n, to = DEST } = {}) {
+  const tx = new btc.Transaction();
+  tx.addInput({ ...legacyPay, txid: prevTxid, index: 1, nonWitnessUtxo: prevRaw });
+  tx.addOutputAddress(to, amount);
+  if (change > 0n) tx.addOutputAddress(legacyPay.address, change);
+  return tx;
+}
+const auditArgs = (over = {}) => ({
+  to: DEST,
+  amountSats: 40_000n,
+  changeSats: 59_000n,
+  sourceScript: legacyPay.script,
+  feeSats: 1_000n,
+  minFee: 1_000n,
+  inputs: [{ txid: prevTxid, vout: 1, value: 100000 }],
+  ...over,
+});
+
+t("auditTransaction: passes a correct transaction, stops every mismatch", () => {
+  auditTransaction(buildLegacySpend(), auditArgs());
+  const fails = (tx, args, re) => assert.throws(() => auditTransaction(tx, args), re);
+  fails(buildLegacySpend({ to: VECTORS.BIP84 }), auditArgs(), /recipient/);
+  fails(buildLegacySpend({ amount: 40_001n, change: 58_999n }), auditArgs(), /amount differs/);
+  fails(buildLegacySpend({ change: 58_000n }), auditArgs(), /change amount|fee differs/);
+  fails(buildLegacySpend({ change: 0n }), auditArgs(), /number of outputs/);
+  fails(buildLegacySpend(), auditArgs({ feeSats: 1_001n }), /fee differs/);
+  fails(buildLegacySpend(), auditArgs({ minFee: 2_000n }), /outside the expected range/);
+  fails(buildLegacySpend(), auditArgs({ inputs: [{ txid: "aa".repeat(32), vout: 1, value: 100000 }] }), /input differs/);
+  fails(buildLegacySpend(), auditArgs({ inputs: [{ txid: prevTxid, vout: 1, value: 99999 }] }), /input amount/);
+  fails(buildLegacySpend({ amount: 99_999n, change: 5n }), auditArgs({ amountSats: 99_999n, changeSats: 5n }), /exceed|fee/);
+  fails(buildLegacySpend(), auditArgs({ sourceScript: new Uint8Array([1, 2, 3]) }), /change does not return/);
+  // dust left to the miners (no change output): fee may exceed the minimum by at most DUST
+  const noChange = buildLegacySpend({ amount: 99_500n, change: 0n });
+  auditTransaction(noChange, auditArgs({ amountSats: 99_500n, changeSats: 0n, feeSats: 500n, minFee: 400n }));
+  const bigLeftover = buildLegacySpend({ amount: 98_000n, change: 0n }); // 2000 sats vanish into the fee
+  fails(bigLeftover, auditArgs({ amountSats: 98_000n, changeSats: 0n, feeSats: 2_000n, minFee: 400n }), /outside the expected range/);
+});
+
+t("checkFinalFeeRate: real size vs selected rate", () => {
+  checkFinalFeeRate(705n, 141, 5);
+  checkFinalFeeRate(705n, 150, 5); // slightly under: estimates are conservative, 0.9x allowed
+  assert.throws(() => checkFinalFeeRate(300n, 141, 5), /lower than selected/);
+  assert.throws(() => checkFinalFeeRate(500_000n, 100, 5), /far too high/);
 });
 
 console.log(`\n${n} logic tests passed`);

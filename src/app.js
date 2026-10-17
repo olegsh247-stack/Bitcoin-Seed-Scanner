@@ -15,7 +15,14 @@ import {
   selectUtxos,
   calcFeeAndChange,
   inputVSize,
-  outputVSize,
+  outputVSizeFor,
+  changeVSize,
+  feeFor,
+  parseFeeRate,
+  validateUtxos,
+  verifyPrevOutput,
+  auditTransaction,
+  checkFinalFeeRate,
   baseVSize,
   satsToBtc,
   btcToSats,
@@ -587,6 +594,44 @@ helpBtn.onclick = () => {
 };
 buildBoxes(12);
 
+// Forget everything tied to the previous scan: key material, the chosen source and any
+// prepared (not yet sent) transaction. Used by "Clear all" and before every new scan.
+function resetSendState() {
+  // Overwrite key material in place before dropping references.
+  for (const f of foundFunds) {
+    try {
+      f.privateKey?.fill(0);
+    } catch (_) {}
+  }
+  foundFunds = [];
+  selectedSource = null;
+  preparedTx = null;
+  confirmArea.style.display = "none";
+  confirmText.value = "";
+  broadcastBtn.disabled = true;
+  if (rootKey) {
+    try {
+      rootKey.wipePrivateData?.();
+    } catch (_) {}
+    rootKey = null;
+  }
+}
+
+// The confirmation belongs to one exact prepared transaction. Any change to the form
+// (recipient, amount, fee) or to the source cancels it: the user must prepare again.
+function invalidatePrepared() {
+  if (!preparedTx && confirmArea.style.display === "none") return;
+  const was = !!preparedTx;
+  preparedTx = null;
+  confirmArea.style.display = "none";
+  confirmText.value = "";
+  broadcastBtn.disabled = true;
+  if (was) {
+    sendStatus.textContent = "Details changed — press Prepare again before sending.";
+    sendStatus.className = "status";
+  }
+}
+
 function hardClear() {
   clearSeedBoxes();
   passphraseEl.value = "";
@@ -604,21 +649,7 @@ function hardClear() {
   progress.classList.remove("active");
   progressBar.style.width = "0%";
   sourceInfo.textContent = LANGS[lang].sourceHint;
-  // Overwrite key material in place before dropping references.
-  for (const f of foundFunds) {
-    try {
-      f.privateKey?.fill(0);
-    } catch (_) {}
-  }
-  foundFunds = [];
-  selectedSource = null;
-  preparedTx = null;
-  if (rootKey) {
-    try {
-      rootKey.wipePrivateData?.();
-    } catch (_) {}
-    rootKey = null;
-  }
+  resetSendState();
 }
 clearBtn.onclick = () => {
   if (confirm("Clear all data (seed, results, send form)?")) {
@@ -695,8 +726,7 @@ addressCheck = initAddressCheck({ fetchAddressInfo, getText: () => LANGS[lang] }
 
 async function fetchUtxos(addr) {
   const list = await (await fetchRetry(`${API}/address/${addr}/utxo`)).json();
-  if (!Array.isArray(list)) throw new Error("Unexpected response from mempool.space");
-  return list;
+  return validateUtxos(list); // strict: any malformed entry stops the preparation
 }
 
 // Legacy (P2PKH) inputs must be signed against the full previous transaction.
@@ -708,11 +738,13 @@ async function fetchRawTx(txid) {
 
 async function fetchFeeHints() {
   try {
-    const res = await fetch(`${API}/v1/fees/recommended`);
+    const res = await fetchWithTimeout(`${API}/v1/fees/recommended`, {}, 10000);
     if (!res.ok) return;
-    const f = await res.json();
+    const f = JSON.parse(res.text);
+    const okRate = (x) => Number.isFinite(x) && x >= 1 && x <= MAX_FEE_RATE;
+    if (!f || !okRate(f.fastestFee) || !okRate(f.halfHourFee) || !okRate(f.hourFee)) return;
     feeHints.textContent = `Hints: fast ${f.fastestFee} · halfHour ${f.halfHourFee} · hour ${f.hourFee} sat/vB`;
-    if (!feeRateEl.value || feeRateEl.value === "5") feeRateEl.value = f.halfHourFee || 5;
+    if (!feeRateEl.value || feeRateEl.value === "5") feeRateEl.value = f.halfHourFee;
   } catch (_) {}
 }
 
@@ -743,7 +775,8 @@ scanBtn.onclick = async () => {
   progress.classList.add("active");
   progressBar.style.width = "5%";
   scanBtn.disabled = true;
-  foundFunds = [];
+  resetSendState();
+  sendStatus.textContent = "";
   tbody.innerHTML = "";
   noFunds.style.display = "none";
   resultsCard.style.display = "none";
@@ -878,6 +911,7 @@ scanBtn.onclick = async () => {
         btn.onclick = () => {
           selectedSource = foundFunds[parseInt(btn.dataset.idx)];
           sourceInfo.innerHTML = `Source: <strong>${selectedSource.address}</strong><br>${selectedSource.type} · ${selectedSource.path} · balance <strong class="bal">${satsToBtc(selectedSource.balanceSats)} BTC</strong>`;
+          invalidatePrepared();
           sendStatus.textContent = "";
           confirmArea.style.display = "none";
         };
@@ -915,7 +949,9 @@ prepareBtn.onclick = async () => {
   if (!selectedSource) return fail("Select a source address first");
   const to = toAddressEl.value.trim();
   const amountStr = amountEl.value.trim();
-  const feeRate = parseInt(feeRateEl.value) || 5;
+  const fr = parseFeeRate(feeRateEl.value);
+  if (!fr.ok) return fail(fr.error);
+  const feeRate = fr.rate;
   if (!to || !amountStr) return fail("Enter address and amount");
   if (!isValidMainnetAddress(to))
     return fail("Not a valid Bitcoin mainnet address (checksum or format error)");
@@ -923,43 +959,54 @@ prepareBtn.onclick = async () => {
   if (amountSats === null) return fail("Amount must be a number with up to 8 decimals");
   if (amountSats <= 0n) return fail("Amount must be greater than zero");
   if (amountSats <= DUST) return fail("Amount is below the dust limit (546 sats)");
-  if (feeRate > MAX_FEE_RATE)
-    return fail(`Fee rate above ${MAX_FEE_RATE} sat/vB looks like a typo`);
 
   sendStatus.textContent = "Fetching UTXOs...";
   sendStatus.className = "status";
   prepareBtn.disabled = true;
+  invalidatePrepared();
+  sendStatus.textContent = "Fetching UTXOs...";
+  sendStatus.className = "status";
+  const source = selectedSource; // the transaction is prepared for exactly this source
+  const snapshot = [toAddressEl.value.trim(), amountEl.value.trim(), feeRateEl.value.trim()];
   try {
-    const utxos = await fetchUtxos(selectedSource.address);
+    const utxos = await fetchUtxos(source.address);
     if (!utxos.length) throw new Error("No UTXOs on this address");
+    const toVs = outputVSizeFor(to);
+    const changeVs = changeVSize(source.name);
     const { selected, sum: inputSum } = selectUtxos(
       utxos,
       amountSats,
       feeRate,
-      selectedSource.name,
+      source.name,
+      toVs,
+      changeVs,
     );
     const {
       fee: feeSats,
       change: changeSats,
       ok,
       vsize,
-    } = calcFeeAndChange(inputSum, amountSats, selected.length, feeRate, selectedSource.name);
+      minFee,
+    } = calcFeeAndChange(inputSum, amountSats, selected.length, feeRate, source.name, toVs, changeVs);
     if (!ok || changeSats < 0n)
       throw new Error(
         `Not enough funds. Need ~${satsToBtc(amountSats + feeSats)} BTC (amount + fee). On address: ${satsToBtc(inputSum)} BTC`,
       );
 
-    const isLegacy = selectedSource.name === "BIP44";
+    const isLegacy = source.name === "BIP44";
     if (isLegacy) sendStatus.textContent = "Fetching previous transactions...";
     const inputs = [];
     for (const u of selected) {
-      const input = { ...selectedSource.payment, txid: u.txid, index: u.vout };
+      const input = { ...source.payment, txid: u.txid, index: u.vout };
       if (isLegacy) {
-        // P2PKH has no witness data: signing requires the whole previous tx.
-        input.nonWitnessUtxo = await fetchRawTx(u.txid);
+        // P2PKH has no witness data: signing requires the whole previous tx. It must be
+        // the one the input names, and its output must match the amount and address.
+        const raw = await fetchRawTx(u.txid);
+        verifyPrevOutput(raw, u.txid, u.vout, u.value, source.payment.script);
+        input.nonWitnessUtxo = raw;
       } else {
         input.witnessUtxo = {
-          script: selectedSource.payment.script,
+          script: source.payment.script,
           amount: BigInt(u.value),
         };
       }
@@ -969,9 +1016,30 @@ prepareBtn.onclick = async () => {
     const tx = new btc.Transaction();
     for (const inp of inputs) tx.addInput(inp);
     tx.addOutputAddress(to, amountSats);
-    if (changeSats > DUST) tx.addOutputAddress(selectedSource.address, changeSats);
+    if (changeSats > DUST) tx.addOutputAddress(source.address, changeSats);
+    const audit = {
+      to,
+      amountSats,
+      changeSats: changeSats > DUST ? changeSats : 0n,
+      sourceScript: source.payment.script,
+      feeSats,
+      minFee,
+      inputs: selected.map((u) => ({ txid: u.txid, vout: u.vout, value: u.value })),
+    };
+    auditTransaction(tx, audit); // independent check before the user is asked to confirm
+    if (
+      selectedSource !== source ||
+      toAddressEl.value.trim() !== snapshot[0] ||
+      amountEl.value.trim() !== snapshot[1] ||
+      feeRateEl.value.trim() !== snapshot[2]
+    )
+      throw new Error("Details changed while preparing — press Prepare again");
     preparedTx = {
       tx,
+      to,
+      source,
+      audit,
+      feeRate,
       amountSats: Number(amountSats),
       feeSats: Number(feeSats),
       changeSats: Number(changeSats),
@@ -1004,14 +1072,20 @@ maxBtn.onclick = async () => {
     sendStatus.className = "status err";
   };
   if (!selectedSource) return fail("Select a source address first");
-  const feeRate = parseInt(feeRateEl.value) || 5;
+  const fr = parseFeeRate(feeRateEl.value);
+  if (!fr.ok) return fail(fr.error);
   try {
     const utxos = await fetchUtxos(selectedSource.address);
     if (!utxos.length) return fail("No UTXOs on this address");
     const inputSum = utxos.reduce((s, u) => s + BigInt(u.value), 0n);
-    const vs = baseVSize() + utxos.length * inputVSize(selectedSource.name) + outputVSize();
-    const fee = BigInt(Math.ceil(vs * feeRate));
+    // Size by the real recipient type when it is entered; otherwise the largest type.
+    const toVs = isValidMainnetAddress(toAddressEl.value.trim())
+      ? outputVSizeFor(toAddressEl.value)
+      : 43;
+    const vs = baseVSize() + utxos.length * inputVSize(selectedSource.name) + toVs;
+    const fee = feeFor(vs, fr.rate);
     const maxSats = inputSum > fee ? inputSum - fee : 0n;
+    invalidatePrepared();
     amountEl.value = satsToBtc(maxSats);
     sendStatus.textContent = "";
     sendStatus.className = "status";
@@ -1020,11 +1094,17 @@ maxBtn.onclick = async () => {
   }
 };
 
+// The confirmation is checked against the prepared transaction, never the live form.
 confirmText.oninput = () => {
-  const to = toAddressEl.value.trim();
-  const needed = to.slice(-6).toLowerCase();
+  if (!preparedTx) {
+    broadcastBtn.disabled = true;
+    return;
+  }
+  const needed = preparedTx.to.slice(-6).toLowerCase();
   broadcastBtn.disabled = confirmText.value.trim().toLowerCase() !== needed;
 };
+// Any edit of the form cancels the prepared transaction.
+for (const el of [toAddressEl, amountEl, feeRateEl]) el.addEventListener("input", invalidatePrepared);
 
 cancelSendBtn.onclick = () => {
   confirmArea.style.display = "none";
@@ -1036,14 +1116,24 @@ cancelSendBtn.onclick = () => {
 
 broadcastBtn.onclick = async () => {
   if (!preparedTx || !selectedSource) return;
+  if (
+    selectedSource !== preparedTx.source ||
+    toAddressEl.value.trim() !== preparedTx.to ||
+    confirmText.value.trim().toLowerCase() !== preparedTx.to.slice(-6).toLowerCase()
+  ) {
+    invalidatePrepared();
+    return;
+  }
   if (!confirm("Really sign and broadcast this transaction?\n\nThis cannot be undone.")) return;
   sendStatus.textContent = "Signing...";
   sendStatus.className = "status";
   broadcastBtn.disabled = true;
   try {
-    const { tx } = preparedTx;
-    tx.sign(selectedSource.privateKey);
+    const { tx, source, audit, feeRate } = preparedTx;
+    auditTransaction(tx, audit); // once more, right before the key is used
+    tx.sign(source.privateKey);
     tx.finalize();
+    checkFinalFeeRate(audit.feeSats, tx.vsize, feeRate);
     const txHex = hex.encode(tx.extract());
 
     sendStatus.textContent = "Broadcasting...";
@@ -1096,7 +1186,14 @@ broadcastBtn.onclick = async () => {
   } catch (e) {
     sendStatus.textContent = "Send error: " + e.message;
     sendStatus.className = "status err";
-    broadcastBtn.disabled = false;
+    if (String(e.message).startsWith("Transaction check failed")) {
+      // Nothing was sent. The prepared transaction is not trusted any more.
+      preparedTx = null;
+      confirmArea.style.display = "none";
+      confirmText.value = "";
+    } else {
+      broadcastBtn.disabled = false;
+    }
   }
 };
 

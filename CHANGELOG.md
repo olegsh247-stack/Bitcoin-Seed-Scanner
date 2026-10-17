@@ -3,6 +3,19 @@
 All notable changes to Bitcoin Seed Scanner are listed here, newest first.
 Minor tweaks (wording, layout fixes, hash refreshes) are not included.
 
+## [Unreleased]
+
+### Security
+- Sending: the confirmation is now tied to the exact prepared transaction. Changing the recipient, amount, fee or source after "Prepare" cancels it and requires preparing again; the last-6-characters check uses the prepared recipient, not the form field.
+- Before signing, the transaction is checked independently: inputs, recipient, amount, change and fee must match what was confirmed; the real fee rate is checked after signing.
+- Strict checks of server data: every UTXO is validated (txid, output index, amount, duplicates); for Legacy addresses the previous transaction must match the txid, amount and address reported by the server.
+- A new scan wipes the previous key material and forgets the selected source and any prepared transaction.
+
+### Changed
+- Fee rate must be a valid positive number (decimals such as 1.5 are allowed); invalid input is refused instead of silently replaced with 5.
+- Fee estimates use the real output size of the recipient and change address types (Legacy, Nested SegWit, Native SegWit, Taproot); "Maximum" uses the same model.
+- The fee-hint request has a time limit and its numbers are validated.
+
 ## [1.2.0] - 2026-10-16
 
 ### Added
