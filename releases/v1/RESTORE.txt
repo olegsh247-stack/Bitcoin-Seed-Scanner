@@ -1,0 +1,2 @@
+Snapshot v1 = commit 72c99da (stable, before multi-server support).
+Restore: copy releases/v1/index.html over index.html, or: git checkout 72c99da -- .
