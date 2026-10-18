@@ -7,7 +7,7 @@
   "description": "Single-file Bitcoin seed recovery scanner. index.html is built from src/ with all dependencies bundled (no CDN).",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node test/logic.test.mjs && node test/e2e.test.mjs"
+    "test": "node test/logic.test.mjs && node test/net.test.mjs && node test/e2e.test.mjs"
   },
   "dependencies": {
     "@noble/hashes": "1.5.0",

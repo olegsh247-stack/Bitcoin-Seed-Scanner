@@ -8,6 +8,7 @@ import * as btc from "@scure/btc-signer";
 import { hex } from "@scure/base";
 import { initAddressCheck } from "./addrcheck.js";
 import { initAddrList } from "./addrlist.js";
+import { createNet, reasonText } from "./net.js";
 import {
   PATHS,
   CHAINS,
@@ -31,7 +32,6 @@ import {
   feeWarning,
 } from "./lib.js";
 
-const API = "https://mempool.space/api";
 
 // ---------------------------------------------------------------- i18n ----
 const LANGS = {
@@ -51,7 +51,7 @@ const LANGS = {
     seedBad: "✗ Checksum mismatch — a word is wrong or in the wrong order",
     seedWord: "✗ Not a valid BIP39 word",
     helpBody:
-      'What it does\nChecks one seed phrase against all four common Bitcoin address types — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — on both the receive and change chains, and lets you send coins from a found address. Many wallets only look at the newest type, so older coins can look "missing".\n\nHow to use\n1. Enter your 12 or 24 words, one per box (you can paste the whole phrase into any box). All boxes turn green when the phrase is valid and red when it is not.\n2. Add the passphrase if you used one.\n3. Press "Find coins" and wait.\n4. Press "Select" next to an address with a balance, enter the destination and amount, press "Prepare", type the last 6 characters of the destination, then "Sign and send".\n5. Close the tab when you are done.\n\nSettings\n• Gap limit: how many unused addresses in a row to see before a chain is considered finished (default 25).\n• Account number: normally 0.\n• Address type: if you know which types you need, switch off the others — scanning will be faster.\n\nSecurity and privacy\n• The seed lives only in this tab\'s memory. It is never saved and never sent anywhere.\n• Only mempool.space is contacted (balances, fees, broadcast). It can see the addresses you check and your IP address; use Tor/VPN if that matters.\n• No code is loaded from the internet: every library is inside this single file.\n• For large amounts use a clean device. This is not a replacement for a hardware wallet.\n\nSource and license\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — MIT license, provided "as is" without warranty. Compare this file\'s SHA-256 with the one in the README.',
+      'What it does\nChecks one seed phrase against all four common Bitcoin address types — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — on both the receive and change chains, and lets you send coins from a found address. Many wallets only look at the newest type, so older coins can look "missing".\n\nHow to use\n1. Enter your 12 or 24 words, one per box (you can paste the whole phrase into any box). All boxes turn green when the phrase is valid and red when it is not.\n2. Add the passphrase if you used one.\n3. Press "Find coins" and wait.\n4. Press "Select" next to an address with a balance, enter the destination and amount, press "Prepare", type the last 6 characters of the destination, then "Sign and send".\n5. Close the tab when you are done.\n\nSettings\n• Gap limit: how many unused addresses in a row to see before a chain is considered finished (default 25).\n• Account number: normally 0.\n• Address type: if you know which types you need, switch off the others — scanning will be faster.\n\nSecurity and privacy\n• The seed lives only in this tab\'s memory. It is never saved and never sent anywhere.\n• Only three public servers are contacted, one at a time: mempool.space, then blockstream.info, then btcscan.org if the first does not answer (balances, fees, broadcast). The server in use is shown under \"Data source\" and can be chosen by hand. Whichever one is used can see the addresses you check and your IP address; use Tor/VPN if that matters.\n• No code is loaded from the internet: every library is inside this single file.\n• For large amounts use a clean device. This is not a replacement for a hardware wallet.\n\nSource and license\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — MIT license, provided "as is" without warranty. Compare this file\'s SHA-256 with the one in the README.',
     passLabel: "Passphrase (if used)",
     passPh: "optional",
     gapLabel: "Gap limit",
@@ -72,6 +72,11 @@ const LANGS = {
     alCopy: "Copy",
     alCopied: "Copied",
     alCopyFail: "Could not copy — select the text and copy it manually",
+    srcLabel: "Data source",
+    srcAuto: "Auto",
+    srcNow: "Using",
+    srcHint: "Auto picks the first server that answers and switches by itself if it stops. Each server sees the addresses you check and your IP.",
+    altSend: "Send via another server",
     dustNote: "Leftover of {n} sats (below the network minimum) was added to the fee.",
     addrPh: "Paste a Bitcoin address",
     addrBtn: "Check",
@@ -126,7 +131,7 @@ const LANGS = {
     seedBad: "✗ Контрольная сумма не сходится — неверное слово или порядок слов",
     seedWord: "✗ Такого слова нет в списке BIP39",
     helpBody:
-      "Что делает\nПроверяет одну seed-фразу сразу по всем четырём типам биткоин-адресов — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — по цепочкам receive и change, и позволяет отправить монеты с найденного адреса. Многие кошельки смотрят только новейший тип, поэтому старые монеты могут «пропадать».\n\nКак пользоваться\n1. Введите 12 или 24 слова по одному в окошко (можно вставить всю фразу целиком в любое окошко). Если фраза верна, все окошки станут зелёными, если нет — красными.\n2. Введите passphrase, если он был.\n3. Нажмите «Найти монеты» и дождитесь результата.\n4. Нажмите «Выбрать» у адреса с балансом, укажите получателя и сумму, нажмите «Подготовить», введите последние 6 символов адреса получателя и «Подписать и отправить».\n5. Закройте вкладку, когда закончите.\n\nНастройки\n• Gap limit: сколько неиспользованных адресов подряд нужно увидеть, чтобы считать цепочку законченной (по умолчанию 25).\n• Номер аккаунта: обычно 0.\n• Тип адреса: если знаете, какие типы вам нужны, отключите остальные — сканирование пойдёт быстрее.\n\nБезопасность и приватность\n• Seed живёт только в памяти этой вкладки. Он нигде не сохраняется и никуда не отправляется.\n• В сеть уходят только запросы к mempool.space (балансы, комиссии, отправка). Он видит проверяемые адреса и ваш IP; если это важно — используйте Tor/VPN.\n• Код из интернета не загружается: все библиотеки находятся внутри этого единственного файла.\n• Для крупных сумм используйте чистое устройство. Это не замена hardware-кошельку.\n\nИсточник и лицензия\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — лицензия MIT, «как есть», без гарантий. Сверьте SHA-256 этого файла с указанным в README.",
+      "Что делает\nПроверяет одну seed-фразу сразу по всем четырём типам биткоин-адресов — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — по цепочкам receive и change, и позволяет отправить монеты с найденного адреса. Многие кошельки смотрят только новейший тип, поэтому старые монеты могут «пропадать».\n\nКак пользоваться\n1. Введите 12 или 24 слова по одному в окошко (можно вставить всю фразу целиком в любое окошко). Если фраза верна, все окошки станут зелёными, если нет — красными.\n2. Введите passphrase, если он был.\n3. Нажмите «Найти монеты» и дождитесь результата.\n4. Нажмите «Выбрать» у адреса с балансом, укажите получателя и сумму, нажмите «Подготовить», введите последние 6 символов адреса получателя и «Подписать и отправить».\n5. Закройте вкладку, когда закончите.\n\nНастройки\n• Gap limit: сколько неиспользованных адресов подряд нужно увидеть, чтобы считать цепочку законченной (по умолчанию 25).\n• Номер аккаунта: обычно 0.\n• Тип адреса: если знаете, какие типы вам нужны, отключите остальные — сканирование пойдёт быстрее.\n\nБезопасность и приватность\n• Seed живёт только в памяти этой вкладки. Он нигде не сохраняется и никуда не отправляется.\n• В сеть уходят запросы только к трём публичным серверам, по одному за раз: mempool.space, затем blockstream.info, затем btcscan.org, если предыдущий не отвечает (балансы, комиссии, отправка). Используемый сервер показан в «Источнике данных», его можно выбрать вручную. Любой из них видит проверяемые адреса и ваш IP; если это важно — используйте Tor/VPN.\n• Код из интернета не загружается: все библиотеки находятся внутри этого единственного файла.\n• Для крупных сумм используйте чистое устройство. Это не замена hardware-кошельку.\n\nИсточник и лицензия\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — лицензия MIT, «как есть», без гарантий. Сверьте SHA-256 этого файла с указанным в README.",
     passLabel: "Passphrase (если использовали)",
     passPh: "необязательно",
     gapLabel: "Gap limit",
@@ -147,6 +152,11 @@ const LANGS = {
     alCopy: "Копировать",
     alCopied: "Скопировано",
     alCopyFail: "Не удалось скопировать — выделите текст и скопируйте вручную",
+    srcLabel: "Источник данных",
+    srcAuto: "Авто",
+    srcNow: "Используется",
+    srcHint: "«Авто» берёт первый отвечающий сервер и сам переключается, если он перестал отвечать. Каждый сервер видит проверяемые адреса и ваш IP.",
+    altSend: "Отправить через другой сервер",
     dustNote: "Остаток {n} сатоши (меньше минимума сети) добавлен к комиссии.",
     addrPh: "Вставьте адрес Bitcoin",
     addrBtn: "Проверить",
@@ -203,7 +213,7 @@ const LANGS = {
     seedBad: "✗ La suma de comprobación no coincide: hay una palabra incorrecta o en otro orden",
     seedWord: "✗ No es una palabra BIP39 válida",
     helpBody:
-      "Qué hace\nComprueba una frase seed en los cuatro tipos habituales de dirección Bitcoin — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — en las cadenas receive y change, y permite enviar monedas desde una dirección encontrada. Muchos monederos solo miran el tipo más nuevo, así que las monedas antiguas pueden parecer «perdidas».\n\nCómo usarla\n1. Escribe las 12 o 24 palabras, una por casilla (puedes pegar la frase completa en cualquier casilla). Todas las casillas se ponen en verde si la frase es válida y en rojo si no lo es.\n2. Añade la passphrase si la usaste.\n3. Pulsa «Buscar monedas» y espera.\n4. Pulsa «Elegir» junto a una dirección con saldo, indica destino e importe, pulsa «Preparar», escribe los últimos 6 caracteres del destino y «Firmar y enviar».\n5. Cierra la pestaña al terminar.\n\nAjustes\n• Gap limit: cuántas direcciones sin usar seguidas deben aparecer para dar por terminada una cadena (25 por defecto).\n• Número de cuenta: normalmente 0.\n• Tipo de dirección: si sabe qué tipos necesita, desactive los demás: el escaneo será más rápido.\n\nSeguridad y privacidad\n• La seed solo existe en la memoria de esta pestaña. Nunca se guarda ni se envía a ningún sitio.\n• Solo se contacta con mempool.space (saldos, comisiones, envío). Puede ver las direcciones que consultas y tu IP; usa Tor/VPN si te importa.\n• No se carga código de internet: todas las bibliotecas están dentro de este único archivo.\n• Con cantidades grandes usa un dispositivo limpio. No sustituye a un monedero hardware.\n\nFuente y licencia\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — licencia MIT, «tal cual», sin garantía. Compara el SHA-256 de este archivo con el del README.",
+      "Qué hace\nComprueba una frase seed en los cuatro tipos habituales de dirección Bitcoin — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — en las cadenas receive y change, y permite enviar monedas desde una dirección encontrada. Muchos monederos solo miran el tipo más nuevo, así que las monedas antiguas pueden parecer «perdidas».\n\nCómo usarla\n1. Escribe las 12 o 24 palabras, una por casilla (puedes pegar la frase completa en cualquier casilla). Todas las casillas se ponen en verde si la frase es válida y en rojo si no lo es.\n2. Añade la passphrase si la usaste.\n3. Pulsa «Buscar monedas» y espera.\n4. Pulsa «Elegir» junto a una dirección con saldo, indica destino e importe, pulsa «Preparar», escribe los últimos 6 caracteres del destino y «Firmar y enviar».\n5. Cierra la pestaña al terminar.\n\nAjustes\n• Gap limit: cuántas direcciones sin usar seguidas deben aparecer para dar por terminada una cadena (25 por defecto).\n• Número de cuenta: normalmente 0.\n• Tipo de dirección: si sabe qué tipos necesita, desactive los demás: el escaneo será más rápido.\n\nSeguridad y privacidad\n• La seed solo existe en la memoria de esta pestaña. Nunca se guarda ni se envía a ningún sitio.\n• Solo se contacta con tres servidores públicos, uno cada vez: mempool.space, luego blockstream.info y luego btcscan.org si el anterior no responde (saldos, comisiones, envío). El servidor en uso se muestra en «Fuente de datos» y puede elegirse a mano. Cualquiera de ellos puede ver las direcciones que consultas y tu IP; usa Tor/VPN si te importa.\n• No se carga código de internet: todas las bibliotecas están dentro de este único archivo.\n• Con cantidades grandes usa un dispositivo limpio. No sustituye a un monedero hardware.\n\nFuente y licencia\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — licencia MIT, «tal cual», sin garantía. Compara el SHA-256 de este archivo con el del README.",
     passLabel: "Passphrase (si la usaste)",
     passPh: "opcional",
     gapLabel: "Gap limit",
@@ -224,6 +234,11 @@ const LANGS = {
     alCopy: "Copiar",
     alCopied: "Copiado",
     alCopyFail: "No se pudo copiar: seleccione el texto y cópielo a mano",
+    srcLabel: "Fuente de datos",
+    srcAuto: "Auto",
+    srcNow: "En uso",
+    srcHint: "«Auto» elige el primer servidor que responde y cambia solo si deja de responder. Cada servidor ve las direcciones consultadas y tu IP.",
+    altSend: "Enviar por otro servidor",
     dustNote: "Un resto de {n} sats (por debajo del mínimo de la red) se añadió a la comisión.",
     addrPh: "Pegue una dirección Bitcoin",
     addrBtn: "Comprobar",
@@ -280,7 +295,7 @@ const LANGS = {
     seedBad: "✗ Somme de contrôle invalide — un mot est faux ou dans le mauvais ordre",
     seedWord: "✗ Mot absent de la liste BIP39",
     helpBody:
-      "À quoi ça sert\nVérifie une phrase seed sur les quatre types d'adresses Bitcoin courants — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — sur les chaînes receive et change, et permet d'envoyer des pièces depuis une adresse trouvée. Beaucoup de portefeuilles ne regardent que le type le plus récent : les anciennes pièces peuvent sembler « disparues ».\n\nMode d'emploi\n1. Saisissez vos 12 ou 24 mots, un par case (vous pouvez coller toute la phrase dans n'importe quelle case). Toutes les cases deviennent vertes si la phrase est valide, rouges sinon.\n2. Ajoutez la passphrase si vous en avez utilisé une.\n3. Cliquez sur « Trouver les pièces » et attendez.\n4. Cliquez sur « Choisir » à côté d'une adresse avec un solde, indiquez destinataire et montant, cliquez sur « Préparer », tapez les 6 derniers caractères de l'adresse de destination, puis « Signer et envoyer ».\n5. Fermez l'onglet quand vous avez terminé.\n\nRéglages\n• Gap limit : combien d'adresses inutilisées consécutives il faut voir pour considérer une chaîne terminée (25 par défaut).\n• Numéro de compte : normalement 0.\n• Type d’adresse : si vous savez quels types vous utilisez, désactivez les autres — le scan sera plus rapide.\n\nSécurité et confidentialité\n• La seed n'existe que dans la mémoire de cet onglet. Elle n'est jamais enregistrée ni envoyée.\n• Seul mempool.space est contacté (soldes, frais, diffusion). Il voit les adresses vérifiées et votre IP ; utilisez Tor/VPN si cela compte pour vous.\n• Aucun code n'est chargé depuis Internet : toutes les bibliothèques sont dans ce fichier unique.\n• Pour de gros montants, utilisez un appareil propre. Ce n'est pas un remplacement d'un portefeuille matériel.\n\nSource et licence\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — licence MIT, « en l'état », sans garantie. Comparez le SHA-256 de ce fichier à celui du README.",
+      "À quoi ça sert\nVérifie une phrase seed sur les quatre types d'adresses Bitcoin courants — BIP44 Legacy (1…), BIP49 Nested SegWit (3…), BIP84 Native SegWit (bc1q…), BIP86 Taproot (bc1p…) — sur les chaînes receive et change, et permet d'envoyer des pièces depuis une adresse trouvée. Beaucoup de portefeuilles ne regardent que le type le plus récent : les anciennes pièces peuvent sembler « disparues ».\n\nMode d'emploi\n1. Saisissez vos 12 ou 24 mots, un par case (vous pouvez coller toute la phrase dans n'importe quelle case). Toutes les cases deviennent vertes si la phrase est valide, rouges sinon.\n2. Ajoutez la passphrase si vous en avez utilisé une.\n3. Cliquez sur « Trouver les pièces » et attendez.\n4. Cliquez sur « Choisir » à côté d'une adresse avec un solde, indiquez destinataire et montant, cliquez sur « Préparer », tapez les 6 derniers caractères de l'adresse de destination, puis « Signer et envoyer ».\n5. Fermez l'onglet quand vous avez terminé.\n\nRéglages\n• Gap limit : combien d'adresses inutilisées consécutives il faut voir pour considérer une chaîne terminée (25 par défaut).\n• Numéro de compte : normalement 0.\n• Type d’adresse : si vous savez quels types vous utilisez, désactivez les autres — le scan sera plus rapide.\n\nSécurité et confidentialité\n• La seed n'existe que dans la mémoire de cet onglet. Elle n'est jamais enregistrée ni envoyée.\n• Seuls trois serveurs publics sont contactés, un à la fois : mempool.space, puis blockstream.info, puis btcscan.org si le précédent ne répond pas (soldes, frais, diffusion). Le serveur utilisé est indiqué sous « Source des données » et peut être choisi à la main. Chacun voit les adresses vérifiées et votre IP ; utilisez Tor/VPN si cela compte pour vous.\n• Aucun code n'est chargé depuis Internet : toutes les bibliothèques sont dans ce fichier unique.\n• Pour de gros montants, utilisez un appareil propre. Ce n'est pas un remplacement d'un portefeuille matériel.\n\nSource et licence\nhttps://github.com/olegsh247-stack/Bitcoin-Seed-Scanner — licence MIT, « en l'état », sans garantie. Comparez le SHA-256 de ce fichier à celui du README.",
     passLabel: "Passphrase (si utilisée)",
     passPh: "facultatif",
     gapLabel: "Gap limit",
@@ -301,6 +316,11 @@ const LANGS = {
     alCopy: "Copier",
     alCopied: "Copié",
     alCopyFail: "Copie impossible : sélectionnez le texte et copiez-le à la main",
+    srcLabel: "Source des données",
+    srcAuto: "Auto",
+    srcNow: "Utilisé",
+    srcHint: "« Auto » choisit le premier serveur qui répond et change seul s’il s’arrête. Chaque serveur voit les adresses vérifiées et votre IP.",
+    altSend: "Envoyer via un autre serveur",
     dustNote: "Un reste de {n} sats (sous le minimum du réseau) a été ajouté aux frais.",
     addrPh: "Collez une adresse Bitcoin",
     addrBtn: "Vérifier",
@@ -414,6 +434,10 @@ function applyLang() {
     ["thAddr", L.thAddr],
     ["thBal", L.thBal],
     ["footerText", L.footer],
+    ["srcLabel", L.srcLabel],
+    ["srcAutoOpt", L.srcAuto],
+    ["srcHint", L.srcHint],
+    ["altSendBtn", L.altSend],
   ];
   for (const [id, text] of map) {
     const el = document.getElementById(id);
@@ -440,6 +464,7 @@ document.querySelectorAll(".lang-btn").forEach(
       lang = b.dataset.lang;
       storeSet("bss_lang", lang);
       applyLang();
+      showSource();
       refreshSeedUI();
     }),
 );
@@ -475,7 +500,10 @@ const passphraseEl = $("passphrase"),
   cancelSendBtn = $("cancelSendBtn"),
   sendStatus = $("sendStatus"),
   sourceInfo = $("sourceInfo"),
-  feeHints = $("feeHints");
+  feeHints = $("feeHints"),
+  altSendBtn = $("altSendBtn"),
+  sourceSel = $("sourceSel"),
+  sourceNow = $("sourceNow");
 
 let foundFunds = [],
   selectedSource = null,
@@ -708,95 +736,77 @@ clearBtn.onclick = () => {
 };
 
 // ------------------------------------------------------------- network ----
-// Retries on network errors, HTTP 429 and 5xx with exponential backoff.
-// Other 4xx responses fail immediately.
-// Adaptive pacing: extra pause between lookups that grows only while the service
-// answers "too many requests" (or a server error) and fades away once it recovers.
-let penaltyMs = 0;
-
-// A connection that never answers must not freeze the app: every request is cut off
-// after a time limit (the body is read inside the same limit) and counts as a failure.
-const FETCH_TIMEOUT_MS = 20000;
-async function fetchWithTimeout(url, init = {}, ms = FETCH_TIMEOUT_MS) {
-  const ctl = new AbortController();
-  const timer = setTimeout(() => ctl.abort(), ms);
-  try {
-    const res = await fetch(url, { ...init, signal: ctl.signal });
-    const text = await res.text();
-    return { ok: res.ok, status: res.status, statusText: res.statusText, text };
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-async function fetchRetry(url, init, tries = 4) {
-  let lastErr;
-  for (let attempt = 0; attempt < tries; attempt++) {
-    try {
-      const res = await fetchWithTimeout(url, init);
-      if (res.ok) {
-        penaltyMs = penaltyMs < 200 ? 0 : Math.floor(penaltyMs / 2);
-        return { json: async () => JSON.parse(res.text), text: async () => res.text };
-      }
-      lastErr = new Error(`HTTP ${res.status}`);
-      if (res.status !== 429 && res.status < 500) break;
-      penaltyMs = Math.min(8000, Math.max(500, penaltyMs * 2));
-    } catch (e) {
-      lastErr = e;
-    }
-    await sleep(500 * 2 ** attempt);
-  }
-  throw lastErr;
-}
+// Three Esplora servers in trust order (see net.js). One is used at a time; the app moves to
+// the next when it stops answering, is rate-limited or blocked, or is behind the chain.
+const net = createNet({
+  sleep: (ms) => sleep(ms),
+  onChange: () => showSource(),
+});
 
 // Balance plus "has this address ever been used" (needed for the gap limit).
 async function fetchAddressInfo(addr) {
-  const data = await (await fetchRetry(`${API}/address/${addr}`)).json();
-  // Fail closed: an answer without real address data must never be read as "empty".
-  const chain = data && data.chain_stats;
-  if (
-    !chain ||
-    typeof chain !== "object" ||
-    !Number.isFinite(chain.funded_txo_sum) ||
-    !Number.isFinite(chain.spent_txo_sum) ||
-    !Number.isFinite(chain.tx_count)
-  )
-    throw new Error("Unexpected response from mempool.space");
-  const mem = data.mempool_stats || {};
-  const balance =
-    (chain.funded_txo_sum || 0) +
-    (mem.funded_txo_sum || 0) -
-    ((chain.spent_txo_sum || 0) + (mem.spent_txo_sum || 0));
-  const used = (chain.tx_count || 0) + (mem.tx_count || 0) > 0;
-  return { balance, used };
+  return net.request(`/address/${addr}`, {
+    parse: (text) => {
+      const data = JSON.parse(text);
+      // Fail closed: an answer without real address data must never be read as "empty".
+      const chain = data && data.chain_stats;
+      if (
+        !chain ||
+        typeof chain !== "object" ||
+        !Number.isFinite(chain.funded_txo_sum) ||
+        !Number.isFinite(chain.spent_txo_sum) ||
+        !Number.isFinite(chain.tx_count)
+      )
+        throw new Error("Unexpected address response");
+      const mem = data.mempool_stats || {};
+      const balance =
+        (chain.funded_txo_sum || 0) +
+        (mem.funded_txo_sum || 0) -
+        ((chain.spent_txo_sum || 0) + (mem.spent_txo_sum || 0));
+      const used = (chain.tx_count || 0) + (mem.tx_count || 0) > 0;
+      return { balance, used };
+    },
+  });
 }
 
 addressCheck = initAddressCheck({ fetchAddressInfo, getText: () => LANGS[lang] });
 addrList = initAddrList({ getText: () => LANGS[lang] });
 
 async function fetchUtxos(addr) {
-  const list = await (await fetchRetry(`${API}/address/${addr}/utxo`)).json();
-  return validateUtxos(list); // strict: any malformed entry stops the preparation
+  // strict: any malformed entry stops the preparation
+  return net.request(`/address/${addr}/utxo`, { parse: (t) => validateUtxos(JSON.parse(t)) });
 }
 
 // Legacy (P2PKH) inputs must be signed against the full previous transaction.
 async function fetchRawTx(txid) {
-  const text = (await (await fetchRetry(`${API}/tx/${txid}/hex`)).text()).trim();
-  if (!/^[0-9a-f]+$/i.test(text)) throw new Error("Unexpected raw transaction response");
-  return hex.decode(text);
+  return net.request(`/tx/${txid}/hex`, {
+    parse: (t) => {
+      const h = t.trim();
+      if (!/^[0-9a-f]+$/i.test(h)) throw new Error("Unexpected raw transaction response");
+      return hex.decode(h);
+    },
+  });
 }
 
 async function fetchFeeHints() {
-  try {
-    const res = await fetchWithTimeout(`${API}/v1/fees/recommended`, {}, 10000);
-    if (!res.ok) return;
-    const f = JSON.parse(res.text);
-    const okRate = (x) => Number.isFinite(x) && x >= 1 && x <= MAX_FEE_RATE;
-    if (!f || !okRate(f.fastestFee) || !okRate(f.halfHourFee) || !okRate(f.hourFee)) return;
-    feeHints.textContent = `Hints: fast ${f.fastestFee} · halfHour ${f.halfHourFee} · hour ${f.hourFee} sat/vB`;
-    if (!feeRateEl.value || feeRateEl.value === "5") feeRateEl.value = f.halfHourFee;
-  } catch (_) {}
+  const f = await net.fees();
+  if (!f) return;
+  feeHints.textContent = `Hints: fast ${f.fast} · halfHour ${f.halfHour} · hour ${f.hour} sat/vB`;
+  if (!feeRateEl.value || feeRateEl.value === "5") feeRateEl.value = f.halfHour;
 }
+
+// Shows which server is in use and lets the user pin one.
+function showSource() {
+  const a = net.getActive();
+  if (sourceNow)
+    sourceNow.textContent = a ? `${LANGS[lang].srcNow}: ${a.host}` : "";
+}
+sourceSel.onchange = () => {
+  net.setMode(sourceSel.value);
+  showSource();
+  feeHints.textContent = "";
+  fetchFeeHints();
+};
 
 // ---------------------------------------------------------------- scan ----
 scanBtn.onclick = async () => {
@@ -807,9 +817,11 @@ scanBtn.onclick = async () => {
   const activePaths = PATHS.filter((p) => typeOn(p.name));
   const account = Math.min(99, Math.max(0, parseInt(accountEl.value) || 0));
   const MAX_PER_CHAIN = 500; // hard safety cap per path/chain
-  const MAX_CONSECUTIVE_FAILURES = 10; // this many failures in a row -> pause and wait
+  const MAX_CONSECUTIVE_FAILURES = 5; // this many failures in a row (all servers tried) -> pause and wait
   const MAX_COOLDOWNS = 5; // give up only after this many waits in a row without any success
 
+  const stopMessage = (e) =>
+    `${reasonText(e)}. None of the servers (${net.providers.map((x) => x.host).join(", ")}) answered properly. Try again later or use a VPN.`;
   const fail = (msg) => {
     statusEl.textContent = msg;
     statusEl.className = "status err";
@@ -825,6 +837,7 @@ scanBtn.onclick = async () => {
   progress.classList.add("active");
   progressBar.style.width = "5%";
   scanBtn.disabled = true;
+  sourceSel.disabled = true;
   resetSendState();
   sendStatus.textContent = "";
   tbody.innerHTML = "";
@@ -832,131 +845,10 @@ scanBtn.onclick = async () => {
   resultsCard.style.display = "none";
   sendCard.classList.remove("active");
 
-  try {
-    const seed = bip39.mnemonicToSeedSync(mnemonic, passphrase);
-    rootKey = HDKey.fromMasterSeed(seed);
-    const combos = activePaths.length * CHAINS.length;
-    let comboIdx = 0,
-      lookups = 0,
-      failed = [], // addresses whose lookup failed; re-checked after the main scan
-      cooldowns = 0; // consecutive waits because the service stopped answering
-    penaltyMs = 0;
-    // Every address looked at, for the "Addresses of this seed phrase" block.
-    const known = new Map();
-    const recordFound = (f, info) => {
-      const k = known.get(f.address);
-      if (k) {
-        k.status = info.balance > 0 ? "funded" : info.used ? "used" : "unused";
-        k.balanceSats = info.balance;
-      }
-      if (info.balance > 0) foundFunds.push({ ...f, balanceSats: info.balance });
-    };
-
-    for (const p of activePaths) {
-      for (const change of CHAINS) {
-        const chainLabel = change === 0 ? "receive" : "change";
-        let streak = 0, // consecutive unused addresses
-          consecutiveFailures = 0;
-        for (let i = 0; i < MAX_PER_CHAIN && streak < gap; i++) {
-          statusEl.textContent = `Scanning ${p.name} (${p.type}, ${chainLabel}) #${i}...`;
-          progressBar.style.width = `${Math.round(((comboIdx + Math.min(1, streak / gap)) / combos) * 100)}%`;
-          const path = `m/${p.purpose}'/0'/${account}'/${change}/${i}`;
-          const child = rootKey.derive(path);
-          const payment = child.privateKey ? p.makePayment(child.publicKey) : null;
-          const address = payment && payment.address;
-          if (!address) {
-            streak++;
-            continue;
-          }
-          lookups++;
-          known.set(address, {
-            name: p.name,
-            type: p.type,
-            path,
-            address,
-            first: change === 0 && i === 0,
-            status: "unknown", // until the lookup succeeds
-            balanceSats: 0,
-          });
-          let info = null;
-          try {
-            info = await fetchAddressInfo(address);
-            consecutiveFailures = 0;
-            cooldowns = 0;
-          } catch (_) {
-            // Never read a failed lookup as "empty": count it and keep scanning.
-            failed.push({ p, path, address, child, payment });
-            consecutiveFailures++;
-            streak = 0;
-            if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
-              // The service stopped answering (rate limit or outage): wait and carry on
-              // instead of giving up. Failed addresses are re-checked at the end.
-              if (++cooldowns > MAX_COOLDOWNS)
-                throw new Error(
-                  "mempool.space is not responding (network blocked or rate-limited). Try again later or use a VPN.",
-                );
-              const waitSec = Math.min(60, 20 + 10 * cooldowns);
-              for (let s = waitSec; s > 0; s--) {
-                statusEl.textContent = `mempool.space is busy or not responding. Waiting ${s}s, then continuing (pause ${cooldowns} of ${MAX_COOLDOWNS})...`;
-                await sleep(1000);
-              }
-              consecutiveFailures = MAX_CONSECUTIVE_FAILURES - 1; // next failure pauses again
-            }
-          }
-          if (info) {
-            streak = info.used ? 0 : streak + 1;
-            recordFound(
-              {
-                path,
-                type: p.type,
-                name: p.name,
-                address,
-                privateKey: child.privateKey,
-                payment,
-                pub: child.publicKey,
-              },
-              info,
-            );
-          }
-          await sleep(80 + penaltyMs);
-        }
-        comboIdx++;
-      }
-    }
-    // Second chance for failed lookups: wait, then ask again (only those addresses).
-    for (let round = 1; round <= 3 && failed.length > 0; round++) {
-      const waitSec = 5 * round;
-      for (let s = waitSec; s > 0; s--) {
-        statusEl.textContent = `Re-checking ${failed.length} address(es) that failed — retry ${round} of 3 in ${s}s...`;
-        await sleep(1000);
-      }
-      const still = [];
-      for (const f of failed) {
-        statusEl.textContent = `Re-checking ${failed.length} address(es) that failed — retry ${round} of 3...`;
-        try {
-          const info = await fetchAddressInfo(f.address);
-          recordFound(
-            {
-              path: f.path,
-              type: f.p.type,
-              name: f.p.name,
-              address: f.address,
-              privateKey: f.child.privateKey,
-              payment: f.payment,
-              pub: f.child.publicKey,
-            },
-            info,
-          );
-        } catch (_) {
-          still.push(f);
-        }
-        await sleep(80 + penaltyMs);
-      }
-      failed = still;
-    }
-    const failedLookups = failed.length;
-    progressBar.style.width = "100%";
-
+  let known = new Map(), // every address looked at, for the "Addresses of this seed phrase" block
+    where = ""; // where the scan is now, to tell the user where it stopped
+  // Shows what has been found so far (also used when a scan stops early).
+  const renderResults = () => {
     resultsCard.style.display = "block";
     sendCard.classList.add("active");
     // First receive address of each scanned type + every address with history.
@@ -989,6 +881,133 @@ scanBtn.onclick = async () => {
         };
       });
     }
+  };
+
+  try {
+    const seed = bip39.mnemonicToSeedSync(mnemonic, passphrase);
+    rootKey = HDKey.fromMasterSeed(seed);
+    const combos = activePaths.length * CHAINS.length;
+    let comboIdx = 0,
+      lookups = 0,
+      failed = [], // addresses whose lookup failed; re-checked after the main scan
+      cooldowns = 0; // consecutive waits because the service stopped answering
+    net.revive(); // measure the servers afresh for every scan
+    showSource();
+    const recordFound = (f, info) => {
+      const k = known.get(f.address);
+      if (k) {
+        k.status = info.balance > 0 ? "funded" : info.used ? "used" : "unused";
+        k.balanceSats = info.balance;
+      }
+      if (info.balance > 0) foundFunds.push({ ...f, balanceSats: info.balance });
+    };
+
+    for (const p of activePaths) {
+      for (const change of CHAINS) {
+        const chainLabel = change === 0 ? "receive" : "change";
+        let streak = 0, // consecutive unused addresses
+          consecutiveFailures = 0;
+        for (let i = 0; i < MAX_PER_CHAIN && streak < gap; i++) {
+          statusEl.textContent = `Scanning ${p.name} (${p.type}, ${chainLabel}) #${i}...`;
+          progressBar.style.width = `${Math.round(((comboIdx + Math.min(1, streak / gap)) / combos) * 100)}%`;
+          const path = `m/${p.purpose}'/0'/${account}'/${change}/${i}`;
+          const child = rootKey.derive(path);
+          const payment = child.privateKey ? p.makePayment(child.publicKey) : null;
+          const address = payment && payment.address;
+          if (!address) {
+            streak++;
+            continue;
+          }
+          lookups++;
+          where = `${p.name}, ${chainLabel} #${i}`;
+          known.set(address, {
+            name: p.name,
+            type: p.type,
+            path,
+            address,
+            first: change === 0 && i === 0,
+            status: "unknown", // until the lookup succeeds
+            balanceSats: 0,
+          });
+          let info = null;
+          try {
+            info = await fetchAddressInfo(address);
+            consecutiveFailures = 0;
+            cooldowns = 0;
+          } catch (err) {
+            // Never read a failed lookup as "empty": count it and keep scanning.
+            failed.push({ p, path, address, child, payment });
+            consecutiveFailures++;
+            streak = 0;
+            if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+              // No server answers (rate limit, block or outage): wait and carry on
+              // instead of giving up. Failed addresses are re-checked at the end.
+              if (++cooldowns > MAX_COOLDOWNS) throw new Error(stopMessage(err));
+              const waitSec = Math.min(60, 20 + 10 * cooldowns);
+              for (let s = waitSec; s > 0; s--) {
+                statusEl.textContent = `Servers are busy or not responding (${reasonText(err)}). Waiting ${s}s, then continuing (pause ${cooldowns} of ${MAX_COOLDOWNS})...`;
+                await sleep(1000);
+              }
+              net.revive(); // forget "down" marks and measure again
+              consecutiveFailures = MAX_CONSECUTIVE_FAILURES - 1; // next failure pauses again
+            }
+          }
+          if (info) {
+            streak = info.used ? 0 : streak + 1;
+            recordFound(
+              {
+                path,
+                type: p.type,
+                name: p.name,
+                address,
+                privateKey: child.privateKey,
+                payment,
+                pub: child.publicKey,
+              },
+              info,
+            );
+          }
+          await sleep(80 + net.getPenalty());
+        }
+        comboIdx++;
+      }
+    }
+    // Second chance for failed lookups: wait, then ask again (only those addresses).
+    for (let round = 1; round <= 3 && failed.length > 0; round++) {
+      const waitSec = 5 * round;
+      for (let s = waitSec; s > 0; s--) {
+        statusEl.textContent = `Re-checking ${failed.length} address(es) that failed — retry ${round} of 3 in ${s}s...`;
+        await sleep(1000);
+      }
+      net.revive(); // servers marked "down" may have recovered: measure again
+      const still = [];
+      for (const f of failed) {
+        statusEl.textContent = `Re-checking ${failed.length} address(es) that failed — retry ${round} of 3...`;
+        try {
+          const info = await fetchAddressInfo(f.address);
+          recordFound(
+            {
+              path: f.path,
+              type: f.p.type,
+              name: f.p.name,
+              address: f.address,
+              privateKey: f.child.privateKey,
+              payment: f.payment,
+              pub: f.child.publicKey,
+            },
+            info,
+          );
+        } catch (_) {
+          still.push(f);
+        }
+        await sleep(80 + net.getPenalty());
+      }
+      failed = still;
+    }
+    const failedLookups = failed.length;
+    progressBar.style.width = "100%";
+
+    renderResults();
 
     if (failedLookups > 0) {
       statusEl.textContent = `Warning: ${failedLookups} of ${lookups} address lookups could not be checked even after retrying (network or rate limit). The result may be incomplete — wait a minute and run the scan again.`;
@@ -1002,9 +1021,16 @@ scanBtn.onclick = async () => {
     }
   } catch (e) {
     statusEl.textContent = "Error: " + e.message;
+    if (rootKey && known.size > 0) {
+      // Keep what was found so far, and say where the scan stopped.
+      renderResults();
+      noFunds.style.display = "none"; // "no funds" would be misleading for an unfinished scan
+      statusEl.textContent += ` Scan stopped at ${where || "the start"}. The result is incomplete.`;
+    }
     statusEl.className = "status err";
   } finally {
     scanBtn.disabled = false;
+    sourceSel.disabled = false;
     setTimeout(() => {
       progress.classList.remove("active");
       progressBar.style.width = "0%";
@@ -1189,6 +1215,70 @@ cancelSendBtn.onclick = () => {
   sendStatus.textContent = "";
 };
 
+// Sends the signed transaction. Never retried blindly: with no answer we cannot know whether
+// it went through. Another server is used automatically only after an explicit refusal; with no
+// answer the user decides (button "send via another server"). Re-sending the same signed
+// transaction is harmless: it has the same id and the network accepts it only once.
+async function sendVia(ctx, manual) {
+  altSendBtn.style.display = "none";
+  let r;
+  try {
+    r = await net.broadcast(ctx.txHex, { exclude: ctx.tried, manual });
+  } catch (e) {
+    if (e.kind === "noanswer") {
+      ctx.tried.push(e.provider.id);
+      sendStatus.textContent = `No response from ${e.provider.host}. The transaction may already have been sent — check your address on ${e.provider.host} before trying again.`;
+      sendStatus.className = "status err";
+      if (ctx.tried.length < net.providers.length) {
+        altCtx = ctx;
+        altSendBtn.style.display = "";
+      }
+      return;
+    }
+    if (e.kind === "rejected")
+      throw new Error(
+        `${e.provider.host} refused the transaction: ${e.message}. Nothing was sent; press Prepare again.`,
+      );
+    throw new Error(`${reasonText(e)}. Nothing was sent; press Prepare again.`);
+  }
+  const txid = r.txid;
+  if (!/^[0-9a-f]{64}$/i.test(txid)) {
+    // The node accepted the request but did not return a txid. Do not offer a
+    // retry (it could double-send); show the response as plain text only.
+    sendStatus.textContent = `Broadcast returned an unexpected response — check ${r.provider.host} before retrying: ${txid.slice(0, 200)}`;
+    sendStatus.className = "status err";
+    return;
+  }
+  // Built with DOM APIs (not innerHTML) so network data can never inject markup.
+  sendStatus.textContent = `Sent successfully via ${r.provider.host}!`;
+  sendStatus.append(document.createElement("br"), "TXID: ");
+  const link = document.createElement("a");
+  link.href = net.txLink(txid, r.provider);
+  link.target = "_blank";
+  link.rel = "noopener";
+  link.style.color = "var(--accent)";
+  link.textContent = txid;
+  sendStatus.append(link);
+  sendStatus.className = "status ok";
+  ctx.source.balanceSats = Math.max(0, ctx.source.balanceSats - ctx.spent);
+  if (ctx.source === selectedSource)
+    sourceInfo.innerHTML = `Source: <strong>${selectedSource.address}</strong><br>${selectedSource.type} · ${selectedSource.path} · balance <strong class="bal">${satsToBtc(selectedSource.balanceSats)} BTC</strong>`;
+  amountEl.value = "";
+  altCtx = null;
+}
+let altCtx = null;
+altSendBtn.onclick = async () => {
+  if (!altCtx) return;
+  sendStatus.textContent = "Broadcasting via another server...";
+  sendStatus.className = "status";
+  try {
+    await sendVia(altCtx, true);
+  } catch (e) {
+    sendStatus.textContent = "Send error: " + e.message;
+    sendStatus.className = "status err";
+  }
+};
+
 broadcastBtn.onclick = async () => {
   if (!preparedTx || !selectedSource) return;
   if (
@@ -1212,52 +1302,15 @@ broadcastBtn.onclick = async () => {
     const txHex = hex.encode(tx.extract());
 
     sendStatus.textContent = "Broadcasting...";
-    let res;
-    try {
-      // Never retried automatically: a second POST could double-send.
-      res = await fetchWithTimeout(`${API}/tx`, { method: "POST", body: txHex }, 30000);
-    } catch (_) {
-      // No answer: we cannot know whether the network accepted the transaction.
-      sendStatus.textContent =
-        "No response from mempool.space. The transaction may already have been sent — check your address on mempool.space before trying again.";
-      sendStatus.className = "status err";
-      confirmArea.style.display = "none";
-      preparedTx = null;
-      return;
-    }
-    if (!res.ok) throw new Error(res.text || res.statusText);
-    const txid = res.text.trim();
-
-    if (!/^[0-9a-f]{64}$/i.test(txid)) {
-      // The node accepted the request but did not return a txid. Do not offer a
-      // retry (it could double-send); show the response as plain text only.
-      sendStatus.textContent = `Broadcast returned an unexpected response — check mempool.space before retrying: ${txid.slice(0, 200)}`;
-      sendStatus.className = "status err";
-      confirmArea.style.display = "none";
-      preparedTx = null;
-      return;
-    }
-
-    // Built with DOM APIs (not innerHTML) so network data can never inject markup.
-    sendStatus.textContent = "Sent successfully!";
-    sendStatus.append(document.createElement("br"), "TXID: ");
-    const link = document.createElement("a");
-    link.href = `https://mempool.space/tx/${txid}`;
-    link.target = "_blank";
-    link.rel = "noopener";
-    link.style.color = "var(--accent)";
-    link.textContent = txid;
-    sendStatus.append(link);
-    sendStatus.className = "status ok";
-
-    selectedSource.balanceSats = Math.max(
-      0,
-      selectedSource.balanceSats - preparedTx.amountSats - preparedTx.feeSats,
-    );
-    sourceInfo.innerHTML = `Source: <strong>${selectedSource.address}</strong><br>${selectedSource.type} · ${selectedSource.path} · balance <strong class="bal">${satsToBtc(selectedSource.balanceSats)} BTC</strong>`;
+    const ctx = {
+      txHex,
+      tried: [], // servers that already got this transaction
+      spent: preparedTx.amountSats + preparedTx.feeSats,
+      source: selectedSource,
+    };
     confirmArea.style.display = "none";
     preparedTx = null;
-    amountEl.value = "";
+    await sendVia(ctx, false);
   } catch (e) {
     sendStatus.textContent = "Send error: " + e.message;
     sendStatus.className = "status err";

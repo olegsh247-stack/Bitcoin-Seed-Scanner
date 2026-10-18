@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-__CSP_HASH__'; style-src 'unsafe-inline'; img-src data:; connect-src https://mempool.space; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-__CSP_HASH__'; style-src 'unsafe-inline'; img-src data:; connect-src https://mempool.space https://blockstream.info https://btcscan.org; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bitcoin Seed Scanner</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23F7931A'/%3E%3Cpath fill='%23fff' d='M44.3 27.5c.6-4-2.4-6.1-6.6-7.5l1.3-5.4-3.3-.8-1.3 5.2c-.9-.2-1.7-.4-2.6-.6l1.3-5.2-3.3-.8-1.3 5.4c-.7-.2-1.4-.3-2.1-.5l-4.5-1.1-.9 3.5s2.4.6 2.4.6c1.3.3 1.6 1.2 1.5 1.9l-1.5 6.2c.1 0 .2.1.3.1l-.3-.1-2.2 8.7c-.2.4-.6 1.1-1.5.8 0 0-2.4-.6-2.4-.6l-1.6 3.8 4.3 1.1c.8.2 1.6.4 2.3.6l-1.4 5.5 3.3.8 1.3-5.4c.9.2 1.7.4 2.6.6l-1.3 5.3 3.3.8 1.4-5.5c5.6 1.1 9.9.6 11.7-4.5 1.4-4.1-.1-6.5-3-8 2.2-.5 3.8-1.9 4.3-4.9zm-7.6 10.7c-1 4.1-8 1.9-10.3 1.3l1.8-7.4c2.3.6 9.6 1.7 8.5 6.1zm1-10.8c-.9 3.7-6.6 1.8-8.4 1.4l1.7-6.7c1.8.4 7.7 1.3 6.7 5.3z'/%3E%3C/svg%3E">
@@ -30,6 +30,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .help-body{font-size:0.9rem;line-height:1.65}
 .layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 20px;align-items:start}.col{min-width:0}
 @media(max-width:900px){.layout{display:flex;flex-direction:column}.col{display:contents}#addrCard{order:1}#seedCard{order:2}#resultsCard{order:3}#addrListCard{order:4}#sendCard{order:5}#critBox{order:6}#saferBox{order:7}#donateCard{order:8}}
+.src-box{margin-top:14px}.src-box select{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:9px;font-size:0.92rem;font-family:inherit}.src-box select:focus{outline:none;border-color:var(--accent)}
 .addr-form{display:flex;gap:10px}.addr-form input{flex:1;min-width:0}.addr-form button{flex-shrink:0}.addr-result{margin-top:12px}.addr-row{margin-top:10px}.addr-label{font-size:0.78rem;color:var(--muted);margin-bottom:2px}.addr-value{font-size:0.92rem;word-break:break-all}.addr-value.addr{font-family:ui-monospace,monospace;font-size:0.84rem}.addr-value.bal{color:var(--success);font-weight:600}.addr-error{color:var(--danger);font-size:0.9rem}
 </style>
 </head>
@@ -90,6 +91,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 <div><label for="gap" id="gapLabel">Gap limit</label><input type="number" id="gap" value="25" min="5" max="100"><div class="hint" id="gapHint">Default 25, range 5-100. Higher = slower, but finds coins farther along the chain.</div></div>
 <div><label for="account" id="accountLabel">Account number</label><input type="number" id="account" value="0" min="0" max="99"><div class="hint" id="accountHint">Default 0. If no coins were found, try 1, 2…</div></div>
 </div>
+<div class="src-box"><label for="sourceSel" id="srcLabel">Data source</label><select id="sourceSel"><option value="auto" id="srcAutoOpt">Auto</option><option value="mempool">mempool.space</option><option value="blockstream">blockstream.info</option><option value="btcscan">btcscan.org</option></select><div class="hint" id="sourceNow"></div><div class="hint" id="srcHint">Auto picks the first server that answers and switches by itself if it stops.</div></div>
 <div class="btn-row">
 <button class="btn-primary" id="scanBtn">Find coins</button>
 <button class="btn-secondary" id="clearBtn">Clear all</button>
@@ -138,6 +140,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 </div>
 </div>
 <div class="status" id="sendStatus"></div>
+<div class="btn-row"><button class="btn-secondary" id="altSendBtn" style="display:none">Send via another server</button></div>
 </div>
 </div>
 </div>

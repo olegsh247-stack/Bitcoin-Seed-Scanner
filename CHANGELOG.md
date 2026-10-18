@@ -12,12 +12,17 @@ Minor tweaks (wording, layout fixes, hash refreshes) are not included.
 - A new scan wipes the previous key material and forgets the selected source and any prepared transaction.
 
 ### Added
+- Backup servers: if mempool.space does not answer, is rate-limited (429) or blocks access (403), the app switches to blockstream.info, then btcscan.org. At the start every server is checked (5 s, block height); one that is more than 2 blocks behind is skipped; a server that really stops answering is dropped after 3 failures. The server in use is shown ("Data source"), and it can be chosen by hand (Auto / mempool.space / blockstream.info / btcscan.org). Answers from every server are validated just as strictly.
+- Fee hints come from the server in use (Esplora `/fee-estimates` on the backups).
+- Sending: if the first server gives no answer, the warning stays and a button "Send via another server" appears; another server is used automatically only after an explicit refusal.
+- If a scan has to stop, what was found so far stays on screen with the place where it stopped, and the message names the reason (limit 429 / blocked 403 / no connection).
 - "Addresses of this seed phrase" block under the found funds: the first receive address of every scanned type plus every address with history (receive and change), with path and status, and a Copy button. Public data only; nothing is saved.
 - The confirmation announces when a sub-minimum leftover (below 546 sats) is added to the fee.
 
 ### Changed
 - "Check an address" is now "Check an address (if known)" (all languages); the "Safer workflow" block moved under "Important".
 - Fee rate must be a valid positive number (decimals such as 1.5 are allowed); invalid input is refused instead of silently replaced with 5.
+- The page may now contact three public servers (mempool.space, blockstream.info, btcscan.org); the Content Security Policy and the Help text list them.
 - Fee estimates use the real output size of the recipient and change address types (Legacy, Nested SegWit, Native SegWit, Taproot); "Maximum" uses the same model.
 - The fee-hint request has a time limit and its numbers are validated.
 

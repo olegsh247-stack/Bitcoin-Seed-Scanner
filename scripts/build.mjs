@@ -40,7 +40,7 @@ const html = template
   .replace("__CSP_HASH__", cspHash)
   .replace(PLACEHOLDER, () => `<script>${scriptBody}</script>`);
 
-// Guard: no remote code may be loaded. Only data fetches to mempool.space are allowed.
+// Guard: no remote code may be loaded. Data fetches are limited by the CSP to the three listed servers.
 const remoteCode = html.match(
   /<script[^>]+src=|<link[^>]+rel=["']?(stylesheet|modulepreload)|from\s*["']https?:|import\s*\(\s*["']https?:/gi,
 );

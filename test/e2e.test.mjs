@@ -33,8 +33,8 @@ const ok = (name) => console.log("ok -", ++n, name);
   const hash = createHash("sha256").update(m[1]).digest("base64");
   assert.ok(html.includes(`script-src 'sha256-${hash}'`), "CSP hash matches the inline script");
   assert.ok(
-    html.includes("connect-src https://mempool.space"),
-    "CSP limits network to mempool.space",
+    html.includes("connect-src https://mempool.space https://blockstream.info https://btcscan.org;"),
+    "CSP limits network to the three servers",
   );
   assert.ok(
     !/TVXzchq|0x761B5365|1GgXo15B|3B6wA2Yu|bc1qy9ht50|bc1q56kmyw|bc1p6wk0ec/.test(html),
@@ -115,7 +115,9 @@ const LEGACY_PREV = prevTxFor(LEGACY, 100_000n);
 const SEGWIT_UTXO = { txid: "cd".repeat(32), vout: 1, value: 150_000 };
 
 const mempool = async (url, init, posted) => {
-  const u = url.replace("https://mempool.space/api", "");
+  const u = url.replace(/^https:\/\/[^/]+\/api/, "");
+  if (u === "/blocks/tip/height") return { status: 200, text: "971952" };
+  if (u === "/fee-estimates") return { status: 200, json: { 1: 9.2, 3: 7, 6: 5 } };
   if (u.startsWith("/v1/fees/recommended"))
     return { status: 200, json: { fastestFee: 9, halfHourFee: 7, hourFee: 5 } };
   if (init.method === "POST" && u === "/tx") {
@@ -269,10 +271,11 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   );
   await scan(dead);
   const s = dead.d.getElementById("status");
-  assert.match(s.textContent, /not responding/i);
+  assert.match(s.textContent, /None of the servers .*answered/i);
+  assert.match(s.textContent, /Scan stopped at BIP44, receive #\d+\. The result is incomplete/);
   assert.equal(s.className, "status err");
   assert.ok(!/No funds found/.test(s.textContent), "must not claim 'No funds found'");
-  assert.notEqual(dead.d.getElementById("resultsCard").style.display, "block");
+  assert.equal(dead.d.getElementById("noFunds").style.display, "none", "no 'no funds' notice");
   ok("total API outage is reported as an error, not as 'No funds found'");
 }
 
@@ -281,7 +284,7 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   let calls = 0;
   const waits = [];
   const patient = boot(async (url, init, posted) => {
-    if (/\/address\/[^/]+$/.test(url) && calls++ < 40) return { status: 500, text: "boom" }; // 10 lookups x 4 tries
+    if (/\/address\/[^/]+$/.test(url) && calls++ < 50) return { status: 500, text: "boom" }; // lookups fail on every server for a while
     return mempool(url, init, posted);
   });
   const obs = new patient.w.MutationObserver(() => {
@@ -323,7 +326,7 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   assert.ok(!/Warning/.test(st), `no warning once the re-check succeeds: ${st}`);
   assert.equal(hiccup.d.querySelectorAll("#tbody tr").length, 2, "funds found via re-check");
   const stuck = boot(async (url, init, posted) => {
-    if (url.endsWith(`/address/${LEGACY.address}`)) return { status: 429, text: "slow" };
+    if (url.endsWith(`/address/${LEGACY.address}`)) return { status: 404, text: "nope" };
     return mempool(url, init, posted);
   });
   await scan(stuck);
@@ -725,7 +728,7 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
 // ---- 14. send safety: untrusted server data is checked strictly --------------
 {
   const variant = (over) => async (url, init, posted) => {
-    const u = url.replace("https://mempool.space/api", "");
+    const u = url.replace(/^https:\/\/[^/]+\/api/, "");
     const m = u.match(/^\/address\/([^/]+)\/utxo$/);
     if (m && over.utxo && over.utxo[m[1]]) return { status: 200, json: over.utxo[m[1]] };
     if (over.hex && u.match(/^\/tx\/([0-9a-f]{64})\/hex$/)) return over.hex(u);
@@ -881,6 +884,79 @@ ok("native segwit: prepare -> sign -> broadcast, output matches request");
   await prep("0.001"); // normal case, real change output
   assert.equal(d3.getElementById("confirmDust").style.display, "none");
   ok("a sub-minimum leftover added to the fee is announced in the confirmation");
+}
+
+// ---- 15. several servers: switching, manual choice, send via another server ---
+{
+  const seen = [];
+  const noMempool = (url, init, posted) => {
+    seen.push(url);
+    if (url.startsWith("https://mempool.space")) throw new Error("blocked by network");
+    return mempool(url, init, posted);
+  };
+  const c = boot(noMempool);
+  await scan(c);
+  assert.equal(c.d.querySelectorAll("#tbody tr").length, 2, "funds found through the backup server");
+  assert.match(c.d.getElementById("sourceNow").textContent, /blockstream\.info/);
+  assert.ok(seen.filter((u) => u.startsWith("https://blockstream.info/api/address/")).length > 5);
+  assert.ok(!seen.some((u) => u.startsWith("https://mempool.space/api/address")), "dead server not used for lookups");
+  assert.ok(!seen.some((u) => /^https:\/\/btcscan/.test(u) && /address/.test(u)), "second backup not needed");
+  ok("mempool.space unreachable: the scan runs on blockstream.info and says so");
+
+  // manual choice
+  const seen2 = [];
+  const m = boot((url, init, posted) => (seen2.push(url), mempool(url, init, posted)));
+  m.d.getElementById("sourceSel").value = "btcscan";
+  m.d.getElementById("sourceSel").dispatchEvent(new m.w.Event("change"));
+  await scan(m);
+  assert.equal(m.d.querySelectorAll("#tbody tr").length, 2);
+  assert.match(m.d.getElementById("sourceNow").textContent, /btcscan\.org/);
+  assert.ok(!seen2.some((u) => /address/.test(u) && !u.startsWith("https://btcscan.org")), "only the chosen server gets lookups");
+  ok("manual source choice is respected");
+
+  // send: first server gives no answer -> warning + button; another server takes it
+  const posts = [];
+  const sendNet = async (url, init, posted) => {
+    if (init.method === "POST") {
+      posts.push(url);
+      if (url.startsWith("https://mempool.space")) throw new Error("timeout");
+      posted.push(init.body);
+      return { status: 200, text: FAKE_TXID };
+    }
+    return mempool(url, init, posted);
+  };
+  const c4 = boot(sendNet);
+  await scan(c4);
+  const d4 = c4.d;
+  click([...d4.querySelectorAll("#tbody button")].find((b) => b.closest("tr").textContent.includes(SEGWIT.address)));
+  type(d4.getElementById("toAddress"), DEST);
+  type(d4.getElementById("amount"), "0.001");
+  type(d4.getElementById("feeRate"), "5");
+  click(d4.getElementById("prepareBtn"));
+  await until(() => d4.getElementById("confirmArea").style.display === "block");
+  type(d4.getElementById("confirmText"), DEST.slice(-6));
+  click(d4.getElementById("broadcastBtn"));
+  await until(() => /No response from/.test(d4.getElementById("sendStatus").textContent));
+  assert.deepEqual(posts, ["https://mempool.space/api/tx"], "no hidden second send");
+  assert.notEqual(d4.getElementById("altSendBtn").style.display, "none");
+  assert.equal(c4.posted.length, 0);
+  click(d4.getElementById("altSendBtn"));
+  await until(() => /Sent successfully/.test(d4.getElementById("sendStatus").textContent));
+  assert.match(d4.getElementById("sendStatus").textContent, /blockstream\.info/);
+  assert.equal(d4.querySelector("#sendStatus a").href, `https://blockstream.info/tx/${FAKE_TXID}`);
+  assert.equal(d4.getElementById("altSendBtn").style.display, "none");
+  assert.equal(c4.posted.length, 1);
+  ok("no answer from the first server: warning, and one click sends via another server");
+
+  // total outage keeps the partial result and says where it stopped (also checked in test 6)
+  const labels = ["srcLabel", "srcHint", "altSendBtn"].map((id) => c.d.getElementById(id).textContent);
+  assert.ok(labels.every(Boolean));
+  for (const lg of ["ru", "es", "fr"]) {
+    click(c.d.querySelector(`.lang-btn[data-lang="${lg}"]`));
+    assert.notEqual(c.d.getElementById("srcLabel").textContent, labels[0], `${lg} translated`);
+    assert.match(c.d.getElementById("sourceNow").textContent, /blockstream\.info/);
+  }
+  ok("source selector and active server are shown in every language");
 }
 
 console.log(`\n${n} e2e checks passed`);
